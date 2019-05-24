@@ -37,7 +37,7 @@ exports.get_config = async (guild) => {
         conn.end();
         return result;
     }).catch((error) => {
-        log.log('[get_config] - ' + error);
+        log.log('[get_config] - ' + guild.id + ' : ' + error);
         return undefined;
     });
 }
@@ -56,7 +56,7 @@ exports.set_config = async (guild) => {
         conn.end();
         return true;
     }).catch((error) => {
-        log.log('[set_config] - ' + error);
+        log.log('[set_config] - ' + guild.id + ' : ' + error);
         return undefined;
     });
 }
@@ -68,7 +68,7 @@ exports.set_guildactive = async (guild, flag) => {
         conn.end;
         return true;
     }).catch((error) => {
-        log.log('[set_guildactive] - ' + error);
+        log.log('[set_guildactive] - ' + guild.id + ' : ' + error);
         return undefined;
     });
 }

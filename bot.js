@@ -19,6 +19,7 @@ let arr_badwords   = [];
 * - log-file
 * - status
 * - badwords
+* - welcome/leave msg
 */
 
 /*
@@ -27,6 +28,7 @@ Todos
 DB
 * - config rows standard: NULL
 * - general row 'active'
+* - welcomeLOG
 
 Patreon Page
 */
@@ -114,11 +116,34 @@ client.on('guildDelete', async guild => {
 
 //Emitted whenever a user joins a guild.
 client.on('guildMemberAdd', async member => {
-  
+  db.get_config(member.guild).then((config) => {
+    if(config !== undefined && config.welcome === 1){
+      let user      = member.user.toString();
+      let server    = member.guild.name;
+      let welcomelog= config.welcomelog;
+      let welcomemsg= config.welcomemsg.replace(/{user}/gmi, user).replace(/{server}/gmi, server);
+      if(member.user.bot === false){
+        member.guild.channels.get(welcomelog).send(welcomemsg, {  
+          file: 'https://media.discordapp.net/attachments/416512556975521793/560400583031259136/lly3amxgwsc21.jpg'
+        });
+      } else {
+        member.guild.channels.get(config.botlog).send(user + '(bot) joined.');
+      }
+    }
+  }).catch((error) => {
+    log.log('[guildMemberAdd] - ' + member.guild.id + ' : ' + error);
+  });  
 });
 
 //Emitted whenever a member leaves a guild, or is kicked.
 client.on('guildMemberRemove', async member => {
+  db.get_config(member.guild).then((config) => {
+    if(config !== undefined && config.leaverlog === 1){
+      member.guild.channels.get(config.leaverlog).send(member.user.toString() + ' left the Server.');
+    }
+  }).catch((error) => {
+    log.log('[guildMemberRemove] - ' + member.guild.id + ' : ' + error);
+  });
 });
 
 /**************************************************************************************************************/
@@ -154,7 +179,7 @@ client.on('raw', async event => {
 
 //Emitted whenever a reaction is added to a cached message.
 client.on('messageReactionAdd', async (reaction, user, message)  => {//
-  if(reaction.me === true && message !== undefined){
+  /*if(reaction.me === true && message !== undefined){
     let channelID = message.channel.id;
     let messageID = message.id;
     let emoteID   = (reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : punycode.ucs2.decode(reaction.emoji.name);
@@ -164,12 +189,12 @@ client.on('messageReactionAdd', async (reaction, user, message)  => {//
     if(response.error == false && response.value !== null && user.bot === false){
       message.guild.members.get(user.id).addRole(response.value);
     }
-  }
+  }*/
 });
 
 //Emitted whenever a reaction is removed from a cached message.
 client.on('messageReactionRemove', async (reaction, user, message) => {
-  if(reaction.me === true && message !== undefined){ //bot reacts before
+  /*if(reaction.me === true && message !== undefined){ //bot reacts before
     let channelID = message.channel.id;
     let messageID = message.id;
     let emoteID   = (reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : punycode.ucs2.decode(reaction.emoji.name);
@@ -179,7 +204,7 @@ client.on('messageReactionRemove', async (reaction, user, message) => {
     if(response.error == false && response.value !== null && user.bot === false){
       message.guild.members.get(user.id).removeRole(response.value);
     }
-  }
+  }*/
 });
 
 /**************************************************************************************************************/
