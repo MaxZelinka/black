@@ -21,10 +21,14 @@ let arr_badwords   = [];
 * - badwords
 */
 
-//DB Todos
 /*
+Todos
+
+DB
 * - config rows standard: NULL
 * - general row 'active'
+
+Patreon Page
 */
 
 //Events
