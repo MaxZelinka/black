@@ -24,7 +24,7 @@ let arr_badwords   = [];
 //DB Todos
 /*
 * - config rows standard: NULL
-*
+* - general row 'active'
 */
 
 //Events
@@ -92,12 +92,16 @@ client.on('guildCreate', async guild => {
     if(db.get_config(guild) === undefined){
       //set config with standard
       db.set_config(guild);
+    } else {
+      //set guild active = true
+      db.set_guildactive(guild, true);
     }
   }
 });
 
 //Emitted whenever a guild is deleted/left.
 client.on('guildDelete', async guild => {
+  db.set_guildactive(guild, false);
 });
 
 /**************************************************************************************************************/

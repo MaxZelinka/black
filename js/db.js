@@ -44,8 +44,8 @@ exports.get_config = async (guild) => {
 
 exports.set_config = async (guild) => {
     conn().then(async (conn) => {         
-        const query_general = `INSERT INTO general ('ServerID', 'ServerName', 'Prefix')
-            VALUES('` + guild.id + `','` + guild.name + `','?b')`;
+        const query_general = `INSERT INTO general ('ServerID', 'ServerName', 'Prefix', 'active')
+            VALUES('` + guild.id + `','` + guild.name + `','?b', 'true)`;
         const query_config  = `INSERT INTO config ('ServerID', 'welcomemsg')
             VALUES('` + guild.id + `','{user} welcome to the server! :)')`;
         const query_module  = `INSERT INTO module ('ServerID')
@@ -57,6 +57,18 @@ exports.set_config = async (guild) => {
         return true;
     }).catch((error) => {
         log.log('[set_config] - ' + error);
+        return undefined;
+    });
+}
+
+exports.set_guildactive = async (guild, flag) => {
+    conn().then(async (conn) => {
+        const query = `UPDATE general SET active = ` + flag + ` WHERE ServerID = ` + guild.id;
+        conn.query(query);
+        conn.end;
+        return true;
+    }).catch((error) => {
+        log.log('[set_guildactive] - ' + error);
         return undefined;
     });
 }
