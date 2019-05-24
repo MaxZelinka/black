@@ -110,6 +110,7 @@ client.on('guildDelete', async guild => {
 
 //Emitted whenever a user joins a guild.
 client.on('guildMemberAdd', async member => {
+  
 });
 
 //Emitted whenever a member leaves a guild, or is kicked.
