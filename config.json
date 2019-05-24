@@ -1,0 +1,9 @@
+{  
+    "db":{  
+       "servername":"localhost",
+       "username":"root",
+       "password":"",
+       "dbname":"lpggbot"
+    },
+    "statusIntervall":216000
+ }

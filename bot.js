@@ -2,14 +2,16 @@ const Discord   = require("discord.js");
 const client    = new Discord.Client();
 const auth      = require("./auth.json");
 const punycode  = require('punycode');
+const fs        = require('fs');
 
 //own scripts
 const log       = require("./js/log");
 const status    = require("./js/status");
 const badwords  = require("./js/badwords");
+const db        = require("./js/db");
 
 //Bot-Settings
-const StatusInterval = 216000;
+let StatusInterval = JSON.parse(fs.readFileSync('config.json', 'utf8')).statusIntervall;
 let arr_badwords   = [];
 
 //Functions current
@@ -19,8 +21,13 @@ let arr_badwords   = [];
 * - badwords
 */
 
-//Events
+//DB Todos
+/*
+* - config rows standard: NULL
+*
+*/
 
+//Events
 /**************************************************************************************************************/
 /* BOT STARTS                                                                                                 */
 /**************************************************************************************************************/
@@ -79,6 +86,14 @@ client.on('webhookUpdate', webhookUpdate => {
 
 //Emitted whenever the client joins a guild.
 client.on('guildCreate', async guild => {
+  //Whether the guild is available to access. If it is not available, it indicates a server outage
+  if(guild.available){
+    //no config set
+    if(db.get_config(guild) === undefined){
+      //set config with standard
+      db.set_config(guild);
+    }
+  }
 });
 
 //Emitted whenever a guild is deleted/left.
@@ -164,6 +179,7 @@ client.on('messageReactionRemove', async (reaction, user, message) => {
 
 //Emitted whenever a message is created.
 client.on("message", async message => {
+  
 });
 
 client.login(auth.token);
