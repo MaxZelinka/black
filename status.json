@@ -1,0 +1,110 @@
+{
+    "status" : 
+    [
+        {
+            "game" : 
+            {
+                "name": "https://www.twitch.tv/letsplaygreatgames",
+                "type": "STREAMING",
+                "url" : "https://www.twitch.tv/letsplaygreatgames"
+            },
+            "status" : "online"
+        },
+        {
+            "game" : 
+            {
+                "name": "?bhelp",
+                "type": "PLAYING"
+            },
+            "status" : "idle"
+        },
+        {
+            "game" : 
+            {
+                "name": "nudes",
+                "type": "WATCHING"
+            },
+            "status" : "online"
+        },
+        {
+            "game" : 
+            {
+                "name": "good E-Girls-Streamer, Kappa",
+                "type": "WATCHING"
+            },
+            "status" : "online"
+        },
+        {
+            "game" : 
+            {
+                "name": "with hiself",
+                "type": "PLAYING"
+            },
+            "status" : "online"
+        },
+        {
+            "game" : 
+            {
+                "name": "how to dominate the world",
+                "type": "LISTENING"
+            },
+            "status" : "dnd"
+        },
+        {
+            "game" : 
+            {
+                "name": "kill other bots next to me",
+                "type": "PLAYING"
+            },
+            "status" : "dnd"
+        },
+        {
+            "game" : 
+            {
+                "name": "better than you",
+                "type": "PLAYING"
+            },
+            "status" : "online"
+        },
+        {
+            "game" : 
+            {
+                "name": "to the song of death",
+                "type": "LISTENING"
+            },
+            "status" : "idle"
+        },
+        {
+            "game" : 
+            {
+                "name": "takeover your server!",
+                "type": "PLAYING"
+            },
+            "status" : "dnd"
+        },
+        {
+            "game" : 
+            {
+                "name": "hijack the administrators!",
+                "type": "PLAYING"
+            },
+            "status" : "dnd"
+        },
+        {
+            "game" : 
+            {
+                "name": "is ashamed of others",
+                "type": "PLAYING"
+            },
+            "status" : "idle"
+        },
+        {
+            "game" : 
+            {
+                "name": "Riven (League of Legends)",
+                "type": "PLAYING"
+            },
+            "status" : "dnd"
+        }        
+    ]
+}
