@@ -28,7 +28,7 @@ async function conn(){
 }
 
 exports.get_config = async (guild) => {
-    conn().then(async (conn) => {
+    return conn().then(async (conn) => {
         const query = `SELECT * FROM general
         INNER JOIN config ON general.ServerID = config.ServerID
         INNER JOIN module ON general.ServerID = module.ServerID
@@ -44,11 +44,11 @@ exports.get_config = async (guild) => {
 
 exports.set_config = async (guild) => {
     conn().then(async (conn) => {         
-        const query_general = `INSERT INTO general ('ServerID', 'ServerName', 'Prefix', 'active')
-            VALUES('` + guild.id + `','` + guild.name + `','?b', 'true)`;
-        const query_config  = `INSERT INTO config ('ServerID', 'welcomemsg')
+        const query_general = `INSERT INTO general (ServerID, ServerName, Prefix, active)
+            VALUES('` + guild.id + `','` + guild.name + `','?b', 1)`;
+        const query_config  = `INSERT INTO config (ServerID, welcomemsg)
             VALUES('` + guild.id + `','{user} welcome to the server! :)')`;
-        const query_module  = `INSERT INTO module ('ServerID')
+        const query_module  = `INSERT INTO module (ServerID)
             VALUES('` + guild.id + `')`;
         conn.query(query_general);
         conn.query(query_config);

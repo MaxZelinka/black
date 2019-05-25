@@ -23,13 +23,6 @@ let arr_badwords   = [];
 */
 
 /*
-Todos
-
-DB
-* - config rows standard: NULL
-* - general row 'active'
-* - welcomeLOG
-
 Patreon Page
 */
 
@@ -92,22 +85,23 @@ client.on('webhookUpdate', webhookUpdate => {
 
 //Emitted whenever the client joins a guild.
 client.on('guildCreate', async guild => {
-  //Whether the guild is available to access. If it is not available, it indicates a server outage
+  //Whether the guild is available to access. If it is not available, it indicates a server outage 
   if(guild.available){
     //no config set
-    if(db.get_config(guild) === undefined){
+    let config = await db.get_config(guild);
+    if(config == undefined || config.length == 0){
       //set config with standard
       db.set_config(guild);
     } else {
       //set guild active = true
-      db.set_guildactive(guild, true);
+      db.set_guildactive(guild, 1);
     }
   }
 });
 
 //Emitted whenever a guild is deleted/left.
 client.on('guildDelete', async guild => {
-  db.set_guildactive(guild, false);
+  db.set_guildactive(guild, 0);
 });
 
 /**************************************************************************************************************/
@@ -117,17 +111,21 @@ client.on('guildDelete', async guild => {
 //Emitted whenever a user joins a guild.
 client.on('guildMemberAdd', async member => {
   db.get_config(member.guild).then((config) => {
-    if(config !== undefined && config.welcome === 1){
-      let user      = member.user.toString();
-      let server    = member.guild.name;
-      let welcomelog= config.welcomelog;
-      let welcomemsg= config.welcomemsg.replace(/{user}/gmi, user).replace(/{server}/gmi, server);
-      if(member.user.bot === false){
-        member.guild.channels.get(welcomelog).send(welcomemsg, {  
-          file: 'https://media.discordapp.net/attachments/416512556975521793/560400583031259136/lly3amxgwsc21.jpg'
-        });
-      } else {
-        member.guild.channels.get(config.botlog).send(user + '(bot) joined.');
+    if(config !== undefined && config.length >= 0){
+      //if module is active
+      if(config[0].welcome === 1 && config[0].welcome_channel !== null){
+        let user      = member.user.toString();
+        let server    = member.guild.name;
+        let welcomelog= config[0].welcome_channel;
+        let welcomemsg= config[0].welcomemsg.replace(/{user}/gmi, user).replace(/{server}/gmi, server);
+
+        if(member.user.bot === false){
+          member.guild.channels.get(welcomelog).send(welcomemsg, {  
+            file: 'https://media.discordapp.net/attachments/416512556975521793/560400583031259136/lly3amxgwsc21.jpg'
+          });
+        } else {
+          member.guild.channels.get(config.botlog).send(user + '(bot) joined.');
+        }
       }
     }
   }).catch((error) => {
@@ -138,8 +136,10 @@ client.on('guildMemberAdd', async member => {
 //Emitted whenever a member leaves a guild, or is kicked.
 client.on('guildMemberRemove', async member => {
   db.get_config(member.guild).then((config) => {
-    if(config !== undefined && config.leaverlog === 1){
-      member.guild.channels.get(config.leaverlog).send(member.user.toString() + ' left the Server.');
+    if(config !== undefined && config.length >= 0){
+      if(config[0].leaver === 1 && config[0].leaver_channel !== null){
+        member.guild.channels.get(config[0].leaver_channel).send(member.user.toString() + ' left the Server.');
+      } 
     }
   }).catch((error) => {
     log.log('[guildMemberRemove] - ' + member.guild.id + ' : ' + error);
