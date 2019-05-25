@@ -44,7 +44,7 @@ exports.get_config = async (guild) => {
 }
 
 exports.set_config = async (guild) => {
-    conn().then(async (conn) => {
+    return conn().then(async (conn) => {
         const query_general = `INSERT INTO general (ServerID, ServerName, Prefix, active)
             VALUES('` + guild.id + `','` + guild.name + `','?b', 1)`;
         const query_config = `INSERT INTO config (ServerID, welcomemsg)
@@ -63,13 +63,34 @@ exports.set_config = async (guild) => {
 }
 
 exports.set_guildactive = async (guild, flag) => {
-    conn().then(async (conn) => {
+    return conn().then(async (conn) => {
         const query = `UPDATE general SET active = ` + flag + ` WHERE ServerID = ` + guild.id;
         conn.query(query);
-        conn.end;
+        conn.end();
         return true;
     }).catch((error) => {
         log.log('[set_guildactive] - ' + guild.id + ' : ' + error);
+        return undefined;
+    });
+}
+
+exports.get_channel = async (guild) => {
+    return conn().then(async (conn) => {
+        const query = `SELECT Channel FROM config WHERE ServerID = ` + guild.id;
+        let result = conn.query(query);
+        conn.end();
+        return result;
+    }).catch((error) => {
+        log.log('[get_channel] - ' + guild.id + ' : ' + error);
+        return undefined;
+    });
+}
+
+exports.set_channel = async(guild, channels) => {
+    return conn().then(async (conn) => {
+        
+    }).catch((error) => {
+        log.log('[set_channel] - ' + guild.id + ' : ' + error);
         return undefined;
     });
 }

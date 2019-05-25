@@ -6,23 +6,12 @@ const modulhandler = require("./modulhandler");
 
 let config = '';
 
-exports.handler = async function (client, message) {
+exports.handler = async (client, message) => {
     config = (config === '') ? await db.get_config(message.guild) : config;
 
-    const cf_mods = (config[0].Moderator !== null) ? config[0].Moderator : '';
     const cf_channel = (config[0].Channel !== null) ? config[0].Channel : '';
     const cf_blacklist = (config[0].blacklist !== null) ? config[0].blacklist : '';
     const cf_prefix = config[0].Prefix;
-
-    let regexMod = new RegExp(message.author.id, 'g');
-    const isAdmin = message.member.permissions.has('ADMINISTRATOR');
-    const isMod = (cf_mods.toString().match(regexMod) !== null) ? true : false;
-    function isChannel(arg) {
-        return (arg !== undefined && arg.match(/^<#!?([0-9]{18})>$/gm) !== null) ? true : false;
-    }
-    function isUser(arg) {
-        return (arg !== undefined && arg.match(/^<@!?([0-9]{18})>$/gm) !== null) ? true : false;
-    }
 
     const args = message.content.trim().split(/ +/g);
     const command = args.shift().toLowerCase();
