@@ -186,7 +186,7 @@ client.on('messageReactionAdd', async (reaction, user, message) => {
 
     let response = await modhandler.get_reaction(message.guild, channelID, messageID, emoteID);
 
-    if(response.length > 0 && response[0].RoleID !== undefined){
+    if(response !== undefined && response.length > 0){
       message.guild.members.get(user.id).addRole(response[0].RoleID).catch((error) => {
         if(error.code == 50013){
           user.send('missing bot permission. contact the admin.').catch((err) => {
@@ -209,7 +209,7 @@ client.on('messageReactionRemove', async (reaction, user, message) => {
 
     let response = await modhandler.get_reaction(message.guild, channelID, messageID, emoteID);
 
-    if(response.length > 0 && response[0].RoleID !== undefined){
+    if(response !== undefined && response.length > 0){
       message.guild.members.get(user.id).removeRole(response[0].RoleID).catch((error) => {
         if(error.code == 50013){
           user.send('missing bot permission. contact the admin.').catch((err) => {
