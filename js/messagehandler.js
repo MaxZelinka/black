@@ -35,13 +35,30 @@ exports.handler = async (client, message) => {
                 modulhandler.help(config, client, message);
                 break;
             case cf_prefix + 'channel':
-                modulhandler.channel(config, client, message);
+                modulhandler.channel(config, client, message).then(async () => {
+                    config = await db.get_config(message.guild);
+                });
                 break;
         }
         if(cf_channel.toString().match(regexChannel) !== null){
             //if channel is set
             switch(command){
-
+                //REACTION
+                case cf_prefix + 'addrole':
+                    modulhandler.addrole(config, client, message);
+                    break;
+                case cf_prefix + 'removerole':
+                    modulhandler.removerole(config, client, message);
+                    break;
+                case cf_prefix + 'reactionid':
+                    modulhandler.reactionid(config, client, message);
+                    break;
+                case cf_prefix + 'embedmsg':
+                    modulhandler.embedmsg(config, client, message);
+                    break;
+                case cf_prefix + 'editmsg':
+                    modulhandler.editmsg(config, client, message);
+                    break;
             }
         }
     }

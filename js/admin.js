@@ -15,3 +15,7 @@ exports.isMod = (message, config) => {
     const regexMod = new RegExp(message.author.id, 'g');
     return (cf_mods.toString().match(regexMod) !== null) ? true : false;
 }
+
+exports.get_message = async (client, channel_ID, message_ID) => {
+    return client.channels.get(channel_ID).fetchMessage(message_ID);
+}

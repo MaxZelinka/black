@@ -86,11 +86,36 @@ exports.get_channel = async (guild) => {
     });
 }
 
-exports.set_channel = async(guild, channels) => {
+exports.set_channel = async (guild, channels) => {
     return conn().then(async (conn) => {
-        
+
     }).catch((error) => {
         log.log('[set_channel] - ' + guild.id + ' : ' + error);
         return undefined;
+    });
+}
+
+//REACTIONS
+
+exports.setReaction = async (guild, channel_ID, message_ID, emote_ID, role_ID) => {
+    return conn().then(async (conn) => {
+        const query_set = `INSERT INTO reactions (ServerID, ChannelID, MessageID, EmoteID, RoleID, ID)
+        VALUES('` + guild.id + `', 
+        '` + channel_ID + `', 
+        '` + message_ID + `', 
+        '` + emote_ID + `', 
+        '` + role_ID +`',
+        '` + channel_ID + message_ID + emote_ID + role_ID + `')`;
+        return conn.query(query_set).then((el) => {
+            if(el !== undefined){
+                const query_get = `SELECT reactionsID FROM reactions WHERE ServerID = ` + guild.id + 
+                ` AND ID = ` + channel_ID + message_ID + emote_ID + role_ID + `;`;
+                let result = conn.query(query_get);
+                conn.end();
+                return result;
+            } else {
+                return undefined;
+            }
+        });
     });
 }
