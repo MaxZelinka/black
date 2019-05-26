@@ -35,3 +35,7 @@ exports.embedmsg = async (config, client, message) => {
 exports.editmsg = async (config, client, message) => {
     reactions.editmsg(config, client, message);
 }
+
+exports.get_reaction = async (guild, channelID, messageID, emoteID) => {
+    return reactions.get_reaction(guild, channelID, messageID, emoteID);
+}

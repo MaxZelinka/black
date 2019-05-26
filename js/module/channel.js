@@ -14,8 +14,8 @@ exports.channel = async (config, client, message) => {
         if(args[0] !== undefined){
             //set
             if(admin.isChannel(args[0]) == true){
-                let set_channel = await db.set_channel(message.guild, get_channel);
-                console.log(set_channel);
+                let set_channel = await db.set_channel(message.guild, get_channel, args[0]);
+                //console.log(set_channel);
             } else {
                 message.channel.send('argument is\'nt a channel').then((msg) => msg.delete(5000));
             }

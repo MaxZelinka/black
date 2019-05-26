@@ -1,10 +1,12 @@
+const msg_send = require("../msg_send");
+
 exports.help = async function(config, client, message){
     message.delete();
     const help = new Array();
 
     help['settings'] = `To run a command in ` + message.guild.name + `, use ` + config[0].Prefix + ` + command. For example, \`` + config[0].Prefix + `help\`. \n
 __**Commands**__\n
-**first**: first steps if you are new!
+**first**: first steps to config this server!
 
 __Settings__
 **prefix**: get/set prefix
@@ -42,9 +44,11 @@ __Reaction Role__`;
 **editmsg** [channel] [messageID] title/body "[value]": change embedmessage value
 `;
 
-client.channels.get(message.channel.id).send(help['settings']).then(() => {
-    client.channels.get(message.channel.id).send(help['modul']).then(() => {
-        client.channels.get(message.channel.id).send(help['reaction']);
+    msg_send.embedMessage(client, message.channel.id, 'Help', 'send to u!', '000000');
+
+    message.author.send(help['settings']).then(() => {
+        message.author.send(help['modul']).then(() => {
+            message.author.send(help['reaction']);
+        });
     });
-});
 }

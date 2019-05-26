@@ -2,12 +2,14 @@ const Discord = require("discord.js");
 const client = new Discord.Client();
 const auth = require("./auth.json");
 const fs = require('fs');
+const punycode = require('punycode');
 
 //own scripts
 const log = require("./js/log");
 const status = require("./js/status");
 const db = require("./js/db");
 const msghandler = require("./js/messagehandler");
+const modhandler = require("./js/modulhandler");
 
 //Bot-Settings
 let StatusInterval = JSON.parse(fs.readFileSync('config.json', 'utf8')).statusIntervall;
@@ -176,33 +178,49 @@ client.on('raw', async event => {
 });
 
 //Emitted whenever a reaction is added to a cached message.
-client.on('messageReactionAdd', async (reaction, user, message) => {//
-  /*if(reaction.me === true && message !== undefined){
+client.on('messageReactionAdd', async (reaction, user, message) => {
+  if(reaction.me === true && message !== undefined){
     let channelID = message.channel.id;
     let messageID = message.id;
     let emoteID   = (reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : punycode.ucs2.decode(reaction.emoji.name);
 
-    let response = await db.reactions(message, 'check', channelID, messageID, emoteID);
+    let response = await modhandler.get_reaction(message.guild, channelID, messageID, emoteID);
 
-    if(response.error == false && response.value !== null && user.bot === false){
-      message.guild.members.get(user.id).addRole(response.value);
+    if(response.length > 0 && response[0].RoleID !== undefined){
+      message.guild.members.get(user.id).addRole(response[0].RoleID).catch((error) => {
+        if(error.code == 50013){
+          user.send('missing bot permission. contact the admin.').catch((err) => {
+            console.log(err);
+          });
+        } else {
+          console.log(error);
+        }        
+      });
     }
-  }*/
+  }
 });
 
 //Emitted whenever a reaction is removed from a cached message.
 client.on('messageReactionRemove', async (reaction, user, message) => {
-  /*if(reaction.me === true && message !== undefined){ //bot reacts before
+  if(reaction.me === true && message !== undefined){
     let channelID = message.channel.id;
     let messageID = message.id;
     let emoteID   = (reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : punycode.ucs2.decode(reaction.emoji.name);
 
-    let response = await db.reactions(message, 'check', channelID, messageID, emoteID);
+    let response = await modhandler.get_reaction(message.guild, channelID, messageID, emoteID);
 
-    if(response.error == false && response.value !== null && user.bot === false){
-      message.guild.members.get(user.id).removeRole(response.value);
+    if(response.length > 0 && response[0].RoleID !== undefined){
+      message.guild.members.get(user.id).removeRole(response[0].RoleID).catch((error) => {
+        if(error.code == 50013){
+          user.send('missing bot permission. contact the admin.').catch((err) => {
+            console.log(err);
+          });
+        } else {
+          console.log(error);
+        }        
+      });
     }
-  }*/
+  }
 });
 
 /**************************************************************************************************************/
