@@ -16,6 +16,11 @@ exports.isMod = (message, config) => {
     return (cf_mods.toString().match(regexMod) !== null) ? true : false;
 }
 
+exports.hasPerm = (func, message) => {
+    //function for the right_system
+    return false;
+}
+
 exports.get_message = async (client, channel_ID, message_ID) => {
     return client.channels.get(channel_ID).fetchMessage(message_ID);
 }
