@@ -1,8 +1,8 @@
 //own scripts
-const log = require("./log");
 const badwords = require("./badwords");
 const db = require("./db");
 const modhandler = require("./modulhandler");
+const msg_send = require("./msg_send");
 
 let config = '';
 
@@ -25,7 +25,7 @@ exports.handler = async (client, message) => {
             if (cf_blacklist.toString().match(regexBlacklist) !== null
                 && message.content.match(regexPrefix) !== null) {
                 //if user is blacklistet & trying to use an command
-                message.channel.send(message.author.toString() + ' - your are blacklistet from using commands.').then((msg) => msg.delete(5000));
+                msg_send.embedMessage(client, message.channel.id, 'Blacklist', message.author.toString() + ' - you are blacklistet from using commands.', '#ff0000', 5000);
             } else {
                 switch(command){
                     case '?bfirst':
