@@ -3,8 +3,8 @@ const help = require("./module/help");
 const channel = require("./module/channel");
 const reactions = require("./module/reactions")
 
-exports.first = async (config, client) => {
-
+exports.first = async (config, client, message) => {
+    help.first(config, client, message);
 }
 
 exports.help = async (config, client, message) => {

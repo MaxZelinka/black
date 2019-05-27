@@ -3,26 +3,26 @@ const msg_send = require("../msg_send");
 exports.first = (config, client, message) => {
     message.delete();
     const first = `Welcome to your new Bot!
-    Here are a few tips to make sure the bot works properly.
+Here are a few tips to make sure the bot works properly.
 
-    Everything below is admin only.
+Everything below is admin only.
 
-    **1) Role**
-    Discord itself assigns bot roles. Make sure the bot role is above all the other roles.
-    Used for e.g. Reaction Roles. The bot can not assign roles about which first itself does not have the rights.
-    It would be awesome if the bot stay black (color)! :)
+**1) Role**
+Discord itself assigns bot roles. Make sure the bot role is above all the other roles.
+Used for e.g. Reaction Roles. The bot can not assign roles about which first itself does not have the rights.
+It would be awesome if the bot stay black (color)! :)
 
-    **2) Channel**
-    Use \`` + config[0].Prefix + `channel\` to setup the channel where every user use commands.
+**2) Channel**
+Use \`` + config[0].Prefix + `channel\` to setup the channel where every user use commands.
 
-    **3) Premium**
-    If you want to use every feature, make sure to be an patreon (link).
-    To activate your premium feature, use \`` + config[0].Prefix + `premium [key]\`.
+**3) Premium**
+If you want to use every feature, make sure to be an patreon (link).
+To activate your premium feature, use \`` + config[0].Prefix + `premium [key]\`.
 
-    **4) Updates**
-    With \`` + config[0].Prefix + `update\` you can setup the channel for upcomming updates and their release date.
+**4) Updates**
+With \`` + config[0].Prefix + `update\` you can setup the channel for upcomming updates and their release date.
 
-    **Thanks for using the bot!** - Necromant#0916
+**Thanks for using the bot!** - Necromant#0916
     `; 
 
     msg_send.embedMessage(client, message.channel.id, 'First', 'Inbox!', '000000');

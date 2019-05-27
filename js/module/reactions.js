@@ -1,4 +1,5 @@
 const punycode = require('punycode');
+const Discord = require("discord.js");
 
 //own scripts
 const db = require("../db");
@@ -61,6 +62,7 @@ exports.removerole = async (config, client, message) => {
 }
 
 exports.reactionid = async (config, client, message) => {
+    message.delete();
     if (admin.isAdmin(message) === true || admin.isMod(message, config) === true) {
         db.get_allreaction(message.guild).then(response => {
             if (response !== undefined) {
@@ -72,23 +74,24 @@ exports.reactionid = async (config, client, message) => {
 
                 let count = 0;
                 let rest = response.length;
-
                 response.map(el => {
                     count++;
-                    rest = rest - 25;
                     let link = 'https://discordapp.com/channels/' + message.guild.id + '/' + el.ChannelID + '/' + el.MessageID;
-                    ReactionsEmbed.addField(el.reactionsID + ' - ' +
-                        message.guild.channels.get(el.ChannelID).toString() + ' - ' +
-                        message.guild.roles.get(el.RoleID).toString() + ' - ' +
-                        el.EmoteID, link);
 
-                    if (count == 25 || rest < 10) {
-                        client.channels.get(channel_id).send(ReactionsEmbed);
+                    let emote = (el.EmoteID.match(/[:]/gm) !== null) ? ':' + el.EmoteID.match(/[\w]*:/g) : el.EmoteID;
+                    
+                    ReactionsEmbed.addField(el.reactionsID + ' - ' +
+                        message.guild.channels.get(el.ChannelID).name.toString() + ' - ' +
+                        message.guild.roles.get(el.RoleID).name.toString() + ' - ' +
+                        emote, link);
+                    if (count == 25 || count == response.length || count == rest) {
+                        client.channels.get(message.channel.id).send(ReactionsEmbed);
                         ReactionsEmbed = new Discord.RichEmbed()
                             .setColor('#000000')
                             .setTitle('Reaction IDs')
                             .setDescription('\u200b');
                         count = 0;
+                        rest = rest - 25;
                     }
                 });
             } else {
