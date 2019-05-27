@@ -1,6 +1,35 @@
 const msg_send = require("../msg_send");
 
-exports.help = async function(config, client, message){
+exports.first = (config, client, message) => {
+    message.delete();
+    const first = `Welcome to your new Bot!
+    Here are a few tips to make sure the bot works properly.
+
+    Everything below is admin only.
+
+    **1) Role**
+    Discord itself assigns bot roles. Make sure the bot role is above all the other roles.
+    Used for e.g. Reaction Roles. The bot can not assign roles about which first itself does not have the rights.
+    It would be awesome if the bot stay black (color)! :)
+
+    **2) Channel**
+    Use \`` + config[0].Prefix + `channel\` to setup the channel where every user use commands.
+
+    **3) Premium**
+    If you want to use every feature, make sure to be an patreon (link).
+    To activate your premium feature, use \`` + config[0].Prefix + `premium [key]\`.
+
+    **4) Updates**
+    With \`` + config[0].Prefix + `update\` you can setup the channel for upcomming updates and their release date.
+
+    **Thanks for using the bot!** - Necromant#0916
+    `; 
+
+    msg_send.embedMessage(client, message.channel.id, 'First', 'Inbox!', '000000');
+    message.author.send(first);
+}
+
+exports.help = (config, client, message) => {
     message.delete();
     const help = new Array();
 
@@ -44,7 +73,7 @@ __Reaction Role__`;
 **editmsg** [channel] [messageID] title/body "[value]": change embedmessage value
 `;
 
-    msg_send.embedMessage(client, message.channel.id, 'Help', 'send to u!', '000000');
+    msg_send.embedMessage(client, message.channel.id, 'Help', 'Inbox!', '000000');
 
     message.author.send(help['settings']).then(() => {
         message.author.send(help['modul']).then(() => {

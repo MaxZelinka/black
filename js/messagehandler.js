@@ -29,6 +29,7 @@ exports.handler = async (client, message) => {
             } else {
                 switch(command){
                     case '?bfirst':
+                        modhandler.first(config, client, message);
                         break;
                     case '?bhelp':
                         modhandler.help(config, client, message);

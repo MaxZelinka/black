@@ -1,7 +1,10 @@
+const punycode = require('punycode');
+
+//own scripts
 const db = require("../db");
+const log = require("../log");
 const admin = require("../admin");
 const msg_send = require("../msg_send");
-const punycode = require('punycode');
 
 exports.addrole = async (config, client, message) => {
     message.delete();
@@ -97,46 +100,77 @@ exports.reactionid = async (config, client, message) => {
 
 exports.embedmsg = async (config, client, message) => {
     message.delete();
+    const args = message.content.trim().split(/ +/g);
+    args.shift();
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
         admin.hasPerm('embedmsg', message) === true) {
 
-        const regex_embedmessage_cmd = new RegExp('^<#[0-9]{18}> *#([0-9A-F]){3,6} *("[^"]*" *){2}', 'gmi');
+        const regex_embedmessage_cmd = new RegExp('^<#\\d{18}> *#([\\dA-F]){3,6} *("[^"]*" *){2}', 'gmi');
         const regex_rest = new RegExp('("[^"]*")', 'gm');
+        const content = message.content.substring(message.content.indexOf(' ') + 1);
+        const rest = content.match(regex_rest);
 
-        
+        if (content.match(regex_embedmessage_cmd) !== null &&
+            rest !== null) {
+            let channel = args[0].replace(/[<#!>]/gmi, '');
+            let colorcode = admin.to_colorcode(args[1]);
+
+            client.channels.get(channel).send({
+                embed: {
+                    color: colorcode,
+                    fields: [{
+                        name: rest[0].replace(/\"/gm, ''),
+                        value: rest[1].replace(/\"/gm, '')
+                    }]
+                }
+            }).then((msg) => {
+                let link = 'https://discordapp.com/channels/' + message.guild.id + '/' + channel + '/' + msg.id;
+                msg_send.embedMessage(client, message.channel.id, 'Embed Message', 'created. \n' + link, '#000000');
+            }).catch((error) => {
+                log.log('[embedmsg] - ' + message.guild.id + ' : ' + error);
+            });
+
+        } else {
+            msg_send.embedMessage(client, message.channel.id, 'Embed Message', 'missing arguments.', '#ff0000', 5000);
+        }
     }
-    /*
-    message.delete();
-                if (isAdmin === true || isMod !== null) {
-                    const regex_embedmessage_cmd = new RegExp('^<#[0-9]{18}> *#([0-9A-F]){3,6} *("[^"]*" *){2}', 'gmi');
-                    const regex_rest = new RegExp('("[^"]*")', 'gm');
-                    let content = message.content.substring(message.content.indexOf(' ') + 1);
-                    let rest = content.match(regex_rest);
-
-                    if (content.match(regex_embedmessage_cmd) !== null && rest !== null) {
-                        args[0] = args[0].replace(/[<#>]/gm, ''); //channelID
-                        let colorcode = parseInt(args[1].replace('#', ''), 16);
-
-                        client.channels.get(args[0]).send({
-                            embed: {
-                                color: colorcode,
-                                fields: [{
-                                    name: rest[0].replace(/\"/gm, ''),
-                                    value: rest[1].replace(/\"/gm, '')
-                                }]
-                            }
-                        }).then(() => {
-                            msg_send.embedMessage(client, message.channel.id, 'embedmessage created', rest[0].replace(/\"/gm, '') + "\n" + rest[1].replace(/\"/gm, ''), 000);
-                        });
-                    } else {
-                        message.channel.send('argument missing.').then((msg) => msg.delete(5000));
-                    }
-        */
 }
 
 exports.editmsg = async (config, client, message) => {
+    message.delete();
+    if (admin.isAdmin(message) === true ||
+        admin.isMod(message, config) === true ||
+        admin.hasPerm('embedmsg', message) === true) {
 
+        const regex_editmsg_cmd = new RegExp('^<#[\\d]{18}> *[\\d]{18} *(\\bTitle\\b|\\bBody\\b) *("[^"]*")', 'gim');
+        const regex_rest = new RegExp('(\\bTitle\\b|\\bBody\\b) *("[^"]*")', 'gim');
+        const content = message.content.substring(message.content.indexOf(' ') + 1);
+        const rest = content.match(regex_rest);
+
+        if (content.match(regex_editmsg_cmd) !== null && rest !== null) {
+            const mod = rest.toString().match(/(^[^"]*)/g).toString().trim().toLowerCase();
+            const val = rest.toString().match(/("[^"]*")/g).toString().replace(/["]/g, '');
+            const channelID = args[0].replace(/[<#>]/g, '');
+            
+            client.channels.get(channelID).fetchMessage(args[1]).then((msg) => {
+                msg.edit({
+                    embed: {
+                        color: msg.embeds[0].color,
+                        fields: [{
+                            name: (mod === 'title') ? val : msg.embeds[0].fields[0].name,
+                            value: (mod === 'body') ? val : msg.embeds[0].fields[0].value
+                        }]
+                    }
+                }).then(() => {
+                    let link = 'https://discordapp.com/channels/' + message.guild.id + '/' + channelID + '/' + msg.id;
+                    msg_send.embedMessage(client, message.channel.id, 'Embed Message', 'edited.\n' + link, 000);
+                });
+            }).catch((error) => {
+                log.log('[editmsg] - ' + message.guild.id + ' : ' + error);
+            });
+        }
+    }
 }
 
 exports.get_reaction = async (guild, channelID, messageID, emoteID) => {
