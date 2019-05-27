@@ -7,8 +7,7 @@ const fetch = require("node-fetch");
 const log = require("./log");
 
 async function get_fileconfig() {
-    return await fspromise.readFile('./config.json', 'utf8')
-        .then(data => {
+    return await fspromise.readFile('./config.json', 'utf8').then(data => {
             return data;
         })
         .catch(error => {
@@ -25,6 +24,17 @@ async function conn() {
             password: DBconfig.password,
             database: DBconfig.dbname
         });
+    });
+}
+
+async function query(query) {
+    return conn().then(async (conn) => {
+        let result = conn.query(query);
+        conn.end();
+        return result;
+    }).catch((error) => {
+        log.log('[query] (' + query + ') - ' + guild.id + ' : ' + error);
+        return undefined;
     });
 }
 
@@ -159,4 +169,33 @@ exports.get_reaction = async (guild, channelID, messageID, emoteID) => {
         log.log('[get_reaction] - ' + guild.id + ' : ' + error);
         return undefined;
     });
+}
+
+exports.remove_reaction = async (guild, reaction_id) => {
+    return query(`DELETE FROM reactions WHERE ServerID = ` + guild.id + ` AND reactionsID = ` + reaction_id + `;`);
+    /*
+    return conn().then(async (conn) => {
+        const query = ;
+        conn.query(query);
+        return true;
+    }).catch((error) => {
+        log.log('[remove_reaction] - ' + guild.id + ' : ' + error);
+        return undefined;
+    });
+    */
+}
+
+exports.get_allreaction = async (guild) => {
+    return query(`SELECT * FROM reactions WHERE ServerID = ` + guild.id + `;`);
+    /*
+    return conn().then(async (conn) => {
+        const query = `SELECT * FROM reactions WHERE ServerID = ` + guild.id + `;`;
+        let result = conn.query(query);
+        conn.end();
+        return result;
+    }).catch((error) => {
+        log.log('[get_allreaction] - ' + guild.id + ' : ' + error);
+        return undefined;
+    });
+    */
 }

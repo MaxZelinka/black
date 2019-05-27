@@ -10,6 +10,7 @@ const status = require("./js/status");
 const db = require("./js/db");
 const msghandler = require("./js/messagehandler");
 const modhandler = require("./js/modulhandler");
+const msg_send  = require("./js/msg_send");
 
 //Bot-Settings
 let StatusInterval = JSON.parse(fs.readFileSync('config.json', 'utf8')).statusIntervall;
