@@ -37,12 +37,50 @@ exports.handler = async (client, message) => {
                     modhandler.help(config, client, message);
                     break;
                 case cf_prefix + 'channel':
-                    modhandler.channel(config, client, message);
+                    modhandler.channel(config, client, message).then(() => {
+                        config = db.get_config(message.guild);
+                    });
                     break;
             }
             if (cf_channel.toString().match(regexChannel) !== null) {
                 //if channel is set
                 switch (command) {
+                    //CONFIG
+                    case cf_prefix + 'prefix':
+                        modhandler.prefix(config, client, message).then(() => {
+                            config = db.get_config(message.guild);
+                        });
+                        break;
+                    case cf_prefix + 'mod':
+                        modhandler.mod(config, client, message).then(() => {
+                            config = db.get_config(message.guild);
+                        });
+                        break;
+                    case cf_prefix + 'botlog':
+                        modhandler.not();
+                        break;
+                    case cf_prefix + 'modlog':
+                        modhandler.not();
+                        break;
+                    case cf_prefix + 'blacklist':
+                        modhandler.not();
+                        break;
+                    case cf_prefix + 'automod':
+                        modhandler.not();
+                        break;
+                    case cf_prefix + 'welcome':
+                        modhandler.not();
+                        break;
+                    case cf_prefix + 'welcomemsg':
+                        modhandler.not();
+                        break;
+                    case cf_prefix + 'leaverlog':
+                        modhandler.not();
+                        break;
+                    //MODUL
+                    case cf_prefix + 'modul':
+                        modhandler.not();
+                        break;
                     //REACTION
                     case cf_prefix + 'addrole':
                         modhandler.addrole(config, client, message);

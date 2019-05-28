@@ -27,7 +27,7 @@ async function conn() {
     });
 }
 
-async function query(query) {
+async function _query(query) {
     return conn().then(async (conn) => {
         let result = conn.query(query);
         conn.end();
@@ -36,6 +36,18 @@ async function query(query) {
         log.log('[query] (' + query + ') - ' + guild.id + ' : ' + error);
         return undefined;
     });
+}
+
+exports.query = async (query) => {
+    return _query(query);
+    /*return conn().then(async (conn) => {
+        let result = conn.query(query);
+        conn.end();
+        return result;
+    }).catch((error) => {
+        log.log('[query] (' + query + ') - ' + guild.id + ' : ' + error);
+        return undefined;
+    });*/
 }
 
 exports.get_config = async (guild) => {
@@ -84,50 +96,6 @@ exports.set_guildactive = async (guild, flag) => {
     });
 }
 
-exports.get_channel = async (guild) => {
-    return conn().then(async (conn) => {
-        const query = `SELECT Channel FROM config WHERE ServerID = ` + guild.id;
-        let result = conn.query(query);
-        conn.end();
-        return result;
-    }).catch((error) => {
-        log.log('[get_channel] - ' + guild.id + ' : ' + error);
-        return undefined;
-    });
-}
-
-exports.set_channel = async (guild, get_channels, args) => {
-    return conn().then(async (conn) => {
-        let channelRegex = new RegExp(args.replace(/[<#!>]/gm, ''), 'gmi');
-        get_channels = get_channels.Channel;
-        if (get_channels.match(channelRegex) !== null) {
-            /*
-            let arr_channel;
-            if(typeoff(get_channels) == 'string'){  //single element
-                arr_channel = new Array[get_channels];
-            } else {
-                arr_channel = get_channels;
-            }
-
-            console.log(arr_channel);
-
-            //get_channels = get_channels.toString().replace(args.replace(/[<#!>]/gm, ''),'');*/
-        } else {
-            //let comma = (get_channels.toString() == '') ? '' : ',';
-            //get_channels = get_channels.toString() + comma + args.replace(/[<#!>]/gm, '');
-            //add
-        }
-        console.log(get_channels);
-        const query = `UPDATE config SET Channel = '` + get_channels + `' WHERE ServerID = ` + guild.id + `;`;
-        conn.query(query);
-        conn.end();
-        return get_channels;
-    }).catch((error) => {
-        log.log('[set_channel] - ' + guild.id + ' : ' + error);
-        return undefined;
-    });
-}
-
 //REACTIONS
 
 exports.set_reaction = async (guild, channel_ID, message_ID, emote_ID, role_ID) => {
@@ -169,33 +137,4 @@ exports.get_reaction = async (guild, channelID, messageID, emoteID) => {
         log.log('[get_reaction] - ' + guild.id + ' : ' + error);
         return undefined;
     });
-}
-
-exports.remove_reaction = async (guild, reaction_id) => {
-    return query(`DELETE FROM reactions WHERE ServerID = ` + guild.id + ` AND reactionsID = ` + reaction_id + `;`);
-    /*
-    return conn().then(async (conn) => {
-        const query = ;
-        conn.query(query);
-        return true;
-    }).catch((error) => {
-        log.log('[remove_reaction] - ' + guild.id + ' : ' + error);
-        return undefined;
-    });
-    */
-}
-
-exports.get_allreaction = async (guild) => {
-    return query(`SELECT * FROM reactions WHERE ServerID = ` + guild.id + `;`);
-    /*
-    return conn().then(async (conn) => {
-        const query = `SELECT * FROM reactions WHERE ServerID = ` + guild.id + `;`;
-        let result = conn.query(query);
-        conn.end();
-        return result;
-    }).catch((error) => {
-        log.log('[get_allreaction] - ' + guild.id + ' : ' + error);
-        return undefined;
-    });
-    */
 }

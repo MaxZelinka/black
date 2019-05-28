@@ -1,7 +1,13 @@
 //own scripts
+const msg_send = require("./msg_send");
+
 const help = require("./module/help");
-const channel = require("./module/channel");
-const reactions = require("./module/reactions")
+const reactions = require("./module/reactions");
+const cfg = require("./module/config");
+
+exports.not = () => {
+    msg_send.embedMessage(client, message.channel.id, 'Command', 'function currently dissabled', '#ff0000', 5000);
+}
 
 exports.first = async (config, client, message) => {
     help.first(config, client, message);
@@ -11,8 +17,18 @@ exports.help = async (config, client, message) => {
     help.help(config, client, message);
 }
 
+//CONFIG
+
+exports.prefix = async (config, client, message) => {
+    cfg.prefix(config, client, message);
+}
+
 exports.channel = async (config, client, message) => {
-    channel.channel(config, client, message);
+    cfg.channel(config, client, message);
+}
+
+exports.mod = async (config, client, message) => {
+    cfg.mod(config, client, message);
 }
 
 //REACTION

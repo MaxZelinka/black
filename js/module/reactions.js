@@ -50,9 +50,11 @@ exports.removerole = async (config, client, message) => {
     args.shift();
     if (admin.isAdmin(message) === true || admin.isMod(message, config) === true) {
         if (args[0] !== undefined) {
-            db.remove_reaction(message.guild, args[0]).then(response => {
+            db.query(`DELETE FROM reactions WHERE ServerID = ` + message.guild.id + ` AND reactionsID = ` + args[0] + `;`).then(response => {
                 if (response !== undefined) {
                     msg_send.embedMessage(client, message.channel.id, 'Reaction', 'reaction deleted.', '#000000');
+                } else {
+                    msg_send.embedMessage(client, message.channel.id, 'Reaction', 'cant delete reaction.', '#ff0000', 5000);
                 }
             });
         } else {
@@ -64,7 +66,7 @@ exports.removerole = async (config, client, message) => {
 exports.reactionid = async (config, client, message) => {
     message.delete();
     if (admin.isAdmin(message) === true || admin.isMod(message, config) === true) {
-        db.get_allreaction(message.guild).then(response => {
+        db.query(`SELECT * FROM reactions WHERE ServerID = ` + message.guild.id + `;`).then(response => {
             if (response !== undefined) {
 
                 let ReactionsEmbed = new Discord.RichEmbed()
@@ -79,11 +81,10 @@ exports.reactionid = async (config, client, message) => {
                     let link = 'https://discordapp.com/channels/' + message.guild.id + '/' + el.ChannelID + '/' + el.MessageID;
 
                     let emote = (el.EmoteID.match(/[:]/gm) !== null) ? ':' + el.EmoteID.match(/[\w]*:/g) : el.EmoteID;
-                    
+
                     ReactionsEmbed.addField(el.reactionsID + ' - ' +
                         message.guild.channels.get(el.ChannelID).name.toString() + ' - ' +
-                        message.guild.roles.get(el.RoleID).name.toString() + ' - ' +
-                        emote, link);
+                        message.guild.roles.get(el.RoleID).name.toString(), link);
                     if (count == 25 || count == response.length || count == rest) {
                         client.channels.get(message.channel.id).send(ReactionsEmbed);
                         ReactionsEmbed = new Discord.RichEmbed()
@@ -155,7 +156,7 @@ exports.editmsg = async (config, client, message) => {
             const mod = rest.toString().match(/(^[^"]*)/g).toString().trim().toLowerCase();
             const val = rest.toString().match(/("[^"]*")/g).toString().replace(/["]/g, '');
             const channelID = args[0].replace(/[<#>]/g, '');
-            
+
             client.channels.get(channelID).fetchMessage(args[1]).then((msg) => {
                 msg.edit({
                     embed: {
