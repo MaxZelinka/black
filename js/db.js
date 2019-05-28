@@ -50,6 +50,7 @@ exports.query = async (query) => {
     });*/
 }
 
+//CONFIG
 exports.get_config = async (guild) => {
     return conn().then(async (conn) => {
         const query = `SELECT * FROM general
@@ -97,7 +98,6 @@ exports.set_guildactive = async (guild, flag) => {
 }
 
 //REACTIONS
-
 exports.set_reaction = async (guild, channel_ID, message_ID, emote_ID, role_ID) => {
     return conn().then(async (conn) => {
         const query_set = `INSERT INTO reactions (ServerID, ChannelID, MessageID, EmoteID, RoleID, ID)
