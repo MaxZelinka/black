@@ -6,7 +6,7 @@ const reactions = require("./module/reactions");
 const cfg = require("./module/config");
 
 exports.not = () => {
-    msg_send.embedMessage(client, message.channel.id, 'Command', 'function currently dissabled', '#ff0000', 5000);
+    msg_send.embedMessage(client, message.channel.id, 'Command', 'function currently disabled', '#ff0000', 5000);
 }
 
 exports.first = async (config, client, message) => {
