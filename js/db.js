@@ -33,7 +33,7 @@ async function _query(query) {
         conn.end();
         return result;
     }).catch((error) => {
-        log.log('[query] (' + query + ') - ' + guild.id + ' : ' + error);
+        log.log('[query] (' + query + ') - ' + error);
         return undefined;
     });
 }
