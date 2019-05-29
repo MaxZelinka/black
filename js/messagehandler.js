@@ -11,9 +11,6 @@ exports.handler = async (client, message) => {
         config = (config === '') ? await db.get_config(message.guild) : await config;
         
         if(config[0] !== undefined){
-
-            //console.log(); //.replace(' ','')
-
             const cf_channel = (config[0].Channel !== null) ? config[0].Channel : '';
             const cf_blacklist = (config[0].blacklist !== null) ? config[0].blacklist : '';
             const cf_prefix = config[0].Prefix;

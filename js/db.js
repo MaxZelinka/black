@@ -29,7 +29,7 @@ async function conn() {
 
 async function _query(query) {
     return conn().then(async (conn) => {
-        let result = conn.query(query);
+        let result = await conn.query(query);
         conn.end();
         return result;
     }).catch((error) => {
@@ -52,6 +52,11 @@ exports.query = async (query) => {
 
 //CONFIG
 exports.get_config = async (guild) => {
+    return _query(`SELECT * FROM general
+    INNER JOIN config ON general.ServerID = config.ServerID
+    INNER JOIN module ON general.ServerID = module.ServerID
+    WHERE general.ServerID = ` + guild.id);
+    /*
     return conn().then(async (conn) => {
         const query = `SELECT * FROM general
         INNER JOIN config ON general.ServerID = config.ServerID
@@ -63,7 +68,7 @@ exports.get_config = async (guild) => {
     }).catch((error) => {
         log.log('[get_config] - ' + guild.id + ' : ' + error);
         return undefined;
-    });
+    });*/
 }
 
 exports.set_config = async (guild) => {
@@ -86,6 +91,8 @@ exports.set_config = async (guild) => {
 }
 
 exports.set_guildactive = async (guild, flag) => {
+    return _query(`UPDATE general SET active = ` + flag + ` WHERE ServerID = ` + guild.id);
+    /*
     return conn().then(async (conn) => {
         const query = `UPDATE general SET active = ` + flag + ` WHERE ServerID = ` + guild.id;
         conn.query(query);
@@ -95,6 +102,7 @@ exports.set_guildactive = async (guild, flag) => {
         log.log('[set_guildactive] - ' + guild.id + ' : ' + error);
         return undefined;
     });
+    */
 }
 
 //REACTIONS
@@ -109,11 +117,15 @@ exports.set_reaction = async (guild, channel_ID, message_ID, emote_ID, role_ID) 
         '` + channel_ID + message_ID + emote_ID + role_ID + `')`;
         return conn.query(query_set).then((el) => {
             if (el !== undefined) {
+                return _query(`SELECT reactionsID FROM reactions WHERE ServerID = ` + guild.id +
+                ` AND ID = ` + channel_ID + message_ID + emote_ID + role_ID + `;`);
+                /*
                 const query_get = `SELECT reactionsID FROM reactions WHERE ServerID = ` + guild.id +
                     ` AND ID = ` + channel_ID + message_ID + emote_ID + role_ID + `;`;
                 let result = conn.query(query_get);
                 conn.end();
                 return result;
+                */
             } else {
                 return undefined;
             }
@@ -125,7 +137,11 @@ exports.set_reaction = async (guild, channel_ID, message_ID, emote_ID, role_ID) 
 }
 
 exports.get_reaction = async (guild, channelID, messageID, emoteID) => {
-    return conn().then(async (conn) => {
+    return _query(`SELECT RoleID FROM reactions WHERE ServerID = ` + guild.id +
+    ` AND ChannelID = ` + channelID +
+    ` AND MessageID = ` + messageID +
+    ` AND EmoteID = ` + emoteID + `;`);
+    /*return conn().then(async (conn) => {
         const query = `SELECT RoleID FROM reactions WHERE ServerID = ` + guild.id +
             ` AND ChannelID = ` + channelID +
             ` AND MessageID = ` + messageID +
@@ -136,5 +152,5 @@ exports.get_reaction = async (guild, channelID, messageID, emoteID) => {
     }).catch((error) => {
         log.log('[get_reaction] - ' + guild.id + ' : ' + error);
         return undefined;
-    });
+    });*/
 }
