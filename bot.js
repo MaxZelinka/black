@@ -114,7 +114,7 @@ client.on('guildMemberAdd', async member => {
   db.get_config(member.guild).then((config) => {
     if (config !== undefined && config.length >= 0) {
       //if module is active
-      if (config[0].welcome === 1 && config[0].welcome_channel !== null) {
+      if (config[0].welcome === 1 && config[0].welcomelog !== null) {
         let user = member.user.toString();
         let server = member.guild.name;
         let welcomelog = config[0].welcome_channel;
