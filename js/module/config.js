@@ -61,7 +61,6 @@ exports.prefix = async (config, client, message) => {
     }
 }
 
-//not tested yet
 exports.channel = async (config, client, message) => {
     message.delete();
     const args = message.content.trim().split(/ +/g);
@@ -103,6 +102,7 @@ exports.channel = async (config, client, message) => {
     }
 }
 
+//not tested yet
 exports.mod = async (config, client, message) => {
     message.delete();
     const args = message.content.trim().split(/ +/g);
@@ -118,10 +118,20 @@ exports.mod = async (config, client, message) => {
                 if (args[0] !== undefined) {
                     //set
                     if (admin.isUser(args[0]) == true) {
+
                         const mod = args[0].replace(/[<@!>]/gmi, '');
                         arr_mod = (arr_mod.includes(mod)) ? arr_mod.filter(x => x !== mod) : arr_mod = [...arr_mod, mod];
                         arr_mod = arr_mod.filter(x => x !== '');
-
+/*
+                        if (arr_mod.indexOf(args[0].replace(/[<@!>]/gmi, '')) > 0) {
+                            //delete
+                            arr_mod.splice(arr_mod.indexOf(args[0].replace(/[<@!>]/gmi, '')), 1);
+                        } else {
+                            //add
+                            arr_mod.push(args[0]);
+                        }
+                        //arr_mod = arr_mod.filter(mod => mod !== '');
+*/
                         db.query(`UPDATE config SET Moderator = '` + arr_mod.toString() + `' WHERE ServerID = ` + message.guild.id + `;`).then(set => {
                             if (set !== undefined) {
                                 let moderator = (arr_mod.length > 0) ? arr_mod.map(x => message.guild.fetchMember(x.replace(' ', '')) + '\n').toString() : '';

@@ -11,9 +11,13 @@ exports.isAdmin = (message) => {
 }
 
 exports.isMod = (message, config) => {
+    const cf_mods = [...config[0].Moderator];
+    return cf_mods.includes(message.author.id);
+    /*
     const cf_mods = (config[0].Moderator !== null) ? config[0].Moderator : '';
     const regexMod = new RegExp(message.author.id, 'g');
     return (cf_mods.toString().match(regexMod) !== null) ? true : false;
+    */
 }
 
 exports.hasPerm = (func, message) => {
