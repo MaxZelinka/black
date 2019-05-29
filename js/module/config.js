@@ -112,7 +112,7 @@ exports.mod = async (config, client, message) => {
         admin.isMod(message, config) === true ||
         await admin.hasPerm('mod', message) === true) {
 
-        db.query(`SELECT Moderator FROM config WHERE ServerID = ` + message.guild.id + ` LIMIT 1;`).then(get => {
+        db.query(`SELECT Moderator FROM config WHERE ServerID = ` + message.guild.id + ` LIMIT 1;`).then(async get => {
             if (get !== undefined) {
                 let arr_mod = (get[0].Moderator.match(/[,]/gmi) !== null) ? get[0].Moderator.split(',') : new Array[get[0].Moderator]; //string to array
                 if (args[0] !== undefined) {
@@ -134,8 +134,10 @@ exports.mod = async (config, client, message) => {
 */
                         db.query(`UPDATE config SET Moderator = '` + arr_mod.toString() + `' WHERE ServerID = ` + message.guild.id + `;`).then(set => {
                             if (set !== undefined) {
+                                /*
                                 let moderator = (arr_mod.length > 0) ? arr_mod.map(x => message.guild.fetchMember(x.replace(' ', '')) + '\n').toString() : '';
                                 msg_send.embedMessage(client, message.channel.id, 'Moderator', moderator.toString().replace(/[,]/gmi, ''), '000000');
+                                */
                             } else {
                                 msg_send.embedMessage(client, message.channel.id, 'Moderator', 'cant set moderator.', '#ff0000', 5000);
                             }
@@ -145,8 +147,12 @@ exports.mod = async (config, client, message) => {
                     }
                 } else {
                     //get
-                    let moderator = (arr_mod.length > 0) ? arr_mod.map(x => message.guild.fetchMember(x.replace(' ', '')) + '\n').toString() : '';
-                    msg_send.embedMessage(client, message.channel.id, 'Moderator', moderator.toString().replace(/[,]/gmi, ''), '000000');
+                    //let moderator = (arr_mod.length > 0) ? arr_mod.map(x => await message.guild.fetchMember(x.replace(' ', ''))) : '';
+                    
+                    //let test = await arr_mod.map(x => message.guild.fetchMember(x.replace(' ','')).then(el => el.user.toString()));
+                    
+                    console.log(test);
+                    //msg_send.embedMessage(client, message.channel.id, 'Moderator', test.toString().replace(/[,]/gmi, ''), '000000');
                 }
             } else {
                 msg_send.embedMessage(client, message.channel.id, 'Moderator', 'cant get/set moderator.', '#ff0000', 5000);

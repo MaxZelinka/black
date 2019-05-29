@@ -143,6 +143,8 @@ exports.embedmsg = async (config, client, message) => {
 
 exports.editmsg = async (config, client, message) => {
     message.delete();
+    const args = message.content.trim().split(/ +/g);
+    args.shift();
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
         admin.hasPerm('embedmsg', message) === true) {
