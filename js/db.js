@@ -115,11 +115,11 @@ exports.set_reaction = async (guild, channel_ID, message_ID, emote_ID, role_ID) 
         '` + emote_ID + `', 
         '` + role_ID + `',
         '` + channel_ID + message_ID + emote_ID + role_ID + `')`;
-        return conn.query(query_set).then((el) => {
+        return conn.query(query_set).then(async (el) => {
             if (el !== undefined) {
-                return _query(`SELECT reactionsID FROM reactions WHERE ServerID = ` + guild.id +
-                ` AND ID = ` + channel_ID + message_ID + emote_ID + role_ID + `;`);
-                /*
+                return _query(`SELECT reactionsID FROM reactions WHERE ServerID = '` + guild.id +
+                `' AND ID = '` + channel_ID + message_ID + emote_ID + role_ID + `';`);
+/*
                 const query_get = `SELECT reactionsID FROM reactions WHERE ServerID = ` + guild.id +
                     ` AND ID = ` + channel_ID + message_ID + emote_ID + role_ID + `;`;
                 let result = conn.query(query_get);

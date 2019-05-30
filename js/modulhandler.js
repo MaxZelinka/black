@@ -23,7 +23,7 @@ const keys = Object.entries(controller).filter(val => {
   });
 */
 
-exports.not = () => {
+exports.not = (client, message) => {
     msg_send.embedMessage(client, message.channel.id, 'Command', 'function currently disabled', '#ff0000', 5000);
 }
 
@@ -47,6 +47,10 @@ exports.channel = async (config, client, message) => {
 
 exports.mod = async (config, client, message) => {
     cfg.mod(config, client, message);
+}
+
+exports.botlog = async (config, client, message) => {
+    cfg.botlog(config, client, message);
 }
 
 //REACTION

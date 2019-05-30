@@ -29,5 +29,6 @@ exports.get_message = async (client, channel_ID, message_ID) => {
 }
 
 exports.to_colorcode = (color) => {
-    return parseInt(color.replace('#', ''), 16);
+    return parseInt(color, 16);
+    //return parseInt(color.replace('#', ''), 16);
 }

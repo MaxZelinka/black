@@ -16,7 +16,6 @@ leaverlog: show | set leaverlog-channel
 */
 
 exports.sample = async (config, client, message) => {
-    message.delete();
     const args = message.content.trim().split(/ +/g);
     args.shift();
 
@@ -26,7 +25,6 @@ exports.sample = async (config, client, message) => {
 }
 
 exports.prefix = async (config, client, message) => {
-    message.delete();
     const args = message.content.trim().split(/ +/g);
     args.shift();
 
@@ -36,7 +34,7 @@ exports.prefix = async (config, client, message) => {
         if (args[0] !== undefined) {
             if (args[0].length <= 20) {
                 if (args[0].match(/^[\w?!\-+*]*/gmi) !== null) {
-                    db.query(`UPDATE general SET Prefix = ` + args[0] + ` WHERE ServerID = ` + message.guild.id + `;`).then(el => {
+                    db.query(`UPDATE general SET Prefix = '` + args[0] + `' WHERE ServerID = ` + message.guild.id + `;`).then(el => {
                         if (el !== undefined) {
                             msg_send.embedMessage(client, message.channel.id, 'Prefix', args[0], '000000');
                         } else {
@@ -62,7 +60,6 @@ exports.prefix = async (config, client, message) => {
 }
 
 exports.channel = async (config, client, message) => {
-    message.delete();
     const args = message.content.trim().split(/ +/g);
     args.shift();
 
@@ -70,7 +67,7 @@ exports.channel = async (config, client, message) => {
         admin.isMod(message, config) === true ||
         await admin.hasPerm('channel', message) === true) {
 
-        db.query(`SELECT Channel FROM config WHERE ServerID = ` + message.guild.id + ` LIMIT 1;`).then(get => {
+        db.query(`SELECT Channel FROM config WHERE ServerID = '` + message.guild.id + `' LIMIT 1;`).then(get => {
             let arr_chn = (get[0].Channel.match(/[,]/gmi) !== null) ? get[0].Channel.split(',') : new Array[get[0].Channel]; //string to array
             if (get !== undefined) {
                 if (args[0] !== undefined) {
@@ -79,7 +76,7 @@ exports.channel = async (config, client, message) => {
                         arr_chn = (arr_chn.includes(chn)) ? arr_chn.filter(x => x !== chn) : arr_chn = [...arr_chn, chn];
                         arr_chn = arr_chn.filter(x => x !== '');
 
-                        db.query(`UPDATE config SET Channel = '` + arr_chn.toString() + `' WHERE ServerID = ` + message.guild.id + `;`).then(set => {
+                        db.query(`UPDATE config SET Channel = '` + arr_chn.toString() + `' WHERE ServerID = '` + message.guild.id + `';`).then(set => {
                             if (set !== undefined) {
                                 let channel = (arr_chn.length > 0) ? arr_chn.map(x => message.guild.channels.get(x.replace(' ', '')) + '\n') : '';
                                 msg_send.embedMessage(client, message.channel.id, 'Channel', channel.toString().replace(/[,]/gmi, ''), '000000');
@@ -102,9 +99,8 @@ exports.channel = async (config, client, message) => {
     }
 }
 
-//not tested yet
+//not good todo: -> fetchmember
 exports.mod = async (config, client, message) => {
-    message.delete();
     const args = message.content.trim().split(/ +/g);
     args.shift();
 
@@ -122,22 +118,11 @@ exports.mod = async (config, client, message) => {
                         const mod = args[0].replace(/[<@!>]/gmi, '');
                         arr_mod = (arr_mod.includes(mod)) ? arr_mod.filter(x => x !== mod) : arr_mod = [...arr_mod, mod];
                         arr_mod = arr_mod.filter(x => x !== '');
-/*
-                        if (arr_mod.indexOf(args[0].replace(/[<@!>]/gmi, '')) > 0) {
-                            //delete
-                            arr_mod.splice(arr_mod.indexOf(args[0].replace(/[<@!>]/gmi, '')), 1);
-                        } else {
-                            //add
-                            arr_mod.push(args[0]);
-                        }
-                        //arr_mod = arr_mod.filter(mod => mod !== '');
-*/
+
                         db.query(`UPDATE config SET Moderator = '` + arr_mod.toString() + `' WHERE ServerID = ` + message.guild.id + `;`).then(set => {
                             if (set !== undefined) {
-                                /*
-                                let moderator = (arr_mod.length > 0) ? arr_mod.map(x => message.guild.fetchMember(x.replace(' ', '')) + '\n').toString() : '';
-                                msg_send.embedMessage(client, message.channel.id, 'Moderator', moderator.toString().replace(/[,]/gmi, ''), '000000');
-                                */
+                                let moderator = (arr_mod.length > 0) ? arr_mod.map(x => '<@' + x.replace(/[,]/gmi, '') + '>') : '';
+                                msg_send.embedMessage(client, message.channel.id, 'Moderator', moderator.toString().replace(/[,]/gmi, '\n'), '000000');
                             } else {
                                 msg_send.embedMessage(client, message.channel.id, 'Moderator', 'cant set moderator.', '#ff0000', 5000);
                             }
@@ -147,12 +132,8 @@ exports.mod = async (config, client, message) => {
                     }
                 } else {
                     //get
-                    //let moderator = (arr_mod.length > 0) ? arr_mod.map(x => await message.guild.fetchMember(x.replace(' ', ''))) : '';
-                    
-                    //let test = await arr_mod.map(x => message.guild.fetchMember(x.replace(' ','')).then(el => el.user.toString()));
-                    
-                    console.log(test);
-                    //msg_send.embedMessage(client, message.channel.id, 'Moderator', test.toString().replace(/[,]/gmi, ''), '000000');
+                    let moderator = (arr_mod.length > 0) ? arr_mod.map(x => '<@' + x.replace(/[,]/gmi, '') + '>') : '';
+                    msg_send.embedMessage(client, message.channel.id, 'Moderator', moderator.toString().replace(/[,]/gmi, '\n'), '000000');
                 }
             } else {
                 msg_send.embedMessage(client, message.channel.id, 'Moderator', 'cant get/set moderator.', '#ff0000', 5000);
@@ -161,8 +142,8 @@ exports.mod = async (config, client, message) => {
     }
 }
 
+
 exports.botlog = async (config, client, message) => {
-    message.delete();
     const args = message.content.trim().split(/ +/g);
     args.shift();
 
@@ -194,7 +175,6 @@ exports.botlog = async (config, client, message) => {
 }
 
 exports.modlog = async (config, client, message) => {
-    message.delete();
     const args = message.content.trim().split(/ +/g);
     args.shift();
 
@@ -226,7 +206,6 @@ exports.modlog = async (config, client, message) => {
 }
 
 exports.blacklist = async (config, client, message) => {
-    message.delete();
     const args = message.content.trim().split(/ +/g);
     args.shift();
 
@@ -236,7 +215,6 @@ exports.blacklist = async (config, client, message) => {
 }
 
 exports.automod = async (config, client, message) => {
-    message.delete();
     const args = message.content.trim().split(/ +/g);
     args.shift();
 
@@ -246,7 +224,6 @@ exports.automod = async (config, client, message) => {
 }
 
 exports.welcome = async (config, client, message) => {
-    message.delete();
     const args = message.content.trim().split(/ +/g);
     args.shift();
 
@@ -256,7 +233,6 @@ exports.welcome = async (config, client, message) => {
 }
 
 exports.welcomemsg = async (config, client, message) => {
-    message.delete();
     const args = message.content.trim().split(/ +/g);
     args.shift();
 
@@ -266,7 +242,6 @@ exports.welcomemsg = async (config, client, message) => {
 }
 
 exports.leaverlog = async (config, client, message) => {
-    message.delete();
     const args = message.content.trim().split(/ +/g);
     args.shift();
 

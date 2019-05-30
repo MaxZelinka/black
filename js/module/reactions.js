@@ -8,7 +8,6 @@ const admin = require("../admin");
 const msg_send = require("../msg_send");
 
 exports.addrole = async (config, client, message) => {
-    message.delete();
     const args = message.content.trim().split(/ +/g);
     args.shift();
     if (admin.isAdmin(message) === true || admin.isMod(message, config) === true) {
@@ -33,9 +32,11 @@ exports.addrole = async (config, client, message) => {
                         msg_send.embedMessage(client, message.channel.id, 'Reaction', 'cant create reaction. Double Entry?', '#ff0000', 5000);
                     }
                 }).catch((error) => {
+                    console.log(error);
                     msg_send.embedMessage(client, message.channel.id, 'Reaction', 'cant create reaction.', '#ff0000', 5000);
                 });
             }).catch((error) => {
+                console.log(error);
                 msg_send.embedMessage(client, message.channel.id, 'Reaction', 'wrong channel-ID or message-ID.', '#ff0000', 5000);
             });
         } else {
@@ -45,7 +46,6 @@ exports.addrole = async (config, client, message) => {
 }
 
 exports.removerole = async (config, client, message) => {
-    message.delete();
     const args = message.content.trim().split(/ +/g);
     args.shift();
     if (admin.isAdmin(message) === true || admin.isMod(message, config) === true) {
@@ -64,7 +64,6 @@ exports.removerole = async (config, client, message) => {
 }
 
 exports.reactionid = async (config, client, message) => {
-    message.delete();
     if (admin.isAdmin(message) === true || admin.isMod(message, config) === true) {
         db.query(`SELECT * FROM reactions WHERE ServerID = ` + message.guild.id + `;`).then(response => {
             if (response !== undefined) {
@@ -103,7 +102,6 @@ exports.reactionid = async (config, client, message) => {
 }
 
 exports.embedmsg = async (config, client, message) => {
-    message.delete();
     const args = message.content.trim().split(/ +/g);
     args.shift();
     if (admin.isAdmin(message) === true ||
@@ -142,7 +140,6 @@ exports.embedmsg = async (config, client, message) => {
 }
 
 exports.editmsg = async (config, client, message) => {
-    message.delete();
     const args = message.content.trim().split(/ +/g);
     args.shift();
     if (admin.isAdmin(message) === true ||

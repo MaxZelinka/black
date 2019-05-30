@@ -8,23 +8,21 @@ let config = '';
 
 exports.handler = async (client, message) => {
     if (message.guild !== null) {
-        config = (config === '') ? await db.get_config(message.guild) : await config;
-        
-        if(config[0] !== undefined){
-            const cf_channel = (config[0].Channel !== null) ? config[0].Channel : '';
-            const cf_blacklist = (config[0].blacklist !== null) ? config[0].blacklist : '';
+
+        config = await db.get_config(message.guild);
+
+        if (config[0] !== undefined) {
+            const cf_channel = (config[0].Channel.includes(',')) ? [...config[0].Channel.replace(/[ ]/gm, '').split(',')] : [config[0].Channel.replace(/[ ]/gm, '')];
+            const cf_blacklist = (config[0].blacklist.includes(',')) ? [...config[0].blacklist.replace(/[ ]/gm, '').split(',')] : [config[0].blacklist.replace(/[ ]/gm, '')];
             const cf_prefix = config[0].Prefix;
-    
+
             const args = message.content.trim().split(/ +/g);
             const command = args.shift().toLowerCase();
-    
-            const regexBlacklist = new RegExp(message.author.id, 'gm');
+
             const regexPrefix = new RegExp('^(' + cf_prefix.replace(/\?/gm, '\\?') + ')\\S*', 'gm');
-            const regexChannel = new RegExp(message.channel.id, 'g');
-    
-            if (cf_blacklist.toString().match(regexBlacklist) !== null
+
+            if (cf_blacklist.includes(message.author.id)
                 && message.content.match(regexPrefix) !== null) {
-                //if user is blacklistet & trying to use an command
                 msg_send.embedMessage(client, message.channel.id, 'Blacklist', message.author.toString() + ' - you are blacklistet from using commands.', '#ff0000', 5000);
             } else {
                 switch (command) {
@@ -38,49 +36,43 @@ exports.handler = async (client, message) => {
                         modhandler.help(config, client, message);
                         break;
                     case cf_prefix + 'channel':
-                        modhandler.channel(config, client, message).then(() => {
-                            config = db.get_config(message.guild);
-                        });
+                        modhandler.channel(config, client, message);
                         break;
                 }
-                if (cf_channel.toString().match(regexChannel) !== null) {
+                if (cf_channel.includes(message.channel.id)) {
                     //if channel is set
                     switch (command) {
                         //CONFIG
                         case cf_prefix + 'prefix':
-                            modhandler.prefix(config, client, message).then(() => {
-                                config = db.get_config(message.guild);
-                            });
+                            modhandler.prefix(config, client, message);
                             break;
                         case cf_prefix + 'mod':
-                            modhandler.mod(config, client, message).then(() => {
-                                config = db.get_config(message.guild);
-                            });
+                            modhandler.mod(config, client, message);
                             break;
                         case cf_prefix + 'botlog':
-                            modhandler.not();
+                            modhandler.botlog(config, client, message);
                             break;
                         case cf_prefix + 'modlog':
-                            modhandler.not();
+                            modhandler.not(client, message);
                             break;
                         case cf_prefix + 'blacklist':
-                            modhandler.not();
+                            modhandler.not(client, message);
                             break;
                         case cf_prefix + 'automod':
-                            modhandler.not();
+                            modhandler.not(client, message);
                             break;
                         case cf_prefix + 'welcome':
-                            modhandler.not();
+                            modhandler.not(client, message);
                             break;
                         case cf_prefix + 'welcomemsg':
-                            modhandler.not();
+                            modhandler.not(client, message);
                             break;
                         case cf_prefix + 'leaverlog':
-                            modhandler.not();
+                            modhandler.not(client, message);
                             break;
                         //MODUL
                         case cf_prefix + 'modul':
-                            modhandler.not();
+                            modhandler.not(client, message);
                             break;
                         //REACTION
                         case cf_prefix + 'addrole':
