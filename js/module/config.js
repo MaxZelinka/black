@@ -121,7 +121,7 @@ exports.mod = async (config, client, message) => {
 
                         db.query(`UPDATE config SET Moderator = '` + arr_mod.toString() + `' WHERE ServerID = ` + message.guild.id + `;`).then(set => {
                             if (set !== undefined) {
-                                let moderator = (arr_mod.length > 0) ? arr_mod.map(x => '<@' + x.replace(/[,]/gmi, '') + '>') : '';
+                                let moderator = (arr_mod.length > 0) ? arr_mod.map(x => '<@' + x.replace(/[ ]/gmi, '').replace(/[,]/gmi, '') + '>') : '';
                                 msg_send.embedMessage(client, message.channel.id, 'Moderator', moderator.toString().replace(/[,]/gmi, '\n'), '000000');
                             } else {
                                 msg_send.embedMessage(client, message.channel.id, 'Moderator', 'cant set moderator.', '#ff0000', 5000);
@@ -132,7 +132,7 @@ exports.mod = async (config, client, message) => {
                     }
                 } else {
                     //get
-                    let moderator = (arr_mod.length > 0) ? arr_mod.map(x => '<@' + x.replace(/[,]/gmi, '') + '>') : '';
+                    let moderator = (arr_mod.length > 0) ? arr_mod.map(x => '<@' + x.replace(/[ ]/gmi, '').replace(/[,]/gmi, '') + '>') : '';
                     msg_send.embedMessage(client, message.channel.id, 'Moderator', moderator.toString().replace(/[,]/gmi, '\n'), '000000');
                 }
             } else {
