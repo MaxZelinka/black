@@ -48,6 +48,7 @@ client.on('ready', async () => {
 client.on('error', error => {
   log.log('[error] - ' + error);
   console.log('[error]');
+  console.log(error);
 });
 
 //Emitted when the client hits a rate limit while making a request
