@@ -35,6 +35,7 @@ Patreon Page
 client.on('ready', async () => {
   //log.log('[ready] - bot start');
   console.log('ready');
+  
   function setStatus() {
     status.set_status(client);
   }
@@ -184,26 +185,13 @@ client.on('messageReactionAdd', async (reaction, user, message) => {
   if(reaction.me === true && message !== undefined){
     const channelID = message.channel.id;
     const messageID = message.id;
-    const emoteID   = (reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : punycode.ucs2.decode(reaction.emoji.name);
-
-    console.log(message.guild + channelID + messageID + emoteID);
+    const emoteID   = (reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : reaction.emoji.name;
 
     const response = await modhandler.get_reaction(message.guild, channelID, messageID, emoteID);
 
-    console.log(response);
-
     if(response !== undefined && response.length > 0){
       message.guild.members.get(user.id).addRole(response[0].RoleID).catch((error) => {
-        if(error.code == 50013){
-          /*
-          //message.guild.members.has -> Perm -> Admin -> send
-
-          user.send('missing bot permission. contact the admin.').catch((err) => {
-            console.log(err);
-          });*/
-        } else {
-          console.log(error);
-        }        
+        console.log(error);
       });
     }
   }
@@ -214,23 +202,13 @@ client.on('messageReactionRemove', async (reaction, user, message) => {
   if(reaction.me === true && message !== undefined){
     const channelID = message.channel.id;
     const messageID = message.id;
-    const emoteID   = (reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : punycode.ucs2.decode(reaction.emoji.name);
-
-    console.log(message.guild + channelID + messageID + emoteID);
+    const emoteID   = (reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : reaction.emoji.name;
 
     const response = await modhandler.get_reaction(message.guild, channelID, messageID, emoteID);
 
-    console.log(response);
-
     if(response !== undefined && response.length > 0){
       message.guild.members.get(user.id).removeRole(response[0].RoleID).catch((error) => {
-        if(error.code == 50013){
-          /*user.send('missing bot permission. contact the admin.').catch((err) => {
-            console.log(err);
-          });*/
-        } else {
-          console.log(error);
-        }        
+        console.log(error);       
       });
     }
   }

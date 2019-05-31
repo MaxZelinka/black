@@ -28,6 +28,7 @@ async function conn() {
 }
 
 async function _query(query) {
+    //console.log(query);
     return conn().then(async (conn) => {
         let result = await conn.query(query);
         conn.end();
@@ -40,14 +41,6 @@ async function _query(query) {
 
 exports.query = async (query) => {
     return _query(query);
-    /*return conn().then(async (conn) => {
-        let result = conn.query(query);
-        conn.end();
-        return result;
-    }).catch((error) => {
-        log.log('[query] (' + query + ') - ' + guild.id + ' : ' + error);
-        return undefined;
-    });*/
 }
 
 //CONFIG

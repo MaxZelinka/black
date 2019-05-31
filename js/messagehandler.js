@@ -8,6 +8,7 @@ exports.handler = async (client, message) => {
     if (message.guild !== null) {
 
         let config = await db.get_config(message.guild);
+        //umstruktieren, ansonsten lädt er jedes mal die config, bei jeder msg
 
         if (config[0] !== undefined) {
             const cf_channel = (config[0].Channel.includes(',')) ? [...config[0].Channel.replace(/[ ]/gm, '').split(',')] : [config[0].Channel.replace(/[ ]/gm, '')];
@@ -42,10 +43,7 @@ exports.handler = async (client, message) => {
                     switch (command) {
                         //CONFIG
                         case cf_prefix + 'prefix':
-                            modhandler.prefix(config, client, message).then(() => {
-                                console.log('trigger');
-                                console.log(await db.get_config(message.guild));
-                            });
+                            modhandler.prefix(config, client, message);
                             break;
                         case cf_prefix + 'mod':
                             modhandler.mod(config, client, message);

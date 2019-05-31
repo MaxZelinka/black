@@ -1,6 +1,7 @@
 const msg_send = require("../msg_send");
 const db = require("../db");
 const admin = require("../admin");
+const Discord = require("discord.js");
 
 exports.sample = async (config, client, message) => {
     const args = message.content.trim().split(/ +/g);
@@ -109,7 +110,7 @@ exports.mod = async (config, client, message) => {
                         arr_mod = arr_mod.map(el => el.replace(/[ ]*/gm, ''));
                         arr_mod = arr_mod.filter(x => x !== '');
 
-                        db.query(`UPDATE config SET Moderator = '` + arr_mod.toString() + `' WHERE ServerID = ` + message.guild.id + `;`).then(set => {
+                        db.query(`UPDATE config SET Moderator = '` + arr_mod.toString() + `' WHERE ServerID = ` + message.guild.id + `;`).then(async set => {
                             if (set !== undefined) {
                                 //only problems with spaces
                                 arr_mod = await Promise.all(arr_mod.map(md => message.guild.fetchMember(md)));
@@ -253,7 +254,7 @@ exports.serverinfo = async (config, client, message) => {
         const guild = message.guild;
 
         const owner = guild.owner.user;
-        const timeformat = (Object.keys(timezones).includes(guild.region)) ? timezones[guild.region] : 'D/M/Y';
+        const timeformat = 'D/M/Y';
         const createdAt = timeformat.replace(/D/gmi, guild.createdAt.getDate()).replace(/M/gmi, guild.createdAt.getMonth() + 1).replace(/Y/gmi, guild.createdAt.getUTCFullYear());
         const countroles = guild.roles.size;
         const online = guild.presences.size;
@@ -271,9 +272,9 @@ exports.serverinfo = async (config, client, message) => {
             .addField('Premium', false, true)
             .addField('Server created', createdAt, true)
             .addField('Total Roles', countroles, true)
-            .addField('Total Members', memberCount + ' members (' + online + ' online)\n' + bots + ' bots 🤖 \n' + member + ' human 🚶', true)
-            .addField('Total Channels', channels + ' channels\n' + textchannels + ' text 📝\n' + voicechannels + ' voice 🎤', true);
+            .addField('Total Members', memberCount + ' members (' + online + ' online)\n' + bots + ' bots  \n' + member + ' human ', true)
+            .addField('Total Channels', channels + ' channels\n' + textchannels + ' text \n' + voicechannels + ' voice ', true);
 
-        message.send(exampleEmbed);
+        message.channel.send(exampleEmbed);
     }
 }
