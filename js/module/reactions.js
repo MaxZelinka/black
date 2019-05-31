@@ -79,9 +79,9 @@ exports.reactionid = async (config, client, message) => {
                     count++;
                     let link = 'https://discordapp.com/channels/' + message.guild.id + '/' + el.ChannelID + '/' + el.MessageID;
 
-                    let emote = (el.EmoteID.match(/[:]/gm) !== null) ? ':' + el.EmoteID.match(/[\w]*:/g) : el.EmoteID;
+                    const emote = (el.EmoteID.includes(':')) ? '<:' + el.EmoteID + '>' : punycode.ucs2.encode(el.EmoteID);
 
-                    ReactionsEmbed.addField(el.reactionsID + ' - ' +
+                    ReactionsEmbed.addField(el.reactionsID + ' - ' + emote + ' - ' +
                         message.guild.channels.get(el.ChannelID).name.toString() + ' - ' +
                         message.guild.roles.get(el.RoleID).name.toString(), link);
                     if (count == 25 || count == response.length || count == rest) {
