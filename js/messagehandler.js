@@ -4,12 +4,10 @@ const db = require("./db");
 const modhandler = require("./modulhandler");
 const msg_send = require("./msg_send");
 
-let config = '';
-
 exports.handler = async (client, message) => {
     if (message.guild !== null) {
 
-        config = await db.get_config(message.guild);
+        let config = await db.get_config(message.guild);
 
         if (config[0] !== undefined) {
             const cf_channel = (config[0].Channel.includes(',')) ? [...config[0].Channel.replace(/[ ]/gm, '').split(',')] : [config[0].Channel.replace(/[ ]/gm, '')];
