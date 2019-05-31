@@ -150,7 +150,6 @@ exports.mod = async (config, client, message) => {
     }
 }
 
-
 exports.botlog = async (config, client, message) => {
     const args = message.content.trim().split(/ +/g);
     args.shift();
@@ -172,6 +171,7 @@ exports.botlog = async (config, client, message) => {
             }
         } else {
             db.query(`SELECT botlog FROM config WHERE ServerID = ` + message.guild.id + `LIMIT 1;`).then(el => {
+                console.log(el);
                 if (el !== undefined) {
                     msg_send.embedMessage(client, message.channel.id, 'Botlog', el[0].botlog, '000000');
                 } else {

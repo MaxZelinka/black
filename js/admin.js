@@ -12,11 +12,6 @@ exports.isAdmin = (message) => {
 
 exports.isMod = (message, config) => {
     return [...config[0].Moderator].includes(message.author.id);
-    /*
-    const cf_mods = (config[0].Moderator !== null) ? config[0].Moderator : '';
-    const regexMod = new RegExp(message.author.id, 'g');
-    return (cf_mods.toString().match(regexMod) !== null) ? true : false;
-    */
 }
 
 exports.hasPerm = (func, message) => {
@@ -30,5 +25,4 @@ exports.get_message = async (client, channel_ID, message_ID) => {
 
 exports.to_colorcode = (color) => {
     return parseInt(color, 16);
-    //return parseInt(color.replace('#', ''), 16);
 }
