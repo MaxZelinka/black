@@ -65,7 +65,7 @@ exports.set_config = async (guild) => {
     VALUES('` + guild.id + `','{user} welcome to the server! :)')`);
     const _module = _query(`INSERT INTO module (ServerID)
     VALUES('` + guild.id + `')`);
-    if(general !== undefined && config !== undefined && _module !== undefined){
+    if (general !== undefined && config !== undefined && _module !== undefined) {
         return true;
     } else {
         return undefined;
@@ -89,7 +89,7 @@ exports.set_reaction = async (guild, channel_ID, message_ID, emote_ID, role_ID) 
         return conn.query(query_set).then(async (el) => {
             if (el !== undefined) {
                 return _query(`SELECT reactionsID FROM reactions WHERE ServerID = '` + guild.id +
-                `' AND ID = '` + channel_ID + message_ID + emote_ID + role_ID + `';`);
+                    `' AND ID = '` + channel_ID + message_ID + emote_ID + role_ID + `';`);
             } else {
                 return undefined;
             }

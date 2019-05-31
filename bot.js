@@ -182,11 +182,15 @@ client.on('raw', async event => {
 //Emitted whenever a reaction is added to a cached message.
 client.on('messageReactionAdd', async (reaction, user, message) => {
   if(reaction.me === true && message !== undefined){
-    let channelID = message.channel.id;
-    let messageID = message.id;
-    let emoteID   = (reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : punycode.ucs2.decode(reaction.emoji.name);
+    const channelID = message.channel.id;
+    const messageID = message.id;
+    const emoteID   = (reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : punycode.ucs2.decode(reaction.emoji.name);
 
-    let response = await modhandler.get_reaction(message.guild, channelID, messageID, emoteID);
+    console.log(message.guild + channelID + messageID + emoteID);
+
+    const response = await modhandler.get_reaction(message.guild, channelID, messageID, emoteID);
+
+    console.log(response);
 
     if(response !== undefined && response.length > 0){
       message.guild.members.get(user.id).addRole(response[0].RoleID).catch((error) => {
@@ -208,11 +212,15 @@ client.on('messageReactionAdd', async (reaction, user, message) => {
 //Emitted whenever a reaction is removed from a cached message.
 client.on('messageReactionRemove', async (reaction, user, message) => {
   if(reaction.me === true && message !== undefined){
-    let channelID = message.channel.id;
-    let messageID = message.id;
-    let emoteID   = (reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : punycode.ucs2.decode(reaction.emoji.name);
+    const channelID = message.channel.id;
+    const messageID = message.id;
+    const emoteID   = (reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : punycode.ucs2.decode(reaction.emoji.name);
 
-    let response = await modhandler.get_reaction(message.guild, channelID, messageID, emoteID);
+    console.log(message.guild + channelID + messageID + emoteID);
+
+    const response = await modhandler.get_reaction(message.guild, channelID, messageID, emoteID);
+
+    console.log(response);
 
     if(response !== undefined && response.length > 0){
       message.guild.members.get(user.id).removeRole(response[0].RoleID).catch((error) => {
