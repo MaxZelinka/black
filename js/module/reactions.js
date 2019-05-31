@@ -20,14 +20,13 @@ exports.addrole = async (config, client, message) => {
             let messageID = args[1];
             let emoteID = (args[2].match(/[<>]/gm) !== null) ? args[2].replace(/^<:|>/gm, '') : punycode.ucs2.decode(args[2]);
             let roleID = args[3].replace(/[<@&>]/gm, '');
-
             admin.get_message(client, channelID, messageID).then((found) => {
                 db.set_reaction(message.guild, channelID, messageID, emoteID, roleID).then((reaction_ID) => {
                     if (reaction_ID !== undefined) {
                         let reaction = (args[2].match(/[<>]/gm) !== null) ? args[2].replace(/^<:|>/gm, '') : args[2];
                         found.react(reaction);
-
-                        msg_send.embedMessage(client, message.channel.id, 'Reaction', 'Reaction_ID: ' + reaction_ID[0].reactionsID, '000000');
+                        const link = 'https://discordapp.com/channels/' + message.guild.id + '/' + el.ChannelID + '/' + el.MessageID;
+                        msg_send.embedMessage(client, message.channel.id, 'Reaction', 'created.\nReaction_ID: ' + reaction_ID[0].reactionsID + '\n' + link, '000000');
                     } else {
                         msg_send.embedMessage(client, message.channel.id, 'Reaction', 'cant create reaction. Double Entry?', '#ff0000', 5000);
                     }
@@ -77,7 +76,7 @@ exports.reactionid = async (config, client, message) => {
                 let rest = response.length;
                 response.map(el => {
                     count++;
-                    let link = 'https://discordapp.com/channels/' + message.guild.id + '/' + el.ChannelID + '/' + el.MessageID;
+                    const link = 'https://discordapp.com/channels/' + message.guild.id + '/' + el.ChannelID + '/' + el.MessageID;
 
                     const emote = (el.EmoteID.includes(':')) ? '<:' + el.EmoteID + '>' : punycode.ucs2.encode(el.EmoteID);
 
