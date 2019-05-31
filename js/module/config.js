@@ -74,6 +74,8 @@ exports.channel = async (config, client, message) => {
                     if (admin.isChannel(args[0]) == true) {
                         const chn = args[0].replace(/[<#!>]/gmi, '');
                         arr_chn = (arr_chn.includes(chn)) ? arr_chn.filter(x => x !== chn) : arr_chn = [...arr_chn, chn];
+                        //delete spaces
+                        arr_chn = arr_chn.map(el => el.replace(/[ ]*/gm,''));
                         arr_chn = arr_chn.filter(x => x !== '');
 
                         db.query(`UPDATE config SET Channel = '` + arr_chn.toString() + `' WHERE ServerID = '` + message.guild.id + `';`).then(set => {
@@ -99,7 +101,6 @@ exports.channel = async (config, client, message) => {
     }
 }
 
-//not good todo: -> fetchmember
 exports.mod = async (config, client, message) => {
     const args = message.content.trim().split(/ +/g);
     args.shift();
@@ -117,12 +118,19 @@ exports.mod = async (config, client, message) => {
 
                         const mod = args[0].replace(/[<@!>]/gmi, '');
                         arr_mod = (arr_mod.includes(mod)) ? arr_mod.filter(x => x !== mod) : arr_mod = [...arr_mod, mod];
+                        //delete spaces
+                        arr_mod = arr_mod.map(el => el.replace(/[ ]*/gm,''));
                         arr_mod = arr_mod.filter(x => x !== '');
 
                         db.query(`UPDATE config SET Moderator = '` + arr_mod.toString() + `' WHERE ServerID = ` + message.guild.id + `;`).then(set => {
                             if (set !== undefined) {
+                                //only problems with spaces
+                                arr_mod = await Promise.all(arr_mod.map(md => message.guild.fetchMember(md)));
+                                msg_send.embedMessage(client, message.channel.id, 'Moderator', arr_mod.toString().replace(/[,]/gmi, '\n'), '000000');
+                                /*
                                 let moderator = (arr_mod.length > 0) ? arr_mod.map(x => '<@' + x.replace(/[ ]/gmi, '').replace(/[,]/gmi, '') + '>') : '';
                                 msg_send.embedMessage(client, message.channel.id, 'Moderator', moderator.toString().replace(/[,]/gmi, '\n'), '000000');
+                                */
                             } else {
                                 msg_send.embedMessage(client, message.channel.id, 'Moderator', 'cant set moderator.', '#ff0000', 5000);
                             }
@@ -132,8 +140,8 @@ exports.mod = async (config, client, message) => {
                     }
                 } else {
                     //get
-                    let moderator = (arr_mod.length > 0) ? arr_mod.map(x => '<@' + x.replace(/[ ]/gmi, '').replace(/[,]/gmi, '') + '>') : '';
-                    msg_send.embedMessage(client, message.channel.id, 'Moderator', moderator.toString().replace(/[,]/gmi, '\n'), '000000');
+                    arr_mod = await Promise.all(arr_mod.map(md => message.guild.fetchMember(md)));
+                    msg_send.embedMessage(client, message.channel.id, 'Moderator', arr_mod.toString().replace(/[,]/gmi, '\n'), '000000');
                 }
             } else {
                 msg_send.embedMessage(client, message.channel.id, 'Moderator', 'cant get/set moderator.', '#ff0000', 5000);
