@@ -44,7 +44,10 @@ exports.handler = async (client, message) => {
                     switch (command) {
                         //CONFIG
                         case cf_prefix + 'prefix':
-                            modhandler.prefix(config, client, message);
+                            modhandler.prefix(config, client, message).then(() => {
+                                console.log('trigger');
+                                console.log(await db.get_config(message.guild));
+                            });
                             break;
                         case cf_prefix + 'mod':
                             modhandler.mod(config, client, message);
