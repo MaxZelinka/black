@@ -53,6 +53,10 @@ exports.botlog = async (config, client, message) => {
     cfg.botlog(config, client, message);
 }
 
+exports.serverinfo = async (config, client, message) => {
+    cfg.serverinfo(config, client, message);
+}
+
 //REACTION
 exports.addrole = async (config, client, message) => {
     reactions.addrole(config, client, message);

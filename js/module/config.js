@@ -2,19 +2,6 @@ const msg_send = require("../msg_send");
 const db = require("../db");
 const admin = require("../admin");
 
-/*
-prefix: get/set prefix
-channel: show | add/remove bot-channel
-mod: show | add/remove bot-mod
-botlog: show | add/remove botlog-channel
-modlog: show | add/remove modlog-channel
-blacklist: show | add/remove blacklist-user
-automod: show | add/remove automod-channel
-welcome: show | set welcome-channel
-welcomemsg: show | set welcome-message
-leaverlog: show | set leaverlog-channel
-*/
-
 exports.sample = async (config, client, message) => {
     const args = message.content.trim().split(/ +/g);
     args.shift();
@@ -75,7 +62,7 @@ exports.channel = async (config, client, message) => {
                         const chn = args[0].replace(/[<#!>]/gmi, '');
                         arr_chn = (arr_chn.includes(chn)) ? arr_chn.filter(x => x !== chn) : arr_chn = [...arr_chn, chn];
                         //delete spaces
-                        arr_chn = arr_chn.map(el => el.replace(/[ ]*/gm,''));
+                        arr_chn = arr_chn.map(el => el.replace(/[ ]*/gm, ''));
                         arr_chn = arr_chn.filter(x => x !== '');
 
                         db.query(`UPDATE config SET Channel = '` + arr_chn.toString() + `' WHERE ServerID = '` + message.guild.id + `';`).then(set => {
@@ -119,7 +106,7 @@ exports.mod = async (config, client, message) => {
                         const mod = args[0].replace(/[<@!>]/gmi, '');
                         arr_mod = (arr_mod.includes(mod)) ? arr_mod.filter(x => x !== mod) : arr_mod = [...arr_mod, mod];
                         //delete spaces
-                        arr_mod = arr_mod.map(el => el.replace(/[ ]*/gm,''));
+                        arr_mod = arr_mod.map(el => el.replace(/[ ]*/gm, ''));
                         arr_mod = arr_mod.filter(x => x !== '');
 
                         db.query(`UPDATE config SET Moderator = '` + arr_mod.toString() + `' WHERE ServerID = ` + message.guild.id + `;`).then(set => {
@@ -256,4 +243,37 @@ exports.leaverlog = async (config, client, message) => {
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
         admin.hasPerm('leaverlog', message)) {}
+}
+
+exports.serverinfo = async (config, client, message) => {
+    if (admin.isAdmin(message) === true ||
+        admin.isMod(message, config) === true ||
+        admin.hasPerm('serverinfo', message)) {
+
+        const guild = message.guild;
+
+        const owner = guild.owner.user;
+        const timeformat = (Object.keys(timezones).includes(guild.region)) ? timezones[guild.region] : 'D/M/Y';
+        const createdAt = timeformat.replace(/D/gmi, guild.createdAt.getDate()).replace(/M/gmi, guild.createdAt.getMonth() + 1).replace(/Y/gmi, guild.createdAt.getUTCFullYear());
+        const countroles = guild.roles.size;
+        const online = guild.presences.size;
+        const memberCount = guild.memberCount;
+        const bots = guild.members.filter(el => el.user.bot == true).size;
+        const member = guild.members.filter(el => el.user.bot == false).size;
+        const channels = guild.channels.size;
+        const textchannels = guild.channels.filter(el => el.type === 'text').size;
+        const voicechannels = guild.channels.filter(el => el.type === 'voice').size;
+
+        const exampleEmbed = new Discord.RichEmbed()
+            .setColor('#000000')
+            .setTitle('Server-Info')
+            .addField('Owner', owner, true)
+            .addField('Premium', false, true)
+            .addField('Server created', createdAt, true)
+            .addField('Total Roles', countroles, true)
+            .addField('Total Members', memberCount + ' members (' + online + ' online)\n' + bots + ' bots 🤖 \n' + member + ' human 🚶', true)
+            .addField('Total Channels', channels + ' channels\n' + textchannels + ' text 📝\n' + voicechannels + ' voice 🎤', true);
+
+        message.send(exampleEmbed);
+    }
 }

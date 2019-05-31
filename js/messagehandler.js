@@ -73,6 +73,9 @@ exports.handler = async (client, message) => {
                         case cf_prefix + 'leaverlog':
                             modhandler.not(client, message);
                             break;
+                        case cf_prefix + 'serverinfo':
+                            modhandler.serverinfo(config, client, message);
+                            break;
                         //MODUL
                         case cf_prefix + 'modul':
                             modhandler.not(client, message);
