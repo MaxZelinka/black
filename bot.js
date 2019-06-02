@@ -185,7 +185,7 @@ client.on('messageReactionAdd', async (reaction, user, message) => {
   if(reaction.me === true && message !== undefined){
     const channelID = message.channel.id;
     const messageID = message.id;
-    const emoteID   = (reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : reaction.emoji.name;
+    const emoteID   = punycode.encode((reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : reaction.emoji.name);
 
     const response = await modhandler.get_reaction(message.guild, channelID, messageID, emoteID);
 
@@ -202,7 +202,7 @@ client.on('messageReactionRemove', async (reaction, user, message) => {
   if(reaction.me === true && message !== undefined){
     const channelID = message.channel.id;
     const messageID = message.id;
-    const emoteID   = (reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : reaction.emoji.name;
+    const emoteID   = punycode.encode((reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : reaction.emoji.name);
 
     const response = await modhandler.get_reaction(message.guild, channelID, messageID, emoteID);
 

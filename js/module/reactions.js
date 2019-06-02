@@ -16,17 +16,21 @@ exports.addrole = async (config, client, message) => {
             args[1] !== undefined &&
             args[2] !== undefined &&
             args[3] !== undefined) {
-            let channelID = args[0].replace(/[<#>]/gm, '');
-            let messageID = args[1];
-            let emoteID = (args[2].match(/[<>]/gm) !== null) ? args[2].replace(/^<:|>/gm, '') : args[2];
-            let roleID = args[3].replace(/[<@&>]/gm, '');
+            const channelID = args[0].replace(/[<#>]/gm, '');
+            const messageID = args[1];
+            const emoteID = punycode.encode((args[2].match(/[<>]/gm) !== null) ? args[2].replace(/^<>/gm, '') : args[2]);
+            const roleID = args[3].replace(/[<@&>]/gm, '');
 
+            //const encode = punycode.encode(emoteID);
+            //const decode = punycode.decode(encode);
+            
+            //console.log(decode);
 
             if (await message.guild.roles.find(el => el.id == roleID) !== null) {
                 admin.get_message(client, channelID, messageID).then((found) => {
                     db.set_reaction(message.guild, channelID, messageID, emoteID, roleID).then((reaction_ID) => {
                         if (reaction_ID !== undefined) {
-                            let reaction = (args[2].match(/[<>]/gm) !== null) ? args[2].replace(/^<:|>/gm, '') : args[2];
+                            let reaction = (args[2].match(/[<>]/gm) !== null) ? args[2].replace(/^<>/gm, '') : args[2];
                             found.react(reaction);
                             const link = 'https://discordapp.com/channels/' + message.guild.id + '/' + channelID + '/' + messageID;
                             msg_send.embedMessage(client, message.channel.id, 'Reaction', 'created.\nReaction_ID: ' + reaction_ID[0].reactionsID + '\n' + link, '000000');
@@ -84,9 +88,9 @@ exports.reactionid = async (config, client, message) => {
                     count++;
                     const link = 'https://discordapp.com/channels/' + message.guild.id + '/' + el.ChannelID + '/' + el.MessageID;
 
-                    const emote = (el.EmoteID.includes(':')) ? '<:' + el.EmoteID + '>' : el.EmoteID;
-
-                    ReactionsEmbed.addField(el.reactionsID + ' - ' + emote + ' - ' +
+                    //const emote = (el.EmoteID.includes(':')) ? '<:' + el.EmoteID + '>' : el.EmoteID;
+                    //const emote = punycode.decode(el.EmoteID);
+                    ReactionsEmbed.addField(el.reactionsID + ' - ' +
                         message.guild.channels.get(el.ChannelID).name.toString() + ' - ' +
                         message.guild.roles.get(el.RoleID).name.toString(), link);
                     if (count == 25 || count == response.length || count == rest) {
