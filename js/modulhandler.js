@@ -5,6 +5,7 @@ const help = require("./module/help");
 const reactions = require("./module/reactions");
 const cfg = require("./module/config");
 const lol = require("./module/leagueoflegends");
+const cmd = require("./module/commands");
 
 /*
 modulare bauweise
@@ -54,8 +55,13 @@ exports.botlog = async (config, client, message) => {
     cfg.botlog(config, client, message);
 }
 
-exports.serverinfo = async (config, client, message) => {
-    cfg.serverinfo(config, client, message);
+//COMMANDS
+exports.clear = (message) => {
+    cmd.clear(message);
+}
+
+exports.serverinfo = async (config, message) => {
+    cmd.serverinfo(config, message);
 }
 
 //REACTION
