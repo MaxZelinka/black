@@ -61,10 +61,11 @@ exports.removerole = async (config, client, message) => {
         admin.isMod(message, config) === true ||
         admin.hasPerm('removerole', message)) {
         if (args[0] !== undefined) {
-            db.query(`SELECT * FROM reactions WHERE ServerID = ` + message.guild.id + ` AND reactionsID = ` + args[0] + `;`).then(role => {
+            db.query(`SELECT * FROM reactions WHERE ServerID = ` + message.guild.id + ` AND reactionsID = ` + args[0] + `;`).then(async role => {
+                const msg = await message.guild.channels.get(role[0].ChannelID).fetchMessage(role[0].MessageID);
+                msg.reactions.get(punycode.decode(role[0].EmoteID)).remove(client.user.id);
                 db.query(`DELETE FROM reactions WHERE ServerID = ` + message.guild.id + ` AND reactionsID = ` + args[0] + `;`).then(response => {
                     if (response !== undefined) {
-                        message.guild.channels.get(role.ChannelID).fetchMessage(role.MessageID).reactions.get(punycode.decode(role.EmoteID)).remove(client.user.id);
                         msg_send.embedMessage(client, message.channel.id, 'Reaction', 'reaction deleted.', '#000000');
                     } else {
                         msg_send.embedMessage(client, message.channel.id, 'Reaction', 'cant delete reaction.', '#ff0000', 5000);
