@@ -1,6 +1,33 @@
 const fetch = require("node-fetch");
 const msg_send = require("../msg_send");
 
+//Create Roles
+  /*
+  const guild = client.guilds.get('581147107033874455');
+
+  const tiers = [
+    'Challenger',
+    'Grandmaster',
+    'Master',
+    'Diamond',
+    'Platinum',
+    'Gold',
+    'Silver',
+    'Bronze',
+    'Iron'
+  ];
+
+  let roles = guild.roles.filter(el => tiers.includes(el.name));
+  roles = roles.map(el => el.name);
+
+  tiers.map(el => {
+    if(roles.includes(el) === false){
+      guild.createRole({
+        name: el
+      });
+    } 
+  });*/
+
 exports.setlolAcc = async (config, client, message) => {
     const api_key = 'RGAPI-1172847b-64ba-4e10-a633-4cb5f28511c5';
     const args = message.content.trim().split(/ +/g);
