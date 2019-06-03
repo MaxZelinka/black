@@ -92,6 +92,11 @@ exports.handler = async (client, message) => {
                         case cf_prefix + 'editmsg':
                             modhandler.editmsg(config, client, message);
                             break;
+                        //LEAGUEOFLEGENDS
+                        case cf_prefix + 'setLOL':
+                            modhandler.not(client, message);
+                            //modhandler.setlolAcc(config, client, message);
+                            break;
                     }
                 }
             }

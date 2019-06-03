@@ -4,6 +4,7 @@ const msg_send = require("./msg_send");
 const help = require("./module/help");
 const reactions = require("./module/reactions");
 const cfg = require("./module/config");
+const lol = require("./module/leagueoflegends");
 
 /*
 modulare bauweise
@@ -80,4 +81,10 @@ exports.editmsg = async (config, client, message) => {
 
 exports.get_reaction = async (guild, channelID, messageID, emoteID) => {
     return reactions.get_reaction(guild, channelID, messageID, emoteID);
+}
+
+//LEAGUE OF LEGENDS
+
+exports.setlolAcc = async (config, client, message) => {
+    lol.setlolAcc(config, client, message);
 }
