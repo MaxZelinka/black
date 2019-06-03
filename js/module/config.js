@@ -99,7 +99,7 @@ exports.mod = async (config, client, message) => {
 
         db.query(`SELECT Moderator FROM config WHERE ServerID = ` + message.guild.id + ` LIMIT 1;`).then(async get => {
             if (get !== undefined) {
-                let arr_mod = (get[0].Moderator.match(/[,]/gmi) !== null) ? get[0].Moderator.split(',') : new Array[get[0].Moderator]; //string to array
+                let arr_mod = (get[0].Moderator.match(/[,]/gmi) !== null) ? get[0].Moderator.replace(' ', '').split(',') : new Array[get[0].Moderator]; //string to array
                 if (args[0] !== undefined) {
                     //set
                     if (admin.isUser(args[0]) == true) {
@@ -110,15 +110,14 @@ exports.mod = async (config, client, message) => {
                         arr_mod = arr_mod.map(el => el.replace(/[ ]*/gm, ''));
                         arr_mod = arr_mod.filter(x => x !== '');
 
+                        console.log(arr_mod);
+
                         db.query(`UPDATE config SET Moderator = '` + arr_mod.toString() + `' WHERE ServerID = ` + message.guild.id + `;`).then(async set => {
                             if (set !== undefined) {
                                 //only problems with spaces
                                 arr_mod = await Promise.all(arr_mod.map(md => message.guild.fetchMember(md)));
                                 msg_send.embedMessage(client, message.channel.id, 'Moderator', arr_mod.toString().replace(/[,]/gmi, '\n'), '000000');
-                                /*
-                                let moderator = (arr_mod.length > 0) ? arr_mod.map(x => '<@' + x.replace(/[ ]/gmi, '').replace(/[,]/gmi, '') + '>') : '';
-                                msg_send.embedMessage(client, message.channel.id, 'Moderator', moderator.toString().replace(/[,]/gmi, '\n'), '000000');
-                                */
+
                             } else {
                                 msg_send.embedMessage(client, message.channel.id, 'Moderator', 'cant set moderator.', '#ff0000', 5000);
                             }
