@@ -253,8 +253,26 @@ exports.serverinfo = async (config, client, message) => {
 
         const guild = message.guild;
 
+        const timezones = {
+            'brazil' : 'D/M/Y',
+            'eu-central' : 'D/M/Y',
+            'hongkong' : 'D/M/Y',
+            'india' : 'D/M/Y',
+            'japan' : 'Y/M/D',
+            'russia' : 'D/M/Y',
+            'singapore' : 'Y/M/D',
+            'southafrica' : 'Y/M/D',
+            'sydney' : 'D/M/Y',
+            'us-central' : 'M/D/Y',
+            'us-east' : 'M/D/Y',
+            'us-south' : 'M/D/Y',
+            'us-west' : 'M/D/Y',
+            'eu-west' : 'D/M/Y'
+          }
+
         const owner = guild.owner.user;
-        const timeformat = 'D/M/Y';
+        const timeformat = (timezones.includes(guild.region)) ? timezones[guild.region] : 'D/M/Y';
+        //const timeformat = 'D/M/Y';
         const createdAt = timeformat.replace(/D/gmi, guild.createdAt.getDate()).replace(/M/gmi, guild.createdAt.getMonth() + 1).replace(/Y/gmi, guild.createdAt.getUTCFullYear());
         const countroles = guild.roles.size;
         const online = guild.presences.size;
