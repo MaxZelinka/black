@@ -23,7 +23,7 @@ exports.addrole = async (config, client, message) => {
 
             //const encode = punycode.encode(emoteID);
             //const decode = punycode.decode(encode);
-            
+
             //console.log(decode);
 
             if (await message.guild.roles.find(el => el.id == roleID) !== null) {
@@ -57,14 +57,19 @@ exports.addrole = async (config, client, message) => {
 exports.removerole = async (config, client, message) => {
     const args = message.content.trim().split(/ +/g);
     args.shift();
-    if (admin.isAdmin(message) === true || admin.isMod(message, config) === true) {
+    if (admin.isAdmin(message) === true ||
+        admin.isMod(message, config) === true ||
+        admin.hasPerm('removerole', message)) {
         if (args[0] !== undefined) {
-            db.query(`DELETE FROM reactions WHERE ServerID = ` + message.guild.id + ` AND reactionsID = ` + args[0] + `;`).then(response => {
-                if (response !== undefined) {
-                    msg_send.embedMessage(client, message.channel.id, 'Reaction', 'reaction deleted.', '#000000');
-                } else {
-                    msg_send.embedMessage(client, message.channel.id, 'Reaction', 'cant delete reaction.', '#ff0000', 5000);
-                }
+            db.query(`SELECT * FROM reactions WHERE ServerID = ` + message.guild.id + ` AND reactionsID = ` + args[0] + `;`).then(role => {
+                db.query(`DELETE FROM reactions WHERE ServerID = ` + message.guild.id + ` AND reactionsID = ` + args[0] + `;`).then(response => {
+                    if (response !== undefined) {
+                        message.guild.channels.get(role.ChannelID).fetchMessage(role.MessageID).reactions.get(punycode.decode(role.EmoteID)).remove(client.user.id);
+                        msg_send.embedMessage(client, message.channel.id, 'Reaction', 'reaction deleted.', '#000000');
+                    } else {
+                        msg_send.embedMessage(client, message.channel.id, 'Reaction', 'cant delete reaction.', '#ff0000', 5000);
+                    }
+                });
             });
         } else {
             msg_send.embedMessage(client, message.channel.id, 'Reaction', 'missing arguments.', '#ff0000', 5000);
@@ -73,7 +78,9 @@ exports.removerole = async (config, client, message) => {
 }
 
 exports.reactionid = async (config, client, message) => {
-    if (admin.isAdmin(message) === true || admin.isMod(message, config) === true) {
+    if (admin.isAdmin(message) === true ||
+        admin.isMod(message, config) === true ||
+        admin.hasPerm('reactionid', message) === true) {
         db.query(`SELECT * FROM reactions WHERE ServerID = ` + message.guild.id + `;`).then(response => {
             if (response !== undefined) {
 
@@ -89,8 +96,8 @@ exports.reactionid = async (config, client, message) => {
                     const link = 'https://discordapp.com/channels/' + message.guild.id + '/' + el.ChannelID + '/' + el.MessageID;
 
                     //const emote = (el.EmoteID.includes(':')) ? '<:' + el.EmoteID + '>' : el.EmoteID;
-                    //const emote = punycode.decode(el.EmoteID);
-                    ReactionsEmbed.addField(el.reactionsID + ' - ' +
+                    const emote = punycode.decode(el.EmoteID);
+                    ReactionsEmbed.addField(el.reactionsID + ' ' + emote + ' - ' +
                         message.guild.channels.get(el.ChannelID).name.toString() + ' - ' +
                         message.guild.roles.get(el.RoleID).name.toString(), link);
                     if (count == 25 || count == response.length || count == rest) {
