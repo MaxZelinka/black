@@ -56,8 +56,8 @@ exports.botlog = async (config, client, message) => {
 }
 
 //COMMANDS
-exports.clear = (message) => {
-    cmd.clear(message);
+exports.clear = (client, message) => {
+    cmd.clear(client, message);
 }
 
 exports.serverinfo = async (config, message) => {
