@@ -53,12 +53,13 @@ exports.get_config = async (guild) => {
 
 exports.set_config = async (guild) => {
     const general = _query(`INSERT INTO general (ServerID, ServerName, Prefix, active)
-    VALUES('` + guild.id + `','` + guild.name + `','?b', 1)`);
-    const config = _query(`INSERT INTO config (ServerID, welcomemsg)
-    VALUES('` + guild.id + `','{user} welcome to the server! :)')`);
-    const _module = _query(`INSERT INTO module (ServerID)
-    VALUES('` + guild.id + `')`);
-    if (general !== undefined && config !== undefined && _module !== undefined) {
+    VALUES('` + guild.id + `','` + guild.name + `','?b', 1)`).then(() => {
+         _query(`INSERT INTO config (ServerID, welcomemsg)
+        VALUES('` + guild.id + `','{user} welcome to the server! :)')`);
+        _query(`INSERT INTO module (ServerID)
+        VALUES('` + guild.id + `')`);
+    });
+    if (general !== undefined) {
         return true;
     } else {
         return undefined;

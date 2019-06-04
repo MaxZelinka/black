@@ -16,14 +16,6 @@ const msg_send  = require("./js/msg_send");
 let StatusInterval = JSON.parse(fs.readFileSync('config.json', 'utf8')).statusIntervall;
 let arr_badwords = [];
 
-//Functions current
-/*
-* - log-file
-* - status
-* - badwords
-* - welcome/leave msg
-*/
-
 /*
 Patreon Page
 */
@@ -54,8 +46,8 @@ client.on('error', error => {
 
 //Emitted when the client hits a rate limit while making a request
 client.on('rateLimit', rateLimit => {
-  log.log('[rateLimit] - ' + rateLimit);
-  console.log('[rateLimit]');
+  //log.log('[rateLimit] - ' + rateLimit);
+  //console.log('[rateLimit]');
 });
 
 //Emitted when the client's WebSocket disconnects and will no longer attempt to reconnect.
@@ -66,7 +58,7 @@ client.on('disconnect', disconnect => {
 
 //Emitted whenever the client tries to reconnect to the WebSocket.
 client.on('reconnecting', reconnecting => {
-  log.log('[reconnecting] - ' + reconnecting);
+  //log.log('[reconnecting] - ' + reconnecting);
   console.log('[reconnecting]');
 });
 

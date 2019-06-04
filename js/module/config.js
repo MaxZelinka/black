@@ -56,19 +56,28 @@ exports.channel = async (config, client, message) => {
         await admin.hasPerm('channel', message) === true) {
 
         db.query(`SELECT Channel FROM config WHERE ServerID = '` + message.guild.id + `' LIMIT 1;`).then(get => {
-            let arr_chn = (get[0].Channel.match(/[,]/gmi) !== null) ? get[0].Channel.split(',') : new Array[get[0].Channel]; //string to array
+            let arr_chn;
+            if(get[0].Channel !== null){
+                arr_chn = (get[0].Channel.match(/[,]/gmi) !== null) ? get[0].Channel.split(',') : new Array(get[0].Channel); //string to array
+            } 
             if (get !== undefined) {
                 if (args[0] !== undefined) {
                     if (admin.isChannel(args[0]) == true) {
+                        
                         const chn = args[0].replace(/[<#!>]/gmi, '');
-                        arr_chn = (arr_chn.includes(chn)) ? arr_chn.filter(x => x !== chn) : arr_chn = [...arr_chn, chn];
-                        //delete spaces
-                        arr_chn = arr_chn.map(el => el.replace(/[ ]*/gm, ''));
-                        arr_chn = arr_chn.filter(x => x !== '');
 
+                        if(get[0].Channel !== null){
+                            arr_chn = (arr_chn.includes(chn)) ? arr_chn.filter(x => x !== chn) : arr_chn = [...arr_chn, chn];
+                            //delete spaces
+                            arr_chn = arr_chn.map(el => el.replace(/[ ]*/gm, ''));
+                            arr_chn = arr_chn.filter(x => x !== '');
+                        } else {
+                            arr_chn = new Array(chn);
+                        }
                         db.query(`UPDATE config SET Channel = '` + arr_chn.toString() + `' WHERE ServerID = '` + message.guild.id + `';`).then(set => {
                             if (set !== undefined) {
                                 let channel = (arr_chn.length > 0) ? arr_chn.map(x => message.guild.channels.get(x.replace(' ', '')) + '\n') : '';
+                                channel = (channel !== '') ? channel : 'empty';
                                 msg_send.embedMessage(client, message.channel.id, 'Channel', channel.toString().replace(/[,]/gmi, ''), '000000');
                             } else {
                                 msg_send.embedMessage(client, message.channel.id, 'Channel', 'cant set channel.', '#ff0000', 5000);
@@ -84,7 +93,7 @@ exports.channel = async (config, client, message) => {
                 }
             } else {
                 msg_send.embedMessage(client, message.channel.id, 'Channel', 'cant get/set channel.', '#ff0000', 5000);
-            }
+            }            
         });
     }
 }

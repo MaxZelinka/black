@@ -9,10 +9,9 @@ exports.handler = async (client, message) => {
 
         let config = await db.get_config(message.guild);
         //umstruktieren, ansonsten lädt er jedes mal die config, bei jeder msg
-
         if (config[0] !== undefined) {
-            const cf_channel = (config[0].Channel.includes(',')) ? [...config[0].Channel.replace(/[ ]/gm, '').split(',')] : [config[0].Channel.replace(/[ ]/gm, '')];
-            const cf_blacklist = (config[0].blacklist.includes(',')) ? [...config[0].blacklist.replace(/[ ]/gm, '').split(',')] : [config[0].blacklist.replace(/[ ]/gm, '')];
+            const cf_channel = (config[0].Channel !== null) ? (config[0].Channel.includes(',')) ? [...config[0].Channel.replace(/[ ]/gm, '').split(',')] : [config[0].Channel.replace(/[ ]/gm, '')] : '';
+            const cf_blacklist = (config[0].blacklist !== null) ? (config[0].blacklist.includes(',')) ? [...config[0].blacklist.replace(/[ ]/gm, '').split(',')] : [config[0].blacklist.replace(/[ ]/gm, '')] : '';
             const cf_prefix = config[0].Prefix;
 
             const args = message.content.trim().split(/ +/g);

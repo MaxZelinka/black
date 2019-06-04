@@ -16,6 +16,9 @@ async function msg_delete(message, number_msg) {
 }
 
 exports.clear = (client, message) => {
+  /*
+  https://discord.js.org/#/docs/main/stable/class/TextChannel?scrollTo=bulkDelete
+  */
   const args = message.content.trim().split(/ +/g);
   args.shift();
 
