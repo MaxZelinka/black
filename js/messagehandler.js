@@ -4,11 +4,17 @@ const db = require("./db");
 const modhandler = require("./modulhandler");
 const msg_send = require("./msg_send");
 
+let config;
+let changed = false;
+
 exports.handler = async (client, message) => {
     if (message.guild !== null) {
 
-        let config = await db.get_config(message.guild);
-        //umstruktieren, ansonsten lädt er jedes mal die config, bei jeder msg
+        if(config === undefined || changed === true){
+            config = await db.get_config(message.guild);
+            changed = false;
+        }
+
         if (config[0] !== undefined) {
             const cf_channel = (config[0].Channel !== null) ? (config[0].Channel.includes(',')) ? [...config[0].Channel.replace(/[ ]/gm, '').split(',')] : [config[0].Channel.replace(/[ ]/gm, '')] : '';
             const cf_blacklist = (config[0].blacklist !== null) ? (config[0].blacklist.includes(',')) ? [...config[0].blacklist.replace(/[ ]/gm, '').split(',')] : [config[0].blacklist.replace(/[ ]/gm, '')] : '';
@@ -34,7 +40,7 @@ exports.handler = async (client, message) => {
                         modhandler.help(config, client, message);
                         break;
                     case cf_prefix + 'channel':
-                        modhandler.channel(config, client, message);
+                        modhandler.channel(config, client, message).then(() => changed = true);
                         break;
                 }
                 if (cf_channel.includes(message.channel.id)) {
@@ -42,13 +48,13 @@ exports.handler = async (client, message) => {
                     switch (command) {
                         //CONFIG
                         case cf_prefix + 'prefix':
-                            modhandler.prefix(config, client, message);
+                            modhandler.prefix(config, client, message).then(() => changed = true);
                             break;
                         case cf_prefix + 'mod':
-                            modhandler.mod(config, client, message);
+                            modhandler.mod(config, client, message).then(() => changed = true);
                             break;
                         case cf_prefix + 'botlog':
-                            modhandler.botlog(config, client, message);
+                            modhandler.botlog(config, client, message).then(() => changed = true);
                             break;
                         case cf_prefix + 'modlog':
                             modhandler.not(client, message);
