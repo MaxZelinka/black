@@ -21,13 +21,14 @@ exports.clear = (client, message) => {
   */
   const args = message.content.trim().split(/ +/g);
   args.shift();
-
+  
   if (admin.isAdmin(message) === true ||
     admin.isMod(message, config) === true ||
     admin.hasPerm('serverinfo', message)) {
+
     if (args[0].match(/[\d]*/gm) !== null) {
-      msg_delete(message, args[0]).then(() => {
-        msg_send.embedMessage(client, message.channel.id, 'clear', args[0] + ' messages deleted.', '000000', 5000);
+      message.channel.bulkDelete(args[0]).then(messages => {
+        msg_send.embedMessage(client, message.channel.id, 'clear', messages.size + ' messages deleted.', '000000', 5000);
       });
     } else {
       msg_send.embedMessage(client, message.channel.id, 'clear', args[0] + ' isnt a number.', 'ff0000', 5000);

@@ -57,7 +57,7 @@ exports.handler = async (client, message) => {
                             modhandler.botlog(config, client, message).then(() => changed = true);
                             break;
                         case cf_prefix + 'modlog':
-                            modhandler.not(client, message);
+                            modhandler.modlog(config, client, message).then(() => changed = true);
                             break;
                         case cf_prefix + 'blacklist':
                             modhandler.not(client, message);

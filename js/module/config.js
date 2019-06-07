@@ -9,7 +9,7 @@ exports.sample = async (config, client, message) => {
 
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
-        admin.hasPerm('sample', message)) {}
+        admin.hasPerm('sample', message)) { }
 }
 
 exports.prefix = async (config, client, message) => {
@@ -57,16 +57,16 @@ exports.channel = async (config, client, message) => {
 
         db.query(`SELECT Channel FROM config WHERE ServerID = '` + message.guild.id + `' LIMIT 1;`).then(get => {
             let arr_chn;
-            if(get[0].Channel !== null){
+            if (get[0].Channel !== null) {
                 arr_chn = (get[0].Channel.match(/[,]/gmi) !== null) ? get[0].Channel.split(',') : new Array(get[0].Channel); //string to array
-            } 
+            }
             if (get !== undefined) {
                 if (args[0] !== undefined) {
                     if (admin.isChannel(args[0]) == true) {
-                        
+
                         const chn = args[0].replace(/[<#!>]/gmi, '');
 
-                        if(get[0].Channel !== null){
+                        if (get[0].Channel !== null) {
                             arr_chn = (arr_chn.includes(chn)) ? arr_chn.filter(x => x !== chn) : arr_chn = [...arr_chn, chn];
                             //delete spaces
                             arr_chn = arr_chn.map(el => el.replace(/[ ]*/gm, ''));
@@ -93,7 +93,7 @@ exports.channel = async (config, client, message) => {
                 }
             } else {
                 msg_send.embedMessage(client, message.channel.id, 'Channel', 'cant get/set channel.', '#ff0000', 5000);
-            }            
+            }
         });
     }
 }
@@ -166,10 +166,10 @@ exports.botlog = async (config, client, message) => {
                 msg_send.embedMessage(client, message.channel.id, 'Botlog', 'argument isnt a channel.', '#ff0000', 5000);
             }
         } else {
-            db.query(`SELECT botlog FROM config WHERE ServerID = ` + message.guild.id + `LIMIT 1;`).then(el => {
-                console.log(el);
+            db.query(`SELECT botlog FROM config WHERE ServerID = ` + message.guild.id + ` LIMIT 1;`).then(async el => {
                 if (el !== undefined) {
-                    msg_send.embedMessage(client, message.channel.id, 'Botlog', el[0].botlog, '000000');
+                    const channel = await admin.get_channel(client, el[0].botlog);
+                    msg_send.embedMessage(client, message.channel.id, 'Botlog', channel.toString(), '000000');
                 } else {
                     msg_send.embedMessage(client, message.channel.id, 'Botlog', 'cant get botlog.', '#ff0000', 5000);
                 }
@@ -198,9 +198,10 @@ exports.modlog = async (config, client, message) => {
                 msg_send.embedMessage(client, message.channel.id, 'Modlog', 'argument isnt a channel.', '#ff0000', 5000);
             }
         } else {
-            db.query(`SELECT botlog FROM config WHERE ServerID = ` + message.guild.id + `LIMIT 1;`).then(el => {
+            db.query(`SELECT modlog FROM config WHERE ServerID = ` + message.guild.id + ` LIMIT 1;`).then(async el => {
                 if (el !== undefined) {
-                    msg_send.embedMessage(client, message.channel.id, 'Modlog', el[0].modlog, '000000');
+                    const channel = await admin.get_channel(client, el[0].modlog);
+                    msg_send.embedMessage(client, message.channel.id, 'Modlog', channel.toString(), '000000');
                 } else {
                     msg_send.embedMessage(client, message.channel.id, 'Modlog', 'cant get modlog.', '#ff0000', 5000);
                 }
@@ -215,7 +216,41 @@ exports.blacklist = async (config, client, message) => {
 
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
-        admin.hasPerm('blacklist', message)) {}
+        admin.hasPerm('blacklist', message)) {
+
+        db.query(`SELECT blacklist FROM config WHERE ServerID = '` + message.guild.id + `' LIMIT 1;`).then(get => {
+            let arr_black;
+            if (get[0].blacklist !== null) {
+                arr_black = (get[0].blacklist.match(/[,]/gmi) !== null) ? get[0].blacklist.split(',') : new Array(get[0].blacklist); //string to array
+            }
+            if (get !== undefined) {
+                if (args[0] !== undefined) {
+                    //set
+                } else {
+                    //get
+                    let user = (arr_black.length > 0) ? arr_black.map(x => message.guild.members.get(x.replace(' ', '')) + '\n') : '';
+                    msg_send.embedMessage(client, message.channel.id, 'Blacklist', user.toString().replace(/[,]/gmi, ''), '000000');
+                }
+            } else {
+                msg_send.embedMessage(client, message.channel.id, 'Blacklist', 'cant get/set user.', '#ff0000', 5000);
+            }
+
+        });
+
+        /*
+                    if (admin.isChannel(args[0]) === true) {
+                        db.query(`UPDATE config SET modlog = ` + args[0].replace(/[<#!>]/gm, '') + ` WHERE ServerID = ` + message.guild.id + `;`).then(el => {
+                            if (el !== undefined) {
+                                msg_send.embedMessage(client, message.channel.id, 'Modlog', args[0], '000000');
+                            } else {
+                                msg_send.embedMessage(client, message.channel.id, 'Modlog', 'cant set modlog.', '#ff0000', 5000);
+                            }
+                        });
+                    } else {
+                        msg_send.embedMessage(client, message.channel.id, 'Modlog', 'argument isnt a channel.', '#ff0000', 5000);
+                    }*/
+
+    }
 }
 
 exports.automod = async (config, client, message) => {
@@ -224,7 +259,7 @@ exports.automod = async (config, client, message) => {
 
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
-        admin.hasPerm('automod', message)) {}
+        admin.hasPerm('automod', message)) { }
 }
 
 exports.welcome = async (config, client, message) => {
@@ -233,7 +268,7 @@ exports.welcome = async (config, client, message) => {
 
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
-        admin.hasPerm('welcome', message)) {}
+        admin.hasPerm('welcome', message)) { }
 }
 
 exports.welcomemsg = async (config, client, message) => {
@@ -242,7 +277,7 @@ exports.welcomemsg = async (config, client, message) => {
 
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
-        admin.hasPerm('welcomemsg', message)) {}
+        admin.hasPerm('welcomemsg', message)) { }
 }
 
 exports.leaverlog = async (config, client, message) => {
@@ -251,5 +286,5 @@ exports.leaverlog = async (config, client, message) => {
 
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
-        admin.hasPerm('leaverlog', message)) {}
+        admin.hasPerm('leaverlog', message)) { }
 }

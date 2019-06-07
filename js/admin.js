@@ -23,6 +23,10 @@ exports.get_message = async (client, channel_ID, message_ID) => {
     return client.channels.get(channel_ID).fetchMessage(message_ID);
 }
 
+exports.get_channel = async (client, channel_ID) => {
+    return client.channels.get(channel_ID);
+}
+
 exports.to_colorcode = (color) => {
     return parseInt(color, 16);
 }

@@ -55,6 +55,15 @@ exports.botlog = async (config, client, message) => {
     cfg.botlog(config, client, message);
 }
 
+exports.modlog = async (config, client, message) => {
+    cfg.modlog(config, client, message);
+}
+
+exports.blacklist = async (config, client, message) => {
+    cfg.blacklist(config, client, message);
+}
+
+
 //COMMANDS
 exports.clear = (client, message) => {
     cmd.clear(client, message);
