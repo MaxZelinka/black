@@ -133,7 +133,7 @@ exports.embedmsg = async (config, client, message) => {
         if (content.match(regex_embedmessage_cmd) !== null &&
             rest !== null) {
             let channel = args[0].replace(/[<#!>]/gmi, '');
-            let colorcode = admin.to_colorcode(args[1]);
+            let colorcode = parseInt(args[1].replace(/[#]/gm,''), 16);
 
             client.channels.get(channel).send({
                 embed: {
