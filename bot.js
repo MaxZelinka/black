@@ -70,8 +70,8 @@ client.on('warn', warn => {
 
 //Emitted whenever a guild text channel has its webhooks changed.
 client.on('webhookUpdate', webhookUpdate => {
-  log.log('[webhookUpdate] - ' + webhookUpdate);
-  console.log('[webhookUpdate]');
+  //log.log('[webhookUpdate] - ' + webhookUpdate);
+  //console.log('[webhookUpdate]');
 });
 
 /**************************************************************************************************************/
