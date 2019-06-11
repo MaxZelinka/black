@@ -14,7 +14,7 @@ function del_file() {
         files.forEach(file => {
             if (file.match(/\d{4}-\d{2}.\blog\b/gm) !== null) {
                 const date = file.replace(/.\blog\b/gm, '');
-                const ago = moment().subtract(3, 'month');
+                const ago = moment().subtract(6, 'month');
                 if (moment(date).isBefore(ago)) {
                     fs.unlink(dir + file, (err) => {
                         if (err) throw err;
