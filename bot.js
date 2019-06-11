@@ -174,7 +174,7 @@ client.on('raw', async event => {
 
 //Emitted whenever a reaction is added to a cached message.
 client.on('messageReactionAdd', async (reaction, user, message) => {
-  if(reaction.me === true && message !== undefined){
+  if(reaction.me === true && message !== undefined && user.bot === false){
     const channelID = message.channel.id;
     const messageID = message.id;
     const emoteID   = punycode.encode((reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : reaction.emoji.name);
@@ -191,7 +191,7 @@ client.on('messageReactionAdd', async (reaction, user, message) => {
 
 //Emitted whenever a reaction is removed from a cached message.
 client.on('messageReactionRemove', async (reaction, user, message) => {
-  if(reaction.me === true && message !== undefined){
+  if(reaction.me === true && message !== undefined && user.bot === false){
     const channelID = message.channel.id;
     const messageID = message.id;
     const emoteID   = punycode.encode((reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : reaction.emoji.name);
