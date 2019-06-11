@@ -55,15 +55,15 @@ exports.setlolAcc = async (config, client, message) => {
         admin.hasPerm('setlolAcc', message)) {
             
         if(args[0] !== undefined && args[1] !== undefined){
-            if(Object.keys(regio).includes(args[0])){
+            if(Object.keys(regio).includes(args[0].toLowerCase())){
 
-                fetch('https://' + regio[args[0]] + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + args[1] + '?api_key=' + api_key, {
+                fetch('https://' + regio[args[0].toLowerCase()] + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + args[1] + '?api_key=' + api_key, {
                     method: 'GET'
                   })
                   .then(summoner => summoner.json())
                   .then(summoner => {
                     if (summoner.status === undefined || summoner.status.status_code !== 404) {
-                      fetch('https://' + regio[args[0]] + '.api.riotgames.com/lol/league/v4/entries/by-summoner/' + summoner.id + '?api_key=' + api_key, {
+                      fetch('https://' + regio[args[0].toLowerCase()] + '.api.riotgames.com/lol/league/v4/entries/by-summoner/' + summoner.id + '?api_key=' + api_key, {
                           method: 'GET'
                         })
                         .then(rank => rank.json())
