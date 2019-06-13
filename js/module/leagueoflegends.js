@@ -65,10 +65,11 @@ exports.setlolAcc = async (config, client, message) => {
             fetch('https://' + regio[args[0].toLowerCase()] + '.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/' + summoner.id + '?api_key=' + api_key, {
                 method: 'GET'
               })
+              .then(third_party => third_party.json())
               .then(third_party => {
-                if (third_party.status !== 404) {
-                  third_party => third_party.json();
-                  if (third_party.key === summoner.id) {
+                if (third_party.status === undefined) {
+                  console.log(third_party);
+                  if (third_party == summoner.id) {
                     if (summoner.status === undefined || summoner.status.status_code !== 404) {
                       fetch('https://' + regio[args[0].toLowerCase()] + '.api.riotgames.com/lol/league/v4/entries/by-summoner/' + summoner.id + '?api_key=' + api_key, {
                           method: 'GET'
@@ -100,9 +101,11 @@ exports.setlolAcc = async (config, client, message) => {
                     } else {
                       msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Summoner not found.', '#ff0000', 5000);
                     }
+                  } else {
+                    msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Third-Party-Key not set or wrong.\nPlease set the Key to "' + summoner.id + '" and try again.', '#ff0000');
                   }
                 } else {
-                  msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Third-Party-Key not set.\nPlease set the Key to "' + summoner.id + '" and try again.', '#ff0000', 5000);
+                  msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Third-Party-Key not set.\nPlease set the Key to "' + summoner.id + '" and try again.', '#ff0000');
                 }
               }).catch(err => console.log(err));
           }).catch(err => console.log(err));
