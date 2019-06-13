@@ -45,7 +45,7 @@ const regio = {
 };
 
 function get_summoner(region, name) {
-  return fetch('https://' + regio[region] + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + name + '?api_key=' + api_key, {
+  return fetch('https://' + regio[region] + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + encodeURI(name) + '?api_key=' + api_key, {
       method: 'GET'
     })
     .then(summoner => summoner.json())
@@ -105,7 +105,7 @@ exports.get_lol = async (config, client, message) => {
       get_rank(region, summoner.id).then(rank => {
         get_masteries(region, summoner.id).then(async masteries => {
           const thumb = (masteries.length > 0) ? 'http://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/' + (await get_champion(masteries[0].championId))[0].name.replace(/[^\w]/gm, '') + '.png' : '';
-          const opgg = 'https://' + region + '.op.gg/summoner/userName=' + summoner.name.replace(/ /gm,'%20');
+          const opgg = 'https://' + region + '.op.gg/summoner/userName=' + encodeURI(summoner.name);
 
           const champ_0 = (masteries[0] !== undefined) ? (await get_champion(masteries[0].championId))[0].name + ' - ' + new Intl.NumberFormat().format(masteries[0].championPoints) : '';
           const champ_1 = (masteries[1] !== undefined) ? (await get_champion(masteries[1].championId))[0].name + ' - ' + new Intl.NumberFormat().format(masteries[1].championPoints) : '';
