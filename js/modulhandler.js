@@ -100,6 +100,10 @@ exports.get_reaction = async (guild, channelID, messageID, emoteID) => {
 
 //LEAGUE OF LEGENDS
 
+exports.get_lol = async (config, client, message) => {
+    lol.get_lol(config, client, message);
+}
+
 exports.setlolAcc = async (config, client, message) => {
     lol.setlolAcc(config, client, message);
 }

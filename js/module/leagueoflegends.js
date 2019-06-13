@@ -28,6 +28,116 @@ tiers.map(el => {
     });
   } 
 });*/
+const api_key = 'RGAPI-06ae383a-4045-4d80-b1ad-c0306de1e805';
+
+const regio = {
+  'ru': 'ru',
+  'kr': 'kr',
+  'br': 'br1',
+  'oce': 'oc1',
+  'jp': 'jp1',
+  'na': 'na1',
+  'eune': 'eun1',
+  'euw': 'euw1',
+  'tr': 'tr1',
+  'lan': 'la1',
+  'las': 'la2'
+};
+
+function get_summoner(region, name) {
+  return fetch('https://' + regio[region] + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + name + '?api_key=' + api_key, {
+      method: 'GET'
+    })
+    .then(summoner => summoner.json())
+    .catch(err => {
+      if (err) throw err;
+    });
+}
+
+function get_thirdparty(region, summoner_id) {
+  return fetch('https://' + regio[region] + '.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/' + summoner_id + '?api_key=' + api_key, {
+      method: 'GET'
+    })
+    .then(third_party => third_party.json())
+    .catch(err => {
+      if (err) throw err;
+    });
+}
+
+function get_rank(region, summoner_id) {
+  return fetch('https://' + regio[region] + '.api.riotgames.com/lol/league/v4/entries/by-summoner/' + summoner_id + '?api_key=' + api_key, {
+      method: 'GET'
+    })
+    .then(rank => rank.json())
+    .catch(err => {
+      if (err) throw err;
+    });
+}
+
+function get_masteries(region, summoner_id) {
+  return fetch('https://' + regio[region] + '.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/' + summoner_id + '?api_key=' + api_key, {
+      method: 'GET'
+    })
+    .then(masteries => masteries.json())
+    .catch(err => {
+      if (err) throw err;
+    });
+}
+
+function get_champion(id) {
+  return fetch('http://ddragon.leagueoflegends.com/cdn/6.24.1/data/en_US/champion.json')
+    .then(champion => champion.json())
+    .then(champion => Object.values(champion.data).filter(champ => champ.key == id))
+    .catch(err => {
+      if (err) throw err;
+    });
+}
+
+exports.get_lol = async (config, client, message) => {
+  const args = message.content.trim().split(/ +/g);
+  args.shift();
+
+  const region = args[0].toLowerCase();
+  const user = args[1];
+
+  get_summoner(region, user).then(summoner => {
+    if (summoner.status_code === undefined) {
+      get_rank(region, summoner.id).then(rank => {
+        get_masteries(region, summoner.id).then(async masteries => {
+          const thumb = (masteries.length > 0) ? 'http://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/' + (await get_champion(masteries[0].championId))[0].name.replace(/[^\w]/gm, '') + '.png' : '';
+          const opgg = 'https://' + region + '.op.gg/summoner/userName=' + summoner.name.replace(/ /gm,'%20');
+
+          const champ_0 = (masteries[0] !== undefined) ? (await get_champion(masteries[0].championId))[0].name + ' - ' + new Intl.NumberFormat().format(masteries[0].championPoints) : '';
+          const champ_1 = (masteries[1] !== undefined) ? (await get_champion(masteries[1].championId))[0].name + ' - ' + new Intl.NumberFormat().format(masteries[1].championPoints) : '';
+          const champ_2 = (masteries[2] !== undefined) ? (await get_champion(masteries[2].championId))[0].name + ' - ' + new Intl.NumberFormat().format(masteries[2].championPoints) : '';
+
+          const solo_Q = rank.filter(rank => rank.queueType == 'RANKED_SOLO_5x5');
+          const flex_55 = rank.filter(rank => rank.queueType == 'RANKED_FLEX_SR');
+          const flex_TT = rank.filter(rank => rank.queueType == 'RANKED_FLEX_TT');;
+
+          const Embed = new Discord.RichEmbed()
+            .setColor('#000000')
+            .setAuthor(summoner.name, thumb, opgg)
+            .setDescription(champ_0 + '\n' + champ_1 + '\n' + champ_2)
+
+          if (solo_Q.length > 0) {
+            Embed.addField('Solo Q', solo_Q[0].tier.substr(0, 1) + solo_Q[0].tier.substr(1).toLowerCase() + ' ' + solo_Q[0].rank)
+          }
+          if (flex_55.length > 0) {
+            Embed.addField('Flex 5x5', flex_55[0].tier.substr(0, 1) + flex_55[0].tier.substr(1).toLowerCase() + ' ' + flex_55[0].rank)
+          }
+          if (flex_TT.length > 0) {
+            Embed.addField('Flex TT', flex_TT[0].tier.substr(0, 1) + flex_TT[0].tier.substr(1).toLowerCase() + ' ' + flex_TT[0].rank)
+          }
+
+          client.guilds.get('312477482836295681').channels.get('312477482836295681').send(Embed);
+        });
+      })
+    } else {
+      console.log('Cant find summoner.');
+    }
+  });
+}
 
 exports.setlolAcc = async (config, client, message) => {
   const api_key = 'RGAPI-06ae383a-4045-4d80-b1ad-c0306de1e805';

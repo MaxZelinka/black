@@ -101,8 +101,11 @@ exports.handler = async (client, message) => {
                             modhandler.editmsg(config, client, message);
                             break;
                         //LEAGUEOFLEGENDS
-                        case cf_prefix + 'lol':
-                            modhandler.setlolAcc(config, client, message);
+                        case cf_prefix + 'getlol':
+                            modhandler.get_lol(config, client, message);
+                            break;
+                        case cf_prefix + 'setlol':
+                            modhandler.not(client, message);
                             break;
                     }
                 }
