@@ -27,7 +27,7 @@ Patreon Page
 client.on('ready', async () => {
   //log.log('[ready] - bot start');
   console.log('ready');
-
+ 
   function setStatus() {
     status.set_status(client);
   }

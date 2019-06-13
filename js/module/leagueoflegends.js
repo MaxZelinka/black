@@ -1,6 +1,7 @@
 const fetch = require("node-fetch");
 const msg_send = require("../msg_send");
 const admin = require("../admin");
+const Discord = require("discord.js");
 
 //Create Roles
 /*
@@ -46,8 +47,8 @@ const regio = {
 
 function get_summoner(region, name) {
   return fetch('https://' + regio[region] + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + encodeURI(name) + '?api_key=' + api_key, {
-      method: 'GET'
-    })
+    method: 'GET'
+  })
     .then(summoner => summoner.json())
     .catch(err => {
       if (err) throw err;
@@ -56,8 +57,8 @@ function get_summoner(region, name) {
 
 function get_thirdparty(region, summoner_id) {
   return fetch('https://' + regio[region] + '.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/' + summoner_id + '?api_key=' + api_key, {
-      method: 'GET'
-    })
+    method: 'GET'
+  })
     .then(third_party => third_party.json())
     .catch(err => {
       if (err) throw err;
@@ -66,8 +67,8 @@ function get_thirdparty(region, summoner_id) {
 
 function get_rank(region, summoner_id) {
   return fetch('https://' + regio[region] + '.api.riotgames.com/lol/league/v4/entries/by-summoner/' + summoner_id + '?api_key=' + api_key, {
-      method: 'GET'
-    })
+    method: 'GET'
+  })
     .then(rank => rank.json())
     .catch(err => {
       if (err) throw err;
@@ -76,8 +77,8 @@ function get_rank(region, summoner_id) {
 
 function get_masteries(region, summoner_id) {
   return fetch('https://' + regio[region] + '.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/' + summoner_id + '?api_key=' + api_key, {
-      method: 'GET'
-    })
+    method: 'GET'
+  })
     .then(masteries => masteries.json())
     .catch(err => {
       if (err) throw err;
@@ -97,46 +98,52 @@ exports.get_lol = async (config, client, message) => {
   const args = message.content.trim().split(/ +/g);
   args.shift();
 
-  const region = args[0].toLowerCase();
-  const user = args[1];
+  if (args[0] !== undefined && args[1] !== undefined) {
+    const region = args[0].toLowerCase();
+    const user = args[1];
 
-  get_summoner(region, user).then(summoner => {
-    if (summoner.status_code === undefined) {
-      get_rank(region, summoner.id).then(rank => {
-        get_masteries(region, summoner.id).then(async masteries => {
-          const thumb = (masteries.length > 0) ? 'http://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/' + (await get_champion(masteries[0].championId))[0].name.replace(/[^\w]/gm, '') + '.png' : '';
-          const opgg = 'https://' + region + '.op.gg/summoner/userName=' + encodeURI(summoner.name);
+    get_summoner(region, user).then(summoner => {
+      if (summoner.status_code === undefined) {
+        get_rank(region, summoner.id).then(rank => {
+          get_masteries(region, summoner.id).then(async masteries => {
+            const thumb = (masteries.length > 0) ? 'http://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/' + (await get_champion(masteries[0].championId))[0].name.replace(/[^\w]/gm, '') + '.png' : '';
+            const opgg = 'https://' + region + '.op.gg/summoner/userName=' + encodeURI(summoner.name);
 
-          const champ_0 = (masteries[0] !== undefined) ? (await get_champion(masteries[0].championId))[0].name + ' - ' + new Intl.NumberFormat().format(masteries[0].championPoints) : '';
-          const champ_1 = (masteries[1] !== undefined) ? (await get_champion(masteries[1].championId))[0].name + ' - ' + new Intl.NumberFormat().format(masteries[1].championPoints) : '';
-          const champ_2 = (masteries[2] !== undefined) ? (await get_champion(masteries[2].championId))[0].name + ' - ' + new Intl.NumberFormat().format(masteries[2].championPoints) : '';
+            const champ_0 = (masteries[0] !== undefined) ? (await get_champion(masteries[0].championId))[0].name + ' (' + new Intl.NumberFormat().format(masteries[0].championPoints) + ') | ' : '';
+            const champ_1 = (masteries[1] !== undefined) ? (await get_champion(masteries[1].championId))[0].name + ' ( ' + new Intl.NumberFormat().format(masteries[1].championPoints) + ') | ' : '';
+            const champ_2 = (masteries[2] !== undefined) ? (await get_champion(masteries[2].championId))[0].name + ' ( ' + new Intl.NumberFormat().format(masteries[2].championPoints) + ') ' : '';
 
-          const solo_Q = rank.filter(rank => rank.queueType == 'RANKED_SOLO_5x5');
-          const flex_55 = rank.filter(rank => rank.queueType == 'RANKED_FLEX_SR');
-          const flex_TT = rank.filter(rank => rank.queueType == 'RANKED_FLEX_TT');;
+            const solo_Q = rank.filter(rank => rank.queueType == 'RANKED_SOLO_5x5');
+            const flex_55 = rank.filter(rank => rank.queueType == 'RANKED_FLEX_SR');
+            const flex_TT = rank.filter(rank => rank.queueType == 'RANKED_FLEX_TT');;
 
-          const Embed = new Discord.RichEmbed()
-            .setColor('#000000')
-            .setAuthor(summoner.name, thumb, opgg)
-            .setDescription(champ_0 + '\n' + champ_1 + '\n' + champ_2)
+            const Embed = new Discord.RichEmbed()
+              .setColor('#000000')
+              .setAuthor(summoner.name, thumb, opgg)
+              .setDescription(champ_0 + champ_1 + champ_2);
 
-          if (solo_Q.length > 0) {
-            Embed.addField('Solo Q', solo_Q[0].tier.substr(0, 1) + solo_Q[0].tier.substr(1).toLowerCase() + ' ' + solo_Q[0].rank)
-          }
-          if (flex_55.length > 0) {
-            Embed.addField('Flex 5x5', flex_55[0].tier.substr(0, 1) + flex_55[0].tier.substr(1).toLowerCase() + ' ' + flex_55[0].rank)
-          }
-          if (flex_TT.length > 0) {
-            Embed.addField('Flex TT', flex_TT[0].tier.substr(0, 1) + flex_TT[0].tier.substr(1).toLowerCase() + ' ' + flex_TT[0].rank)
-          }
+            if (solo_Q.length > 0) {
+              Embed.addField('Solo Q', solo_Q[0].tier.substr(0, 1) + solo_Q[0].tier.substr(1).toLowerCase() + ' ' + solo_Q[0].rank)
+            }
+            if (flex_55.length > 0) {
+              Embed.addField('Flex 5x5', flex_55[0].tier.substr(0, 1) + flex_55[0].tier.substr(1).toLowerCase() + ' ' + flex_55[0].rank)
+            }
+            if (flex_TT.length > 0) {
+              Embed.addField('Flex TT', flex_TT[0].tier.substr(0, 1) + flex_TT[0].tier.substr(1).toLowerCase() + ' ' + flex_TT[0].rank)
+            }
 
-          client.guilds.get('312477482836295681').channels.get('312477482836295681').send(Embed);
-        });
-      })
-    } else {
-      console.log('Cant find summoner.');
-    }
-  });
+            message.channel.send(Embed);
+
+            //client.guilds.get('312477482836295681').channels.get('312477482836295681').send(Embed);
+          });
+        })
+      } else {
+        console.log('Cant find summoner.');
+      }
+    });
+  } else {
+    msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'missing arguments.', '#ff0000', 5000);
+  }
 }
 
 exports.setlolAcc = async (config, client, message) => {
@@ -168,13 +175,13 @@ exports.setlolAcc = async (config, client, message) => {
       if (Object.keys(regio).includes(args[0].toLowerCase())) {
 
         fetch('https://' + regio[args[0].toLowerCase()] + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + args[1] + '?api_key=' + api_key, {
-            method: 'GET'
-          })
+          method: 'GET'
+        })
           .then(summoner => summoner.json())
           .then(summoner => {
             fetch('https://' + regio[args[0].toLowerCase()] + '.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/' + summoner.id + '?api_key=' + api_key, {
-                method: 'GET'
-              })
+              method: 'GET'
+            })
               .then(third_party => third_party.json())
               .then(third_party => {
                 if (third_party.status === undefined) {
@@ -182,8 +189,8 @@ exports.setlolAcc = async (config, client, message) => {
                   if (third_party == summoner.id) {
                     if (summoner.status === undefined || summoner.status.status_code !== 404) {
                       fetch('https://' + regio[args[0].toLowerCase()] + '.api.riotgames.com/lol/league/v4/entries/by-summoner/' + summoner.id + '?api_key=' + api_key, {
-                          method: 'GET'
-                        })
+                        method: 'GET'
+                      })
                         .then(rank => rank.json())
                         .then(rank => {
                           if (rank.status === undefined) {
