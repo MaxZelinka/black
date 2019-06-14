@@ -175,7 +175,7 @@ exports.get_lol = async (config, client, message) => {
               });
             })
           } else {
-            console.log('Cant find summoner.');
+            msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Cant find summoner.', '#ff0000', 5000);
           }
         }).catch(err => {
           log.log(err);
@@ -188,25 +188,10 @@ exports.get_lol = async (config, client, message) => {
 }
 
 exports.setlolAcc = async (config, client, message) => {
-  const api_key = 'RGAPI-06ae383a-4045-4d80-b1ad-c0306de1e805';
   const args = message.content.trim().split(/ +/g);
   args.shift();
 
   //Problem: Fake-Acc can be used.
-
-  const regio = {
-    'ru': 'ru',
-    'kr': 'kr',
-    'br': 'br1',
-    'oce': 'oc1',
-    'jp': 'jp1',
-    'na': 'na1',
-    'eune': 'eun1',
-    'euw': 'euw1',
-    'tr': 'tr1',
-    'lan': 'la1',
-    'las': 'la2'
-  };
 
   if (admin.isAdmin(message) === true ||
     admin.isMod(message, config) === true ||

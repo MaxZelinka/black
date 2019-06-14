@@ -132,24 +132,27 @@ exports.embedmsg = async (config, client, message) => {
 
         if (content.match(regex_embedmessage_cmd) !== null &&
             rest !== null) {
-            let channel = args[0].replace(/[<#!>]/gmi, '');
-            let colorcode = parseInt(args[1].replace(/[#]/gm,''), 16);
+            if (rest[0].length <= 52 && rest[1].length <= 1026) {
+                let channel = args[0].replace(/[<#!>]/gmi, '');
+                let colorcode = parseInt(args[1].replace(/[#]/gm, ''), 16);
 
-            client.channels.get(channel).send({
-                embed: {
-                    color: colorcode,
-                    fields: [{
-                        name: rest[0].replace(/\"/gm, ''),
-                        value: rest[1].replace(/\"/gm, '')
-                    }]
-                }
-            }).then((msg) => {
-                let link = 'https://discordapp.com/channels/' + message.guild.id + '/' + channel + '/' + msg.id;
-                msg_send.embedMessage(client, message.channel.id, 'Embed Message', 'created. \n' + link, '#000000');
-            }).catch((error) => {
-                log.log('[embedmsg] - ' + message.guild.id + ' : ' + error);
-            });
-
+                client.channels.get(channel).send({
+                    embed: {
+                        color: colorcode,
+                        fields: [{
+                            name: rest[0].replace(/\"/gm, ''),
+                            value: rest[1].replace(/\"/gm, '')
+                        }]
+                    }
+                }).then((msg) => {
+                    let link = 'https://discordapp.com/channels/' + message.guild.id + '/' + channel + '/' + msg.id;
+                    msg_send.embedMessage(client, message.channel.id, 'Embed Message', 'created. \n' + link, '#000000');
+                }).catch((error) => {
+                    log.log('[embedmsg] - ' + message.guild.id + ' : ' + error);
+                });
+            } else {
+                msg_send.embedMessage(client, message.channel.id, 'Embed Message', 'max chars:\n title: 50 \n body: 1024', '#ff0000', 5000); 
+            }
         } else {
             msg_send.embedMessage(client, message.channel.id, 'Embed Message', 'missing arguments.', '#ff0000', 5000);
         }

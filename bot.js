@@ -106,39 +106,26 @@ client.on('guildDelete', async guild => {
 //Emitted whenever a user joins a guild.
 client.on('guildMemberAdd', async member => {
   db.get_config(member.guild).then((config) => {
-    console.log(config);
-    /*
-    const chn = client.guilds.get('581147107033874455').channels.get('581147107487121439');
-    const server_icon = (member.guild.iconURL !== null) ? member.guild.iconURL : '';
+    if (config !== undefined && config.length >= 0) {
+      if (config[0].welcome === 1
+        && config[0].welcome_channel !== null
+        && config[0].botlog !== null) {
 
-    if (member.user.bot === false) {
-        const welcomemsg = new Discord.RichEmbed()
+        const chn = member.guild.channels.get(config[0].welcome_channel);
+        const server_icon = (member.guild.iconURL !== null) ? member.guild.iconURL : '';
+        
+        if (member.user.bot === false) {
+          const welcomemsg = new Discord.RichEmbed()
             .setColor('#000000')
             .setAuthor('Welcome', server_icon)
             .setDescription(member.user.toString() + ' Welcome to the LPGG-Discord, enjoy your stay!')
             .setImage('https://steamuserimages-a.akamaihd.net/ugc/845963567852349042/400307109ECE5B0975C57845FFFB2B5C023A3841/');
-        chn.send(welcomemsg);
-    } else {
-        const welcomemsg = new Discord.RichEmbed()
-            .setColor('#000000')
-            .setDescription(member.user.toString() + ' (bot) joined')
-        chn.send(welcomemsg);
-    }
-    */
-    if (config !== undefined && config.length >= 0) {
-      //if module is active
-      if (config[0].welcome === 1 && config[0].welcomelog !== null) {
-        let user = member.user.toString();
-        let server = member.guild.name;
-        let welcomelog = config[0].welcome_channel;
-        let welcomemsg = config[0].welcomemsg.replace(/{user}/gmi, user).replace(/{server}/gmi, server);
-
-        if (member.user.bot === false) {
-          member.guild.channels.get(welcomelog).send(welcomemsg, {
-            file: 'https://media.discordapp.net/attachments/416512556975521793/560400583031259136/lly3amxgwsc21.jpg'
-          });
+          chn.send(welcomemsg);
         } else {
-          member.guild.channels.get(config.botlog).send(user + '(bot) joined.');
+          const welcomemsg = new Discord.RichEmbed()
+            .setColor('#000000')
+            .setDescription(member.user.toString() + ' (bot) joined');
+          chn.send(welcomemsg);
         }
       }
     }

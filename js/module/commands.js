@@ -16,9 +16,8 @@ exports.clear = (client, message) => {
       admin.hasPerm('serverinfo', message)) {
 
       if (args[0].match(/[\d]*/gm) !== null) {
-        message.channel.bulkDelete(args[0]).then(messages => {
-          msg_send.embedMessage(client, message.channel.id, 'clear', messages.size + ' messages deleted.', '000000', 5000);
-        });
+        message.channel.bulkDelete(args[0]);
+        msg_send.embedMessage(client, message.channel.id, 'clear', args[0] + ' messages deleted.', '000000', 5000);
       } else {
         msg_send.embedMessage(client, message.channel.id, 'clear', args[0] + ' isnt a number.', 'ff0000', 5000);
       }
