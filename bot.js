@@ -10,7 +10,7 @@ const status = require("./js/status");
 const db = require("./js/db");
 const msghandler = require("./js/messagehandler");
 const modhandler = require("./js/modulhandler");
-const msg_send  = require("./js/msg_send");
+const msg_send = require("./js/msg_send");
 
 //Bot-Settings
 let StatusInterval = JSON.parse(fs.readFileSync('config.json', 'utf8')).statusIntervall;
@@ -27,7 +27,7 @@ Patreon Page
 client.on('ready', async () => {
   //log.log('[ready] - bot start');
   console.log('ready');
- 
+
   function setStatus() {
     status.set_status(client);
   }
@@ -106,6 +106,25 @@ client.on('guildDelete', async guild => {
 //Emitted whenever a user joins a guild.
 client.on('guildMemberAdd', async member => {
   db.get_config(member.guild).then((config) => {
+    console.log(config);
+    /*
+    const chn = client.guilds.get('581147107033874455').channels.get('581147107487121439');
+    const server_icon = (member.guild.iconURL !== null) ? member.guild.iconURL : '';
+
+    if (member.user.bot === false) {
+        const welcomemsg = new Discord.RichEmbed()
+            .setColor('#000000')
+            .setAuthor('Welcome', server_icon)
+            .setDescription(member.user.toString() + ' Welcome to the LPGG-Discord, enjoy your stay!')
+            .setImage('https://steamuserimages-a.akamaihd.net/ugc/845963567852349042/400307109ECE5B0975C57845FFFB2B5C023A3841/');
+        chn.send(welcomemsg);
+    } else {
+        const welcomemsg = new Discord.RichEmbed()
+            .setColor('#000000')
+            .setDescription(member.user.toString() + ' (bot) joined')
+        chn.send(welcomemsg);
+    }
+    */
     if (config !== undefined && config.length >= 0) {
       //if module is active
       if (config[0].welcome === 1 && config[0].welcomelog !== null) {
@@ -154,7 +173,9 @@ const events = {
 //handle raw events (for e.g. uncached messages)
 client.on('raw', async event => {
   if (!events.hasOwnProperty(event.t)) return;
-  const { d: data } = event;
+  const {
+    d: data
+  } = event;
   const user = client.users.get(data.user_id);
   const channel = client.channels.get(data.channel_id) || await user.createDM();
 
@@ -174,14 +195,14 @@ client.on('raw', async event => {
 
 //Emitted whenever a reaction is added to a cached message.
 client.on('messageReactionAdd', async (reaction, user, message) => {
-  if(reaction.me === true && message !== undefined && user.bot === false){
+  if (reaction.me === true && message !== undefined && user.bot === false) {
     const channelID = message.channel.id;
     const messageID = message.id;
-    const emoteID   = punycode.encode((reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : reaction.emoji.name);
+    const emoteID = punycode.encode((reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : reaction.emoji.name);
 
     const response = await modhandler.get_reaction(message.guild, channelID, messageID, emoteID);
 
-    if(response !== undefined && response.length > 0){
+    if (response !== undefined && response.length > 0) {
       message.guild.members.get(user.id).addRole(response[0].RoleID).catch((error) => {
         console.log(error);
       });
@@ -191,16 +212,16 @@ client.on('messageReactionAdd', async (reaction, user, message) => {
 
 //Emitted whenever a reaction is removed from a cached message.
 client.on('messageReactionRemove', async (reaction, user, message) => {
-  if(reaction.me === true && message !== undefined && user.bot === false){
+  if (reaction.me === true && message !== undefined && user.bot === false) {
     const channelID = message.channel.id;
     const messageID = message.id;
-    const emoteID   = punycode.encode((reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : reaction.emoji.name);
+    const emoteID = punycode.encode((reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : reaction.emoji.name);
 
     const response = await modhandler.get_reaction(message.guild, channelID, messageID, emoteID);
 
-    if(response !== undefined && response.length > 0){
+    if (response !== undefined && response.length > 0) {
       message.guild.members.get(user.id).removeRole(response[0].RoleID).catch((error) => {
-        console.log(error);       
+        console.log(error);
       });
     }
   }
