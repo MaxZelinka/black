@@ -71,13 +71,21 @@ __Reaction Role__`;
 **reactionid** : show all currently used reactionIDs
 **embedmsg** [channel] "[title]" "[body]": create an embedmessage
 **editmsg** [channel] [messageID] title/body "[value]": change embedmessage value
+
+__League of Legends__`;
+
+help['lol'] = `
+**getlol** [region] [name]: get LOL Information
+**setlol** [region] [name]: set Role with given LOL Information
 `;
 
     msg_send.embedMessage(client, message.channel.id, 'Help', 'Inbox!', '000000');
 
     message.author.send(help['settings']).then(() => {
         message.author.send(help['modul']).then(() => {
-            message.author.send(help['reaction']);
+            message.author.send(help['reaction']).then(() => {
+                message.author.send(help['lol']);
+            });
         });
     });
 }

@@ -121,65 +121,69 @@ function get_champion(id) {
 }
 
 exports.get_lol = async (config, client, message) => {
-  const args = message.content.trim().split(/ +/g);
-  args.shift();
-
-  if (args[0] !== undefined && args[1] !== undefined) {
-    const region = args[0].toLowerCase();
+  if (admin.isAdmin(message) === true ||
+    admin.isMod(message, config) === true ||
+    admin.hasPerm('get_lol', message)) {
+    const args = message.content.trim().split(/ +/g);
     args.shift();
-    const user = args.toString().replace(/[,]/gm,' ');
 
-    const loading = new Discord.RichEmbed()
-      .setColor('#000')
-      .setURL('https://discord.js.org/')
-      .setAuthor('loading', 'https://media1.tenor.com/images/50337fc1e603a4726067ed3a5127ee9e/tenor.gif?itemid=5488360', 'https://discord.js.org')
-      .setDescription(user);
+    if (args[0] !== undefined && args[1] !== undefined) {
+      const region = args[0].toLowerCase();
+      args.shift();
+      const user = args.toString().replace(/[,]/gm, ' ');
 
-    message.channel.send(loading).then(msg => {
-      get_summoner(region, user).then(summoner => {
-        if (summoner.id !== undefined) {
-          get_rank(region, summoner.id).then(rank => {
-            get_masteries(region, summoner.id).then(async masteries => {
-              const thumb = (masteries.length > 0) ? 'http://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/' + (await get_champion(masteries[0].championId))[0].name.replace(/[^\w]/gm, '') + '.png' : '';
-              const opgg = 'https://' + region + '.op.gg/summoner/userName=' + encodeURI(summoner.name);
+      const loading = new Discord.RichEmbed()
+        .setColor('#000')
+        .setURL('https://discord.js.org/')
+        .setAuthor('loading', 'https://media1.tenor.com/images/50337fc1e603a4726067ed3a5127ee9e/tenor.gif?itemid=5488360', 'https://discord.js.org')
+        .setDescription(user);
 
-              const champ_0 = (masteries[0] !== undefined) ? (await get_champion(masteries[0].championId))[0].name + ' (' + new Intl.NumberFormat().format(masteries[0].championPoints) + ') | ' : '';
-              const champ_1 = (masteries[1] !== undefined) ? (await get_champion(masteries[1].championId))[0].name + ' ( ' + new Intl.NumberFormat().format(masteries[1].championPoints) + ') | ' : '';
-              const champ_2 = (masteries[2] !== undefined) ? (await get_champion(masteries[2].championId))[0].name + ' ( ' + new Intl.NumberFormat().format(masteries[2].championPoints) + ') ' : '';
+      message.channel.send(loading).then(msg => {
+        get_summoner(region, user).then(summoner => {
+          if (summoner.id !== undefined) {
+            get_rank(region, summoner.id).then(rank => {
+              get_masteries(region, summoner.id).then(async masteries => {
+                const thumb = (masteries.length > 0) ? 'http://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/' + (await get_champion(masteries[0].championId))[0].name.replace(/[^\w]/gm, '') + '.png' : '';
+                const opgg = 'https://' + region + '.op.gg/summoner/userName=' + encodeURI(summoner.name);
 
-              const solo_Q = rank.filter(rank => rank.queueType == 'RANKED_SOLO_5x5');
-              const flex_55 = rank.filter(rank => rank.queueType == 'RANKED_FLEX_SR');
-              const flex_TT = rank.filter(rank => rank.queueType == 'RANKED_FLEX_TT');;
+                const champ_0 = (masteries[0] !== undefined) ? (await get_champion(masteries[0].championId))[0].name + ' (' + new Intl.NumberFormat().format(masteries[0].championPoints) + ') | ' : '';
+                const champ_1 = (masteries[1] !== undefined) ? (await get_champion(masteries[1].championId))[0].name + ' ( ' + new Intl.NumberFormat().format(masteries[1].championPoints) + ') | ' : '';
+                const champ_2 = (masteries[2] !== undefined) ? (await get_champion(masteries[2].championId))[0].name + ' ( ' + new Intl.NumberFormat().format(masteries[2].championPoints) + ') ' : '';
 
-              const Embed = new Discord.RichEmbed()
-                .setColor('#000000')
-                .setAuthor(summoner.name, thumb, opgg)
-                .setDescription(champ_0 + champ_1 + champ_2);
+                const solo_Q = rank.filter(rank => rank.queueType == 'RANKED_SOLO_5x5');
+                const flex_55 = rank.filter(rank => rank.queueType == 'RANKED_FLEX_SR');
+                const flex_TT = rank.filter(rank => rank.queueType == 'RANKED_FLEX_TT');;
 
-              if (solo_Q.length > 0) {
-                Embed.addField('Solo Q', solo_Q[0].tier.substr(0, 1) + solo_Q[0].tier.substr(1).toLowerCase() + ' ' + solo_Q[0].rank)
-              }
-              if (flex_55.length > 0) {
-                Embed.addField('Flex 5x5', flex_55[0].tier.substr(0, 1) + flex_55[0].tier.substr(1).toLowerCase() + ' ' + flex_55[0].rank)
-              }
-              if (flex_TT.length > 0) {
-                Embed.addField('Flex TT', flex_TT[0].tier.substr(0, 1) + flex_TT[0].tier.substr(1).toLowerCase() + ' ' + flex_TT[0].rank)
-              }
+                const Embed = new Discord.RichEmbed()
+                  .setColor('#000000')
+                  .setAuthor(summoner.name, thumb, opgg)
+                  .setDescription(champ_0 + champ_1 + champ_2);
 
-              msg.delete().then(() => {
-                message.channel.send(Embed);
+                if (solo_Q.length > 0) {
+                  Embed.addField('Solo Q', solo_Q[0].tier.substr(0, 1) + solo_Q[0].tier.substr(1).toLowerCase() + ' ' + solo_Q[0].rank)
+                }
+                if (flex_55.length > 0) {
+                  Embed.addField('Flex 5x5', flex_55[0].tier.substr(0, 1) + flex_55[0].tier.substr(1).toLowerCase() + ' ' + flex_55[0].rank)
+                }
+                if (flex_TT.length > 0) {
+                  Embed.addField('Flex TT', flex_TT[0].tier.substr(0, 1) + flex_TT[0].tier.substr(1).toLowerCase() + ' ' + flex_TT[0].rank)
+                }
+
+                msg.delete().then(() => {
+                  message.channel.send(Embed);
+                });
               });
-            });
-          })
-        } else {
-          console.log('Cant find summoner.');
-        }
-      }).catch(err => {
-        log.log(err);
-      });
-    })
-  } else {
-    msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'missing arguments.', '#ff0000', 5000);
+            })
+          } else {
+            console.log('Cant find summoner.');
+          }
+        }).catch(err => {
+          log.log(err);
+        });
+      })
+    } else {
+      msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'missing arguments.', '#ff0000', 5000);
+    }
   }
 }
 
