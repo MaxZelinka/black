@@ -29,14 +29,17 @@ async function conn() {
 
 async function _query(query) {
     //console.log(query);
-    return conn().then(async (conn) => {
-        let result = await conn.query(query);
-        conn.end();
-        return result;
-    }).catch((error) => {
-        log.log('[query] (' + query + ') - ' + error);
-        return undefined;
-    });
+    try {
+        return conn().then(async (conn) => {
+            let result = await conn.query(query);
+            conn.end();
+            return result;
+        }).catch((error) => {
+            throw error;
+        });
+    } catch (err) {
+        log.log('[query] (' + query + ') - ' + err);
+    }
 }
 
 exports.query = async (query) => {
@@ -53,12 +56,13 @@ exports.get_config = async (guild) => {
 
 exports.set_config = async (guild) => {
     const general = _query(`INSERT INTO general (ServerID, ServerName, Prefix, active)
-    VALUES('` + guild.id + `','` + guild.name + `','?b', 1)`).then(() => {
-         _query(`INSERT INTO config (ServerID, welcomemsg)
+    VALUES('` + guild.id + `','` + guild.name + `','?b', 1)`)
+        .then(() => {
+            _query(`INSERT INTO config (ServerID, welcomemsg)
         VALUES('` + guild.id + `','{user} welcome to the server! :)')`);
-        _query(`INSERT INTO module (ServerID)
+            _query(`INSERT INTO module (ServerID)
         VALUES('` + guild.id + `')`);
-    });
+        });
     if (general !== undefined) {
         return true;
     } else {
