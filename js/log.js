@@ -4,6 +4,7 @@ const fs = require('fs');
 const dir = './logs/';
 
 exports.log = function (data) {
+    console.log(data);
     fs.appendFile(dir + moment().format('YYYY-MM') + '.log', moment().format('YYYY.MM.DD - HH:mm:ss') + '\t' + data + '\r\n', function (err) {
         if (err) throw err;
     });

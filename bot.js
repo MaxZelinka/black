@@ -113,7 +113,6 @@ client.on('guildMemberAdd', async member => {
 
         const chn = member.guild.channels.get(config[0].welcome_channel);
         const server_icon = (member.guild.iconURL !== null) ? member.guild.iconURL : '';
-        
         if (member.user.bot === false) {
           const welcomemsg = new Discord.RichEmbed()
             .setColor('#000000')
