@@ -39,8 +39,7 @@ client.on('ready', async () => {
 
 //Emitted whenever the client's WebSocket encounters a connection error.
 client.on('error', error => {
-  log.log('[error] - ' + error);
-  console.log('[error]');
+  log.log('[error]');
   console.log(error);
 });
 
@@ -52,8 +51,8 @@ client.on('rateLimit', rateLimit => {
 
 //Emitted when the client's WebSocket disconnects and will no longer attempt to reconnect.
 client.on('disconnect', disconnect => {
-  log.log('[disconnect] - ' + disconnect);
-  console.log('[disconnect]');
+  log.log('[disconnect]');
+  console.log(disconnect);
 });
 
 //Emitted whenever the client tries to reconnect to the WebSocket.
@@ -64,8 +63,8 @@ client.on('reconnecting', reconnecting => {
 
 //Emitted for general warnings.
 client.on('warn', warn => {
-  log.log('[warn] - ' + warn);
-  console.log('[warn]');
+  log.log('[warn]');
+  console.log(warn);
 });
 
 //Emitted whenever a guild text channel has its webhooks changed.

@@ -21,11 +21,6 @@ exports.addrole = async (config, client, message) => {
             const emoteID = punycode.encode((args[2].match(/[<>]/gm) !== null) ? args[2].replace(/^<>/gm, '') : args[2]);
             const roleID = args[3].replace(/[<@&>]/gm, '');
 
-            //const encode = punycode.encode(emoteID);
-            //const decode = punycode.decode(encode);
-
-            //console.log(decode);
-
             if (await message.guild.roles.find(el => el.id == roleID) !== null) {
                 admin.get_message(client, channelID, messageID).then((found) => {
                     db.set_reaction(message.guild, channelID, messageID, emoteID, roleID).then((reaction_ID) => {
@@ -119,6 +114,7 @@ exports.reactionid = async (config, client, message) => {
 }
 
 exports.embedmsg = async (config, client, message) => {
+    //?bembedmsg #💰-server-support #000 "Support" "We are grateful for every support we can get. :)" "img"
     const args = message.content.trim().split(/ +/g);
     args.shift();
     if (admin.isAdmin(message) === true ||
@@ -132,9 +128,19 @@ exports.embedmsg = async (config, client, message) => {
 
         if (content.match(regex_embedmessage_cmd) !== null &&
             rest !== null) {
-            if (rest[0].length <= 52 && rest[1].length <= 1026) {
+            if (rest[0].length <= 1026 && rest[1].length <= 1026) {
                 let channel = args[0].replace(/[<#!>]/gmi, '');
                 let colorcode = parseInt(args[1].replace(/[#]/gm, ''), 16);
+
+                /*
+                const img = content.replace(regex_embedmessage_cmdv, '').replace(/[" ]/gmi, '');
+                const embedmsg = new Discord.RichEmbed()
+                .setColor(args[1])
+                .setAuthor(rest[0].replace(/\"/gm, ''))
+                .setDescription(rest[1].replace(/\"/gm, ''))
+                .setImage(img);
+                client.channels.get(channel).send(embedmsg);
+                */
 
                 client.channels.get(channel).send({
                     embed: {
@@ -151,7 +157,7 @@ exports.embedmsg = async (config, client, message) => {
                     log.log('[embedmsg] - ' + message.guild.id + ' : ' + error);
                 });
             } else {
-                msg_send.embedMessage(client, message.channel.id, 'Embed Message', 'max chars:\n title: 50 \n body: 1024', '#ff0000', 5000); 
+                msg_send.embedMessage(client, message.channel.id, 'Embed Message', 'max chars:\n title: 50 \n body: 1024', '#ff0000', 5000);
             }
         } else {
             msg_send.embedMessage(client, message.channel.id, 'Embed Message', 'missing arguments.', '#ff0000', 5000);
