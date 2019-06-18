@@ -157,7 +157,7 @@ exports.embedmsg = async (config, client, message) => {
                     log.log('[embedmsg] - ' + message.guild.id + ' : ' + error);
                 });
             } else {
-                msg_send.embedMessage(client, message.channel.id, 'Embed Message', 'max chars:\n title: 50 \n body: 1024', '#ff0000', 5000);
+                msg_send.embedMessage(client, message.channel.id, 'Embed Message', 'max chars:\n title: 1024 \n body: 1024', '#ff0000', 5000);
             }
         } else {
             msg_send.embedMessage(client, message.channel.id, 'Embed Message', 'missing arguments.', '#ff0000', 5000);
@@ -182,22 +182,26 @@ exports.editmsg = async (config, client, message) => {
             const val = rest.toString().match(/("[^"]*")/g).toString().replace(/["]/g, '');
             const channelID = args[0].replace(/[<#>]/g, '');
 
-            client.channels.get(channelID).fetchMessage(args[1]).then((msg) => {
-                msg.edit({
-                    embed: {
-                        color: msg.embeds[0].color,
-                        fields: [{
-                            name: (mod === 'title') ? val : msg.embeds[0].fields[0].name,
-                            value: (mod === 'body') ? val : msg.embeds[0].fields[0].value
-                        }]
-                    }
-                }).then(() => {
-                    let link = 'https://discordapp.com/channels/' + message.guild.id + '/' + channelID + '/' + msg.id;
-                    msg_send.embedMessage(client, message.channel.id, 'Embed Message', 'edited.\n' + link, 000);
+            if(val.length <= 1024){
+                client.channels.get(channelID).fetchMessage(args[1]).then((msg) => {
+                    msg.edit({
+                        embed: {
+                            color: msg.embeds[0].color,
+                            fields: [{
+                                name: (mod === 'title') ? val : msg.embeds[0].fields[0].name,
+                                value: (mod === 'body') ? val : msg.embeds[0].fields[0].value
+                            }]
+                        }
+                    }).then(() => {
+                        let link = 'https://discordapp.com/channels/' + message.guild.id + '/' + channelID + '/' + msg.id;
+                        msg_send.embedMessage(client, message.channel.id, 'Embed Message', 'edited.\n' + link, 000);
+                    });
+                }).catch((error) => {
+                    log.log('[editmsg] - ' + message.guild.id + ' : ' + error);
                 });
-            }).catch((error) => {
-                log.log('[editmsg] - ' + message.guild.id + ' : ' + error);
-            });
+            }  else {
+                msg_send.embedMessage(client, message.channel.id, 'Embed Message', 'max chars:\n title: 1024 \n body: 1024', '#ff0000', 5000);
+            }            
         }
     }
 }

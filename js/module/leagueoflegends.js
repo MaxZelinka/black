@@ -8,18 +8,6 @@ const log = require("../log");
 /*
 const guild = client.guilds.get('581147107033874455');
 
-const tiers = [
-  'Challenger',
-  'Grandmaster',
-  'Master',
-  'Diamond',
-  'Platinum',
-  'Gold',
-  'Silver',
-  'Bronze',
-  'Iron'
-];
-
 let roles = guild.roles.filter(el => tiers.includes(el.name));
 roles = roles.map(el => el.name);
 
@@ -57,6 +45,25 @@ const img_url = {
   'Bronze': 'https://i.ibb.co/D13bBRN/Emblem-Bronze.png',
   'Iron': 'https://i.ibb.co/8PN8YHm/Emblem-Iron.png'
 }
+
+const ranks = {
+  'I': 1,
+  'II': 2,
+  'III': 3,
+  'IV': 4
+}
+
+const tiers = [
+  'Challenger',
+  'Grandmaster',
+  'Master',
+  'Diamond',
+  'Platinum',
+  'Gold',
+  'Silver',
+  'Bronze',
+  'Iron'
+];
 
 function get_summoner(region, name) {
   try {
@@ -172,25 +179,39 @@ exports.get_lol = async (config, client, message) => {
                   .setDescription(champ_0 + '\n' + champ_1 + '\n' + champ_2);
 
                 if (solo_Q.length > 0) {
-                  Embed.addField('Solo Q', solo_Q[0].tier.substr(0, 1) + solo_Q[0].tier.substr(1).toLowerCase() + ' ' + solo_Q[0].rank);
+                  const wr = (parseFloat((solo_Q[0].wins / (solo_Q[0].wins + solo_Q[0].losses)) * 100).toFixed(2)).replace(/[.]/gm, ',');
+                  Embed.addField('Ranked Solo', solo_Q[0].tier.substr(0, 1) + solo_Q[0].tier.substr(1).toLowerCase() + ' ' + ranks[solo_Q[0].rank] + ' (' + solo_Q[0].leaguePoints + ' LP)' +
+                    '\n' + wr + '% / ' + solo_Q[0].wins + 'W ' + solo_Q[0].losses + 'L');
+
                   Embed.setThumbnail(img_url[solo_Q[0].tier.substr(0, 1) + solo_Q[0].tier.substr(1).toLowerCase()]);
                 }
                 if (flex_55.length > 0) {
-                  Embed.addField('Flex 5x5', flex_55[0].tier.substr(0, 1) + flex_55[0].tier.substr(1).toLowerCase() + ' ' + flex_55[0].rank);
+                  const wr = (parseFloat((flex_55[0].wins / (flex_55[0].wins + flex_55[0].losses)) * 100).toFixed(2)).replace(/[.]/gm, ',');
+                  Embed.addField('Ranked Flex 5v5', flex_55[0].tier.substr(0, 1) + flex_55[0].tier.substr(1).toLowerCase() + ' ' + ranks[flex_55[0].rank] + ' (' + flex_55[0].leaguePoints + ' LP)' +
+                    '\n' + wr + '% / ' + flex_55[0].wins + 'W ' + flex_55[0].losses + 'L');
                 }
+
                 if (flex_TT.length > 0) {
-                  Embed.addField('Flex TT', flex_TT[0].tier.substr(0, 1) + flex_TT[0].tier.substr(1).toLowerCase() + ' ' + flex_TT[0].rank);
+                  const wr = (parseFloat((flex_TT[0].wins / (flex_TT[0].wins + flex_TT[0].losses)) * 100).toFixed(2)).replace(/[.]/gm, ',');
+                  Embed.addField('Ranked Flex 3v3', flex_TT[0].tier.substr(0, 1) + flex_TT[0].tier.substr(1).toLowerCase() + ' ' + ranks[flex_TT[0].rank] + ' (' + flex_TT[0].leaguePoints + ' LP)' +
+                    '\n' + wr + '% / ' + flex_TT[0].wins + 'W ' + flex_TT[0].losses + 'L');
                 }
 
                 msg.delete().then(() => {
                   message.channel.send(Embed);
                 });
               });
-            })
+            }).catch(err => {
+              msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Cant get rank.', '#ff0000', 5000);
+              msg.delete();
+              log.log(err);
+            });
           } else {
+            msg.delete();
             msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Cant find summoner.', '#ff0000', 5000);
           }
         }).catch(err => {
+          msg.delete();
           log.log(err);
         });
       })
