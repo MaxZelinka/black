@@ -194,7 +194,7 @@ exports.editmsg = async (config, client, message) => {
                         }
                     }).then(() => {
                         let link = 'https://discordapp.com/channels/' + message.guild.id + '/' + channelID + '/' + msg.id;
-                        msg_send.embedMessage(client, message.channel.id, 'Embed Message', 'edited.\n' + link, 000);
+                        msg_send.embedMessage(client, message.channel.id, 'Embed Message', 'edited.\n' + link, '#000000');
                     });
                 }).catch((error) => {
                     log.log('[editmsg] - ' + message.guild.id + ' : ' + error);
