@@ -4,20 +4,6 @@ const admin = require("../admin");
 const Discord = require("discord.js");
 const log = require("../log");
 
-//Create Roles
-/*
-const guild = client.guilds.get('581147107033874455');
-
-let roles = guild.roles.filter(el => tiers.includes(el.name));
-roles = roles.map(el => el.name);
-
-tiers.map(el => {
-  if(roles.includes(el) === false){
-    guild.createRole({
-      name: el
-    });
-  } 
-});*/
 const api_key = 'RGAPI-06ae383a-4045-4d80-b1ad-c0306de1e805';
 
 const regio = {
@@ -65,12 +51,24 @@ const tiers = [
   'Iron'
 ];
 
-function get_summoner(region, name) {
+function createRoles(message) {
+  let roles = message.guild.roles.filter(el => tiers.includes(el.name));
+  roles = roles.map(el => el.name);
+  tiers.map(el => {
+    if (roles.includes(el) === false) {
+      message.guild.createRole({
+        name: el
+      });
+    }
+  });
+}
+
+function get_thirdparty(region, summoner_id) {
   try {
-    return fetch('https://' + regio[region] + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + encodeURI(name) + '?api_key=' + api_key, {
+    return fetch('https://' + regio[region] + '.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/' + summoner_id + '?api_key=' + api_key, {
         method: 'GET'
       })
-      .then(summoner => summoner.json())
+      .then(third_party => third_party.json())
       .catch(err => {
         throw err;
       });
@@ -80,12 +78,12 @@ function get_summoner(region, name) {
   }
 }
 
-function get_thirdparty(region, summoner_id) {
+function get_summoner(region, name) {
   try {
-    return fetch('https://' + regio[region] + '.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/' + summoner_id + '?api_key=' + api_key, {
+    return fetch('https://' + regio[region] + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + encodeURI(name) + '?api_key=' + api_key, {
         method: 'GET'
       })
-      .then(third_party => third_party.json())
+      .then(summoner => summoner.json())
       .catch(err => {
         throw err;
       });
@@ -225,8 +223,6 @@ exports.setlolAcc = async (config, client, message) => {
   const args = message.content.trim().split(/ +/g);
   args.shift();
 
-  //Problem: Fake-Acc can be used.
-
   if (admin.isAdmin(message) === true ||
     admin.isMod(message, config) === true ||
     admin.hasPerm('setlolAcc', message)) {
@@ -234,58 +230,41 @@ exports.setlolAcc = async (config, client, message) => {
     if (args[0] !== undefined && args[1] !== undefined) {
       if (Object.keys(regio).includes(args[0].toLowerCase())) {
 
-        fetch('https://' + regio[args[0].toLowerCase()] + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + args[1] + '?api_key=' + api_key, {
-            method: 'GET'
-          })
-          .then(summoner => summoner.json())
-          .then(summoner => {
-            fetch('https://' + regio[args[0].toLowerCase()] + '.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/' + summoner.id + '?api_key=' + api_key, {
-                method: 'GET'
-              })
-              .then(third_party => third_party.json())
-              .then(third_party => {
-                if (third_party.status === undefined) {
-                  console.log(third_party);
-                  if (third_party == summoner.id) {
-                    if (summoner.status === undefined || summoner.status.status_code !== 404) {
-                      fetch('https://' + regio[args[0].toLowerCase()] + '.api.riotgames.com/lol/league/v4/entries/by-summoner/' + summoner.id + '?api_key=' + api_key, {
-                          method: 'GET'
-                        })
-                        .then(rank => rank.json())
-                        .then(rank => {
-                          if (rank.status === undefined) {
+        const region = args[0].toLowerCase();
+        args.shift();
+        const user = args.toString().replace(/[,]/gm, ' ');
 
-                            if (rank.length > 0) {
-                              //ranked
-                              const rang = rank.filter(el => el.queueType == 'RANKED_SOLO_5x5');
-                              if (rang.length > 0) {
-                                //soloQ
-                                const tier = rang[0].tier.substring(0, 1) + rang[0].tier.substring(1).toLowerCase();
+        //create roles, if not set yet.
+        createRoles(message);
 
-                                msg_send.embedMessage(client, message.channel.id, 'League of Legends', '**' + args[1] + ' (' + args[0] + ')**\n' + tier, '#000000');
-                                //const role = message.guild.roles.filter(el => el.name === tier);
-                                //message.member.addRole(role.first().id);
-                              } else {
-                                msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'No SoloQ played.', '#ff0000', 5000);
-                              }
-                            } else {
-                              msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'No SoloQ played.', '#ff0000', 5000);
-                            }
-                          } else {
-                            msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Summoner not found.', '#ff0000', 5000);
-                          }
-                        }).catch(err => console.log(err));
-                    } else {
-                      msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Summoner not found.', '#ff0000', 5000);
-                    }
+        get_summoner(region, user).then(summoner => {
+          //get third party
+          if (summoner.id !== undefined) {
+            get_rank(region, summoner.id).then(rank => {
+              const solo_Q = rank.filter(rank => rank.queueType == 'RANKED_SOLO_5x5');
+              if (solo_Q.length > 0) {
+                const tiername = solo_Q[0].tier.substr(0, 1) + solo_Q[0].tier.substr(1).toLowerCase();
+                const roles = message.guild.roles.filter(el => tiers.includes(el.name));
+                roles.map(role => {
+                  if (role.name === tiername) {
+                    message.member.addRole(role.id);
+                    msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'set Rank: ' + role.name, '#000000', 5000);
                   } else {
-                    msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Third-Party-Key not set or wrong.\nPlease set the Key to "' + summoner.id + '" and try again.', '#ff0000');
+                    message.member.removeRole(role.id);
                   }
-                } else {
-                  msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Third-Party-Key not set.\nPlease set the Key to "' + summoner.id + '" and try again.', '#ff0000');
-                }
-              }).catch(err => console.log(err));
-          }).catch(err => console.log(err));
+                });
+              } else {
+                msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Unranked.', '#000000', 5000);
+              }
+            });
+          } else {
+            msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Cant find summoner.', '#ff0000', 5000);
+          }
+        }).catch(err => {
+          msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Cant find summoner.', '#ff0000', 5000);
+          log.log(err);
+        });
+
       } else {
         msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'region not found.\n avieleble regios: ' + Object.keys(regio).toString(), '#ff0000', 5000);
       }
