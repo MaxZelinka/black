@@ -219,7 +219,7 @@ exports.get_lol = async (config, client, message) => {
   }
 }
 
-exports.setlolAcc = async (config, client, message) => {
+exports.set_lol = async (config, client, message) => {
   const args = message.content.trim().split(/ +/g);
   args.shift();
 
@@ -238,24 +238,34 @@ exports.setlolAcc = async (config, client, message) => {
         createRoles(message);
 
         get_summoner(region, user).then(summoner => {
-          //get third party
           if (summoner.id !== undefined) {
-            get_rank(region, summoner.id).then(rank => {
-              const solo_Q = rank.filter(rank => rank.queueType == 'RANKED_SOLO_5x5');
-              if (solo_Q.length > 0) {
-                const tiername = solo_Q[0].tier.substr(0, 1) + solo_Q[0].tier.substr(1).toLowerCase();
-                const roles = message.guild.roles.filter(el => tiers.includes(el.name));
-                roles.map(role => {
-                  if (role.name === tiername) {
-                    message.member.addRole(role.id);
-                    msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'set Rank: ' + role.name, '#000000', 5000);
+            get_thirdparty(region, summoner.id).then(third_party => {
+              if (third_party == summoner.id) {
+                get_rank(region, summoner.id).then(rank => {
+                  const solo_Q = rank.filter(rank => rank.queueType == 'RANKED_SOLO_5x5');
+                  if (solo_Q.length > 0) {
+                    const tiername = solo_Q[0].tier.substr(0, 1) + solo_Q[0].tier.substr(1).toLowerCase();
+                    const roles = message.guild.roles.filter(el => tiers.includes(el.name));
+                    roles.map(role => {
+                      if (role.name === tiername) {
+                        message.member.addRole(role.id);
+                        msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'set Rank: ' + role.name, '#000000', 5000);
+                      } else {
+                        message.member.removeRole(role.id);
+                      }
+                    });
                   } else {
-                    message.member.removeRole(role.id);
+                    msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Unranked.', '#000000', 5000);
                   }
+                }).catch(err => {
+                  msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Cant get rankk.', '#ff0000', 5000);
+                  log.log(err);
                 });
               } else {
-                msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Unranked.', '#000000', 5000);
+                message.member.send('Set the Third-Party-Key to: ' + summoner.id + '\n\nhttps://i.imgur.com/HPo8ztC.png');
               }
+            }).catch(() => {
+              message.member.send('No Third-Party-Key set yet or RIOT API Error.\nSet your Third-Party-Key to: ' + summoner.id + '\n\nhttps://i.imgur.com/HPo8ztC.png');
             });
           } else {
             msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Cant find summoner.', '#ff0000', 5000);

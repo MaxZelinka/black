@@ -98,7 +98,7 @@ exports.handler = async (client, message) => {
                                 modhandler.get_lol(config, client, message);
                                 break;
                             case cf_prefix + 'setlol':
-                                modhandler.not(client, message);
+                                modhandler.set_lol(config, client, message);
                                 break;
                         }
                     }

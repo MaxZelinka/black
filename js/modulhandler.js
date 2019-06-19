@@ -104,6 +104,6 @@ exports.get_lol = async (config, client, message) => {
     lol.get_lol(config, client, message);
 }
 
-exports.setlolAcc = async (config, client, message) => {
-    lol.setlolAcc(config, client, message);
+exports.set_lol = async (config, client, message) => {
+    lol.set_lol(config, client, message);
 }
