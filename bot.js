@@ -12,6 +12,8 @@ const msghandler = require("./js/messagehandler");
 const modhandler = require("./js/modulhandler");
 const msg_send = require("./js/msg_send");
 
+//nodecashe
+
 //Bot-Settings
 let StatusInterval = JSON.parse(fs.readFileSync('config.json', 'utf8')).statusIntervall;
 let arr_badwords = [];
@@ -31,7 +33,7 @@ client.on('ready', async () => {
   function setStatus() {
     status.set_status(client);
   }
-  setInterval(setStatus, 216000);
+  setInterval(setStatus, StatusInterval);
 });
 /**************************************************************************************************************/
 /* ERROR HANDLING                                                                                             */
