@@ -225,7 +225,7 @@ exports.set_lol = async (config, client, message) => {
 
   if (admin.isAdmin(message) === true ||
     admin.isMod(message, config) === true ||
-    admin.hasPerm('setlolAcc', message)) {
+    admin.hasPerm('set_lol', message)) {
 
     if (args[0] !== undefined && args[1] !== undefined) {
       if (Object.keys(regio).includes(args[0].toLowerCase())) {
