@@ -4,8 +4,8 @@ const admin = require("../admin");
 const Discord = require("discord.js");
 const log = require("../log");
 
+//constants
 const api_key = 'RGAPI-06ae383a-4045-4d80-b1ad-c0306de1e805';
-
 const regio = {
   'ru': 'ru',
   'kr': 'kr',
@@ -19,7 +19,6 @@ const regio = {
   'lan': 'la1',
   'las': 'la2'
 };
-
 const img_url = {
   'Challenger': 'https://i.ibb.co/5FBN7pV/Emblem-Challenger.png',
   'Grandmaster': 'https://i.ibb.co/rbmqZ5Q/Emblem-Grandmaster.png',
@@ -31,14 +30,13 @@ const img_url = {
   'Bronze': 'https://i.ibb.co/D13bBRN/Emblem-Bronze.png',
   'Iron': 'https://i.ibb.co/8PN8YHm/Emblem-Iron.png'
 }
-
 const ranks = {
   'I': 1,
   'II': 2,
   'III': 3,
-  'IV': 4
+  'IV': 4,
+  'V' : 5
 }
-
 const tiers = [
   'Challenger',
   'Grandmaster',
@@ -138,9 +136,7 @@ function get_champion(id) {
 }
 
 exports.get_lol = async (config, client, message) => {
-  if (admin.isAdmin(message) === true ||
-    admin.isMod(message, config) === true ||
-    admin.hasPerm('get_lol', message)) {
+  if (admin.isAdmin(message) || admin.isMod(message, config) || admin.hasPerm('get_lol', message)) {
     const args = message.content.trim().split(/ +/g);
     args.shift();
 
@@ -149,70 +145,74 @@ exports.get_lol = async (config, client, message) => {
       args.shift();
       const user = args.toString().replace(/[,]/gm, ' ');
 
-      const loading = new Discord.RichEmbed()
-        .setColor('#000')
-        .setURL('https://discord.js.org/')
-        .setAuthor('loading', 'https://media1.tenor.com/images/50337fc1e603a4726067ed3a5127ee9e/tenor.gif?itemid=5488360', 'https://discord.js.org')
-        .setDescription(user);
+      if (Object.keys(regio).includes(region)) {
+        const loading = new Discord.RichEmbed()
+          .setColor('#000')
+          .setURL('https://discord.js.org/')
+          .setAuthor('loading', 'https://media1.tenor.com/images/50337fc1e603a4726067ed3a5127ee9e/tenor.gif?itemid=5488360', 'https://discord.js.org')
+          .setDescription(user);
 
-      message.channel.send(loading).then(msg => {
-        get_summoner(region, user).then(summoner => {
-          if (summoner.id !== undefined) {
-            get_rank(region, summoner.id).then(rank => {
-              get_masteries(region, summoner.id).then(async masteries => {
-                const thumb = (masteries.length > 0) ? 'http://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/' + (await get_champion(masteries[0].championId))[0].name.replace(/[^\w]/gm, '') + '.png' : '';
-                const opgg = 'https://' + region + '.op.gg/summoner/userName=' + encodeURI(summoner.name);
+        message.channel.send(loading).then(msg => {
+          get_summoner(region, user).then(summoner => {
+            if (summoner.id !== undefined) {
+              get_rank(region, summoner.id).then(rank => {
+                get_masteries(region, summoner.id).then(async masteries => {
+                  const thumb = (masteries.length > 0) ? 'http://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/' + (await get_champion(masteries[0].championId))[0].name.replace(/[^\w]/gm, '') + '.png' : '';
+                  const opgg = 'https://' + region + '.op.gg/summoner/userName=' + encodeURI(summoner.name);
 
-                const champ_0 = (masteries[0] !== undefined) ? (await get_champion(masteries[0].championId))[0].name + ' (' + new Intl.NumberFormat().format(masteries[0].championPoints) + ') ' : '';
-                const champ_1 = (masteries[1] !== undefined) ? (await get_champion(masteries[1].championId))[0].name + ' ( ' + new Intl.NumberFormat().format(masteries[1].championPoints) + ') ' : '';
-                const champ_2 = (masteries[2] !== undefined) ? (await get_champion(masteries[2].championId))[0].name + ' ( ' + new Intl.NumberFormat().format(masteries[2].championPoints) + ') ' : '';
+                  const champ_0 = (masteries[0] !== undefined) ? (await get_champion(masteries[0].championId))[0].name + ' (' + new Intl.NumberFormat().format(masteries[0].championPoints) + ') ' : '';
+                  const champ_1 = (masteries[1] !== undefined) ? (await get_champion(masteries[1].championId))[0].name + ' ( ' + new Intl.NumberFormat().format(masteries[1].championPoints) + ') ' : '';
+                  const champ_2 = (masteries[2] !== undefined) ? (await get_champion(masteries[2].championId))[0].name + ' ( ' + new Intl.NumberFormat().format(masteries[2].championPoints) + ') ' : '';
 
-                const solo_Q = rank.filter(rank => rank.queueType == 'RANKED_SOLO_5x5');
-                const flex_55 = rank.filter(rank => rank.queueType == 'RANKED_FLEX_SR');
-                const flex_TT = rank.filter(rank => rank.queueType == 'RANKED_FLEX_TT');;
+                  const solo_Q = rank.filter(rank => rank.queueType == 'RANKED_SOLO_5x5');
+                  const flex_55 = rank.filter(rank => rank.queueType == 'RANKED_FLEX_SR');
+                  const flex_TT = rank.filter(rank => rank.queueType == 'RANKED_FLEX_TT');;
 
-                const Embed = new Discord.RichEmbed()
-                  .setColor('#000000')
-                  .setAuthor(summoner.name, thumb, opgg)
-                  .setDescription(champ_0 + '\n' + champ_1 + '\n' + champ_2);
+                  const Embed = new Discord.RichEmbed()
+                    .setColor('#000000')
+                    .setAuthor(summoner.name, thumb, opgg)
+                    .setDescription(champ_0 + '\n' + champ_1 + '\n' + champ_2);
 
-                if (solo_Q.length > 0) {
-                  const wr = (parseFloat((solo_Q[0].wins / (solo_Q[0].wins + solo_Q[0].losses)) * 100).toFixed(2)).replace(/[.]/gm, ',');
-                  Embed.addField('Ranked Solo', solo_Q[0].tier.substr(0, 1) + solo_Q[0].tier.substr(1).toLowerCase() + ' ' + ranks[solo_Q[0].rank] + ' (' + solo_Q[0].leaguePoints + ' LP)' +
-                    '\n' + wr + '% / ' + solo_Q[0].wins + 'W ' + solo_Q[0].losses + 'L');
+                  if (solo_Q.length > 0) {
+                    const wr = (parseFloat((solo_Q[0].wins / (solo_Q[0].wins + solo_Q[0].losses)) * 100).toFixed(2)).replace(/[.]/gm, ',');
+                    Embed.addField('Ranked Solo', solo_Q[0].tier.substr(0, 1) + solo_Q[0].tier.substr(1).toLowerCase() + ' ' + ranks[solo_Q[0].rank] + ' (' + solo_Q[0].leaguePoints + ' LP)' +
+                      '\n' + wr + '% / ' + solo_Q[0].wins + 'W ' + solo_Q[0].losses + 'L');
 
-                  Embed.setThumbnail(img_url[solo_Q[0].tier.substr(0, 1) + solo_Q[0].tier.substr(1).toLowerCase()]);
-                }
-                if (flex_55.length > 0) {
-                  const wr = (parseFloat((flex_55[0].wins / (flex_55[0].wins + flex_55[0].losses)) * 100).toFixed(2)).replace(/[.]/gm, ',');
-                  Embed.addField('Ranked Flex 5v5', flex_55[0].tier.substr(0, 1) + flex_55[0].tier.substr(1).toLowerCase() + ' ' + ranks[flex_55[0].rank] + ' (' + flex_55[0].leaguePoints + ' LP)' +
-                    '\n' + wr + '% / ' + flex_55[0].wins + 'W ' + flex_55[0].losses + 'L');
-                }
+                    Embed.setThumbnail(img_url[solo_Q[0].tier.substr(0, 1) + solo_Q[0].tier.substr(1).toLowerCase()]);
+                  }
+                  if (flex_55.length > 0) {
+                    const wr = (parseFloat((flex_55[0].wins / (flex_55[0].wins + flex_55[0].losses)) * 100).toFixed(2)).replace(/[.]/gm, ',');
+                    Embed.addField('Ranked Flex 5v5', flex_55[0].tier.substr(0, 1) + flex_55[0].tier.substr(1).toLowerCase() + ' ' + ranks[flex_55[0].rank] + ' (' + flex_55[0].leaguePoints + ' LP)' +
+                      '\n' + wr + '% / ' + flex_55[0].wins + 'W ' + flex_55[0].losses + 'L');
+                  }
 
-                if (flex_TT.length > 0) {
-                  const wr = (parseFloat((flex_TT[0].wins / (flex_TT[0].wins + flex_TT[0].losses)) * 100).toFixed(2)).replace(/[.]/gm, ',');
-                  Embed.addField('Ranked Flex 3v3', flex_TT[0].tier.substr(0, 1) + flex_TT[0].tier.substr(1).toLowerCase() + ' ' + ranks[flex_TT[0].rank] + ' (' + flex_TT[0].leaguePoints + ' LP)' +
-                    '\n' + wr + '% / ' + flex_TT[0].wins + 'W ' + flex_TT[0].losses + 'L');
-                }
+                  if (flex_TT.length > 0) {
+                    const wr = (parseFloat((flex_TT[0].wins / (flex_TT[0].wins + flex_TT[0].losses)) * 100).toFixed(2)).replace(/[.]/gm, ',');
+                    Embed.addField('Ranked Flex 3v3', flex_TT[0].tier.substr(0, 1) + flex_TT[0].tier.substr(1).toLowerCase() + ' ' + ranks[flex_TT[0].rank] + ' (' + flex_TT[0].leaguePoints + ' LP)' +
+                      '\n' + wr + '% / ' + flex_TT[0].wins + 'W ' + flex_TT[0].losses + 'L');
+                  }
 
-                msg.delete().then(() => {
-                  message.channel.send(Embed);
+                  msg.delete().then(() => {
+                    message.channel.send(Embed);
+                  });
                 });
+              }).catch(err => {
+                msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Cant get rank.', '#ff0000', 5000);
+                msg.delete();
+                log.log(err);
               });
-            }).catch(err => {
-              msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Cant get rank.', '#ff0000', 5000);
+            } else {
               msg.delete();
-              log.log(err);
-            });
-          } else {
+              msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Cant find summoner.', '#ff0000', 5000);
+            }
+          }).catch(err => {
             msg.delete();
-            msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Cant find summoner.', '#ff0000', 5000);
-          }
-        }).catch(err => {
-          msg.delete();
-          log.log(err);
+            log.log(err);
+          });
         });
-      })
+      } else {
+        msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'region not found.\n avieleble regios: ' + Object.keys(regio).toString(), '#ff0000', 5000);
+      }
     } else {
       msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'missing arguments.', '#ff0000', 5000);
     }
@@ -228,12 +228,11 @@ exports.set_lol = async (config, client, message) => {
     admin.hasPerm('set_lol', message)) {
 
     if (args[0] !== undefined && args[1] !== undefined) {
-      if (Object.keys(regio).includes(args[0].toLowerCase())) {
+      const region = args[0].toLowerCase();
+      args.shift();
+      const user = args.toString().replace(/[,]/gm, ' ');
 
-        const region = args[0].toLowerCase();
-        args.shift();
-        const user = args.toString().replace(/[,]/gm, ' ');
-
+      if (Object.keys(regio).includes(region)) {
         //create roles, if not set yet.
         createRoles(message);
 
