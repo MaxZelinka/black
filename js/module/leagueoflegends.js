@@ -239,7 +239,7 @@ exports.set_lol = async (config, client, message) => {
         get_summoner(region, user).then(summoner => {
           if (summoner.id !== undefined) {
             get_thirdparty(region, summoner.id).then(third_party => {
-              if (third_party == summoner.id) {
+              if (third_party == summoner.id.substr(0, 10)) {
                 get_rank(region, summoner.id).then(rank => {
                   const solo_Q = rank.filter(rank => rank.queueType == 'RANKED_SOLO_5x5');
                   if (solo_Q.length > 0) {
@@ -261,10 +261,10 @@ exports.set_lol = async (config, client, message) => {
                   log.log(err);
                 });
               } else {
-                message.member.send('Set the Third-Party-Key to: ' + summoner.id + '\n\nhttps://i.imgur.com/HPo8ztC.png');
+                message.member.send('Set the Third-Party-Key to: ' + summoner.id.substr(0, 10) + '\n\nhttps://i.imgur.com/HPo8ztC.png');
               }
             }).catch(() => {
-              message.member.send('No Third-Party-Key set yet or RIOT API Error.\nSet your Third-Party-Key to: ' + summoner.id + '\n\nhttps://i.imgur.com/HPo8ztC.png');
+              message.member.send('No Third-Party-Key set yet or RIOT API Error.\nSet your Third-Party-Key to: ' + summoner.id.substr(0, 10) + '\n\nhttps://i.imgur.com/HPo8ztC.png');
             });
           } else {
             msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Cant find summoner.', '#ff0000', 5000);
