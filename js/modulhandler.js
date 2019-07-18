@@ -98,6 +98,10 @@ exports.get_reaction = async (guild, channelID, messageID, emoteID) => {
     return reactions.get_reaction(guild, channelID, messageID, emoteID);
 }
 
+exports.imgmsg = async (config, client, message) => {
+    cmd.imgmsg(config, client, message);
+}
+
 //LEAGUE OF LEGENDS
 
 exports.get_lol = async (config, client, message) => {

@@ -93,6 +93,9 @@ exports.handler = async (client, message) => {
                             case cf_prefix + 'editmsg':
                                 modhandler.editmsg(config, client, message);
                                 break;
+                            case cf_prefix + 'img':
+                                modhandler.imgmsg(config, client, message);
+                                break;
                             //LEAGUEOFLEGENDS
                             case cf_prefix + 'getlol':
                                 modhandler.get_lol(config, client, message);

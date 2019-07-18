@@ -81,3 +81,21 @@ exports.serverinfo = async (config, message) => {
     log.log(err);
   }
 }
+
+exports.imgmsg = (config, client, message) => {
+  if (admin.isAdmin(message) ||
+    admin.isMod(message, config) ||
+    admin.hasPerm('imgmsg', message)) {
+
+    const args = message.content.trim().split(/ +/g);
+    args.shift();
+
+    let rich = new Discord.RichEmbed();
+    rich.setImage(args[1]);
+    rich.setColor('000');
+
+    if (args[0] && admin.isChannel(args[0]) && args[1]) {
+      client.guilds.get(message.guild.id).channels.get(args[0].replace(/[<#>]/gm,'')).send(rich);
+    }
+  }
+}

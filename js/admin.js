@@ -19,6 +19,8 @@ exports.hasPerm = (func, message) => {
     return false;
 }
 
+//isURL
+
 exports.get_message = async (client, channel_ID, message_ID) => {
     return client.channels.get(channel_ID).fetchMessage(message_ID);
 }
