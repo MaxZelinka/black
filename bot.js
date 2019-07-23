@@ -9,16 +9,13 @@ const Discord = require("discord.js"),
 
 //own scripts
 const log = require("./js/log"),
-  status = require("./js/status"),
+  services = require("./js/services"),
   db = require("./js/db"),
   msghandler = require("./js/messagehandler"),
   modhandler = require("./js/modulhandler"),
   reactions = require("./module/reactions");
 
-//nodecashe
-
 //Bot-Settings
-let StatusInterval = JSON.parse(fs.readFileSync('config.json', 'utf8')).statusIntervall;
 let arr_badwords = [];
 
 /*
@@ -32,11 +29,7 @@ Patreon Page
 client.on('ready', async () => {
   //log.log('[ready] - bot start');
   console.log('ready');
-
-  function setStatus() {
-    status.set_status(client);
-  }
-  setInterval(setStatus, StatusInterval);
+  services.set_status();
 });
 /**************************************************************************************************************/
 /* ERROR HANDLING                                                                                             */
