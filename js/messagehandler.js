@@ -1,7 +1,6 @@
 //own scripts
 const badwords = require("./badwords"),
     db = require("./db"),
-    modhandler = require("./modulhandler"),
     msg_send = require("./msg_send"),
     help = require("./module/help"),
     reactions = require("./module/reactions"),
@@ -9,13 +8,17 @@ const badwords = require("./badwords"),
     lol = require("./module/leagueoflegends"),
     cmd = require("./module/commands");
 
+function not(client, message) {
+    msg_send.embedMessage(client, message.channel.id, 'Command', 'function currently disabled', '#ff0000', 5000);
+}
+
 exports.handler = async (client, message) => {
     if (message.guild !== null) {
         db.get_config(message.guild).then((config) => {
-            if (config !== undefined && config[0] !== undefined) {
-                const cf_channel = (config[0].Channel !== null) ? (config[0].Channel.includes(',')) ? [...config[0].Channel.replace(/[ ]/gm, '').split(',')] : [config[0].Channel.replace(/[ ]/gm, '')] : '';
-                const cf_blacklist = (config[0].blacklist !== null) ? (config[0].blacklist.includes(',')) ? [...config[0].blacklist.replace(/[ ]/gm, '').split(',')] : [config[0].blacklist.replace(/[ ]/gm, '')] : '';
-                const cf_prefix = config[0].Prefix;
+            if (config && config[0]) {
+                const cf_channel = (config[0].Channel !== null) ? (config[0].Channel.includes(',')) ? [...config[0].Channel.replace(/[ ]/gm, '').split(',')] : [config[0].Channel.replace(/[ ]/gm, '')] : '',
+                    cf_blacklist = (config[0].blacklist !== null) ? (config[0].blacklist.includes(',')) ? [...config[0].blacklist.replace(/[ ]/gm, '').split(',')] : [config[0].blacklist.replace(/[ ]/gm, '')] : '',
+                    cf_prefix = config[0].Prefix;
 
                 const args = message.content.trim().split(/ +/g);
                 const command = args.shift().toLowerCase();
@@ -57,19 +60,19 @@ exports.handler = async (client, message) => {
                                 cfg.modlog(config, client, message);
                                 break;
                             case cf_prefix + 'blacklist':
-                                modhandler.not(client, message);
+                                not(client, message);
                                 break;
                             case cf_prefix + 'automod':
-                                modhandler.not(client, message);
+                                not(client, message);
                                 break;
                             case cf_prefix + 'welcome':
-                                modhandler.not(client, message);
+                                not(client, message);
                                 break;
                             case cf_prefix + 'welcomemsg':
-                                modhandler.not(client, message);
+                                not(client, message);
                                 break;
                             case cf_prefix + 'leaverlog':
-                                modhandler.not(client, message);
+                                not(client, message);
                                 break;
 
                                 //COMMANDS
@@ -85,7 +88,7 @@ exports.handler = async (client, message) => {
 
                                 //MODUL
                             case cf_prefix + 'modul':
-                                modhandler.not(client, message);
+                                not(client, message);
                                 break;
 
                                 //REACTION
@@ -104,7 +107,7 @@ exports.handler = async (client, message) => {
                             case cf_prefix + 'editmsg':
                                 reactions.editmsg(config, client, message);
                                 break;
-                                
+
                                 //LEAGUEOFLEGENDS
                             case cf_prefix + 'getlol':
                                 lol.get_lol(config, client, message);

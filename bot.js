@@ -1,16 +1,15 @@
-const Discord = require("discord.js");
-const client = new Discord.Client();
-const auth = require("./auth.json");
-const fs = require('fs');
-const punycode = require('punycode');
+const Discord = require("discord.js"),
+  client = new Discord.Client(),
+  auth = require("./auth.json"),
+  fs = require('fs'),
+  punycode = require('punycode');
 
 //own scripts
-const log = require("./js/log");
-const status = require("./js/status");
-const db = require("./js/db");
-const msghandler = require("./js/messagehandler");
-const modhandler = require("./js/modulhandler");
-const msg_send = require("./js/msg_send");
+const log = require("./js/log"),
+  status = require("./js/status"),
+  db = require("./js/db"),
+  msghandler = require("./js/messagehandler"),
+  modhandler = require("./js/modulhandler");
 
 //nodecashe
 
@@ -85,7 +84,7 @@ client.on('guildCreate', async guild => {
   if (guild.available) {
     //no config set
     let config = await db.get_config(guild);
-    if (config == undefined || config.length == 0) {
+    if (!config || config.length == 0) {
       //set config with standard
       db.set_config(guild);
     } else {
@@ -107,14 +106,14 @@ client.on('guildDelete', async guild => {
 //Emitted whenever a user joins a guild.
 client.on('guildMemberAdd', async member => {
   db.get_config(member.guild).then((config) => {
-    if (config !== undefined && config.length >= 0) {
+    if (config && config.length >= 0) {
       if (config[0].welcome === 1 &&
         config[0].welcome_channel !== null &&
         config[0].botlog !== null) {
 
-        const chn = member.guild.channels.get(config[0].welcome_channel);
-        const server_icon = (member.guild.iconURL !== null) ? member.guild.iconURL : '';
-        if (member.user.bot === false) {
+        const chn = member.guild.channels.get(config[0].welcome_channel),
+          server_icon = (member.guild.iconURL !== null) ? member.guild.iconURL : '';
+        if (!member.user.bot) {
           const welcomemsg = new Discord.RichEmbed()
             .setColor('#000000')
             .setAuthor('Welcome', server_icon)
@@ -163,13 +162,13 @@ client.on('raw', async event => {
   const {
     d: data
   } = event;
-  const user = client.users.get(data.user_id);
-  const channel = client.channels.get(data.channel_id) || await user.createDM();
+  const user = client.users.get(data.user_id),
+    channel = client.channels.get(data.channel_id) || await user.createDM();
 
   //if (channel.messages.has(data.message_id)) return; //event trigger 2 times without this
 
-  const message = await channel.fetchMessage(data.message_id);
-  const emojiKey = (data.emoji.id) ? `${data.emoji.name}:${data.emoji.id}` : data.emoji.name;
+  const message = await channel.fetchMessage(data.message_id),
+    emojiKey = (data.emoji.id) ? `${data.emoji.name}:${data.emoji.id}` : data.emoji.name;
   let reaction = message.reactions.get(emojiKey);
 
   if (!reaction) {
