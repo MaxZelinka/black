@@ -137,9 +137,7 @@ function get_champion(id) {
 }
 
 exports.get_lol = async (config, client, message) => {
-  const args = message.content.trim().split(/ +/g);
-  args.shift();
-
+  const args = admin.cut_cmd(message);
   if (args[0] && args[1]) {
     const region = args[0].toLowerCase();
     args.shift();
@@ -219,9 +217,7 @@ exports.get_lol = async (config, client, message) => {
 }
 
 exports.set_lol = async (config, client, message) => {
-  const args = message.content.trim().split(/ +/g);
-  args.shift();
-
+  const args = admin.cut_cmd(message);
   if (args[0] && args[1]) {
     const region = args[0].toLowerCase();
     args.shift();
@@ -238,12 +234,12 @@ exports.set_lol = async (config, client, message) => {
               get_rank(region, summoner.id).then(rank => {
                 const solo_Q = rank.filter(rank => rank.queueType == 'RANKED_SOLO_5x5');
                 if (solo_Q.length > 0) {
-                  const tiername = solo_Q[0].tier.substr(0, 1) + solo_Q[0].tier.substr(1).toLowerCase();
-                  const roles = message.guild.roles.filter(el => tiers.includes(el.name));
+                  const tiername = solo_Q[0].tier.substr(0, 1) + solo_Q[0].tier.substr(1).toLowerCase(),
+                    roles = message.guild.roles.filter(el => tiers.includes(el.name));
                   roles.map(role => {
                     if (role.name === tiername) {
                       message.member.addRole(role.id);
-                      msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'set Rank: ' + role.name, '#000000', 5000);
+                      msg_send.embedMessage(client, message.channel.id, 'League of Legends', `set Rank: ${role.name}`, '#000000', 5000);
                     } else {
                       message.member.removeRole(role.id);
                     }
@@ -256,10 +252,10 @@ exports.set_lol = async (config, client, message) => {
                 log.log(err);
               });
             } else {
-              message.member.send('Set the Third-Party-Key to: ' + summoner.id.substr(0, 10) + '\n\nhttps://i.imgur.com/HPo8ztC.png');
+              message.member.send(`Set the Third-Party-Key to: ${summoner.id.substr(0, 10)} \n\nhttps://i.imgur.com/HPo8ztC.png`);
             }
           }).catch(() => {
-            message.member.send('No Third-Party-Key set yet or RIOT API Error.\nSet your Third-Party-Key to: ' + summoner.id.substr(0, 10) + '\n\nhttps://i.imgur.com/HPo8ztC.png');
+            message.member.send(`No Third-Party-Key set yet or RIOT API Error.\nSet your Third-Party-Key to: ${summoner.id.substr(0, 10)} \n\nhttps://i.imgur.com/HPo8ztC.png`);
           });
         } else {
           msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Cant find summoner.', '#ff0000', 5000);
@@ -270,7 +266,7 @@ exports.set_lol = async (config, client, message) => {
       });
 
     } else {
-      msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'region not found.\n avieleble regios: ' + Object.keys(regio).toString(), '#ff0000', 5000);
+      msg_send.embedMessage(client, message.channel.id, 'League of Legends', `region not found.\n avieleble regios: ${Object.keys(regio).toString()}`, '#ff0000', 5000);
     }
   } else {
     msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'missing argument.', '#ff0000', 5000);

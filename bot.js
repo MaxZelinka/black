@@ -108,9 +108,9 @@ client.on('guildDelete', async guild => {
 client.on('guildMemberAdd', async member => {
   db.get_config(member.guild).then((config) => {
     if (config !== undefined && config.length >= 0) {
-      if (config[0].welcome === 1
-        && config[0].welcome_channel !== null
-        && config[0].botlog !== null) {
+      if (config[0].welcome === 1 &&
+        config[0].welcome_channel !== null &&
+        config[0].botlog !== null) {
 
         const chn = member.guild.channels.get(config[0].welcome_channel);
         const server_icon = (member.guild.iconURL !== null) ? member.guild.iconURL : '';
@@ -182,14 +182,13 @@ client.on('raw', async event => {
 
 //Emitted whenever a reaction is added to a cached message.
 client.on('messageReactionAdd', async (reaction, user, message) => {
-  if (reaction.me === true && message !== undefined && user.bot === false) {
-    const channelID = message.channel.id;
-    const messageID = message.id;
-    const emoteID = punycode.encode((reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : reaction.emoji.name);
+  if (reaction.me && message && !user.bot) {
+    const channelID = message.channel.id,
+      messageID = message.id,
+      emoteID = punycode.encode((reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : reaction.emoji.name),
+      response = await modhandler.get_reaction(message.guild, channelID, messageID, emoteID);
 
-    const response = await modhandler.get_reaction(message.guild, channelID, messageID, emoteID);
-
-    if (response !== undefined && response.length > 0) {
+    if (response && response.length > 0) {
       message.guild.members.get(user.id).addRole(response[0].RoleID).catch((error) => {
         console.log(error);
       });
@@ -199,14 +198,13 @@ client.on('messageReactionAdd', async (reaction, user, message) => {
 
 //Emitted whenever a reaction is removed from a cached message.
 client.on('messageReactionRemove', async (reaction, user, message) => {
-  if (reaction.me === true && message !== undefined && user.bot === false) {
-    const channelID = message.channel.id;
-    const messageID = message.id;
-    const emoteID = punycode.encode((reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : reaction.emoji.name);
+  if (reaction.me && message && !user.bot) {
+    const channelID = message.channel.id,
+      messageID = message.id,
+      emoteID = punycode.encode((reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : reaction.emoji.name),
+      response = await modhandler.get_reaction(message.guild, channelID, messageID, emoteID);
 
-    const response = await modhandler.get_reaction(message.guild, channelID, messageID, emoteID);
-
-    if (response !== undefined && response.length > 0) {
+    if (response && response.length > 0) {
       message.guild.members.get(user.id).removeRole(response[0].RoleID).catch((error) => {
         console.log(error);
       });
