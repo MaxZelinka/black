@@ -1,29 +1,15 @@
-const msg_send = require("../msg_send");
-const db = require("../db");
-const admin = require("../admin");
-const Discord = require("discord.js");
-
-exports.sample = async (config, client, message) => {
-    const args = message.content.trim().split(/ +/g);
-    args.shift();
-
-    if (admin.isAdmin(message) === true ||
-        admin.isMod(message, config) === true ||
-        admin.hasPerm('sample', message)) { }
-}
+const msg_send = require("../msg_send"),
+    db = require("../db"),
+    admin = require("../admin");
 
 exports.prefix = async (config, client, message) => {
-    const args = message.content.trim().split(/ +/g);
-    args.shift();
-
-    if (admin.isAdmin(message) === true ||
-        admin.isMod(message, config) === true ||
-        await admin.hasPerm('prefix', message) === true) {
-        if (args[0] !== undefined) {
+    const args = admin.cut_cmd(message);
+    if (admin.isAdmin(message) || admin.isMod(message, config)) {
+        if (args[0]) {
             if (args[0].length <= 20) {
                 if (args[0].match(/^[\w?!\-+*]*/gmi) !== null) {
-                    db.query(`UPDATE general SET Prefix = '` + args[0] + `' WHERE ServerID = ` + message.guild.id + `;`).then(el => {
-                        if (el !== undefined) {
+                    db.query(`UPDATE general SET Prefix = '${args[0]}' WHERE ServerID = ${message.guild.id};`).then(el => {
+                        if (el) {
                             msg_send.embedMessage(client, message.channel.id, 'Prefix', args[0], '000000');
                         } else {
                             msg_send.embedMessage(client, message.channel.id, 'Prefix', 'cant set prefix.', '#ff0000', 5000);
@@ -36,8 +22,8 @@ exports.prefix = async (config, client, message) => {
                 msg_send.embedMessage(client, message.channel.id, 'Prefix', 'prefix exceeds the maximum length. (20)', '#ff0000', 5000);
             }
         } else {
-            db.query(`SELECT Prefix FROM general WHERE ServerID = ` + message.guild.id + ` LIMIT 1;`).then(el => {
-                if (el !== undefined) {
+            db.query(`SELECT Prefix FROM general WHERE ServerID = ${message.guild.id} LIMIT 1;`).then(el => {
+                if (el) {
                     msg_send.embedMessage(client, message.channel.id, 'Prefix', el[0].Prefix, '000000');
                 } else {
                     msg_send.embedMessage(client, message.channel.id, 'Prefix', 'cant get prefix.', '#ff0000', 5000);
@@ -48,24 +34,18 @@ exports.prefix = async (config, client, message) => {
 }
 
 exports.channel = async (config, client, message) => {
-    const args = message.content.trim().split(/ +/g);
-    args.shift();
-
-    if (admin.isAdmin(message) === true ||
-        admin.isMod(message, config) === true ||
-        await admin.hasPerm('channel', message) === true) {
+    const args = admin.cut_cmd(message);
+    if (admin.isAdmin(message) || admin.isMod(message, config)) {
 
         db.query(`SELECT Channel FROM config WHERE ServerID = '` + message.guild.id + `' LIMIT 1;`).then(get => {
             let arr_chn;
             if (get[0].Channel !== null) {
                 arr_chn = (get[0].Channel.match(/[,]/gmi) !== null) ? get[0].Channel.split(',') : new Array(get[0].Channel); //string to array
             }
-            if (get !== undefined) {
-                if (args[0] !== undefined) {
-                    if (admin.isChannel(args[0]) == true) {
-
+            if (get) {
+                if (args[0]) {
+                    if (admin.isChannel(args[0])) {
                         const chn = args[0].replace(/[<#!>]/gmi, '');
-
                         if (get[0].Channel !== null) {
                             arr_chn = (arr_chn.includes(chn)) ? arr_chn.filter(x => x !== chn) : arr_chn = [...arr_chn, chn];
                             //delete spaces
@@ -99,19 +79,14 @@ exports.channel = async (config, client, message) => {
 }
 
 exports.mod = async (config, client, message) => {
-    const args = message.content.trim().split(/ +/g);
-    args.shift();
-
-    if (admin.isAdmin(message) === true ||
-        admin.isMod(message, config) === true ||
-        await admin.hasPerm('mod', message) === true) {
-
+    const args = admin.cut_cmd(message);
+    if (admin.isAdmin(message) || admin.isMod(message, config)) {
         db.query(`SELECT Moderator FROM config WHERE ServerID = ` + message.guild.id + ` LIMIT 1;`).then(async get => {
-            if (get !== undefined) {
+            if (get) {
                 let arr_mod = (get[0].Moderator.match(/[,]/gmi) !== null) ? get[0].Moderator.replace(' ', '').split(',') : new Array[get[0].Moderator]; //string to array
-                if (args[0] !== undefined) {
+                if (args[0]) {
                     //set
-                    if (admin.isUser(args[0]) == true) {
+                    if (admin.isUser(args[0])) {
 
                         const mod = args[0].replace(/[<@!>]/gmi, '');
                         arr_mod = (arr_mod.includes(mod)) ? arr_mod.filter(x => x !== mod) : arr_mod = [...arr_mod, mod];
@@ -119,10 +94,8 @@ exports.mod = async (config, client, message) => {
                         arr_mod = arr_mod.map(el => el.replace(/[ ]*/gm, ''));
                         arr_mod = arr_mod.filter(x => x !== '');
 
-                        console.log(arr_mod);
-
                         db.query(`UPDATE config SET Moderator = '` + arr_mod.toString() + `' WHERE ServerID = ` + message.guild.id + `;`).then(async set => {
-                            if (set !== undefined) {
+                            if (set) {
                                 //only problems with spaces
                                 arr_mod = await Promise.all(arr_mod.map(md => message.guild.fetchMember(md)));
                                 msg_send.embedMessage(client, message.channel.id, 'Moderator', arr_mod.toString().replace(/[,]/gmi, '\n'), '000000');
@@ -147,9 +120,7 @@ exports.mod = async (config, client, message) => {
 }
 
 exports.botlog = async (config, client, message) => {
-    const args = message.content.trim().split(/ +/g);
-    args.shift();
-
+    const args = admin.cut_cmd(message);
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
         admin.hasPerm('botlog', message)) {
@@ -179,9 +150,7 @@ exports.botlog = async (config, client, message) => {
 }
 
 exports.modlog = async (config, client, message) => {
-    const args = message.content.trim().split(/ +/g);
-    args.shift();
-
+    const args = admin.cut_cmd(message);
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
         admin.hasPerm('modlog', message)) {
@@ -211,9 +180,7 @@ exports.modlog = async (config, client, message) => {
 }
 
 exports.blacklist = async (config, client, message) => {
-    const args = message.content.trim().split(/ +/g);
-    args.shift();
-
+    const args = admin.cut_cmd(message);
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
         admin.hasPerm('blacklist', message)) {
@@ -236,55 +203,33 @@ exports.blacklist = async (config, client, message) => {
             }
 
         });
-
-        /*
-                    if (admin.isChannel(args[0]) === true) {
-                        db.query(`UPDATE config SET modlog = ` + args[0].replace(/[<#!>]/gm, '') + ` WHERE ServerID = ` + message.guild.id + `;`).then(el => {
-                            if (el !== undefined) {
-                                msg_send.embedMessage(client, message.channel.id, 'Modlog', args[0], '000000');
-                            } else {
-                                msg_send.embedMessage(client, message.channel.id, 'Modlog', 'cant set modlog.', '#ff0000', 5000);
-                            }
-                        });
-                    } else {
-                        msg_send.embedMessage(client, message.channel.id, 'Modlog', 'argument isnt a channel.', '#ff0000', 5000);
-                    }*/
-
     }
 }
 
 exports.automod = async (config, client, message) => {
-    const args = message.content.trim().split(/ +/g);
-    args.shift();
-
+    const args = admin.cut_cmd(message);
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
-        admin.hasPerm('automod', message)) { }
+        admin.hasPerm('automod', message)) {}
 }
 
 exports.welcome = async (config, client, message) => {
-    const args = message.content.trim().split(/ +/g);
-    args.shift();
-
+    const args = admin.cut_cmd(message);
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
-        admin.hasPerm('welcome', message)) { }
+        admin.hasPerm('welcome', message)) {}
 }
 
 exports.welcomemsg = async (config, client, message) => {
-    const args = message.content.trim().split(/ +/g);
-    args.shift();
-
+    const args = admin.cut_cmd(message);
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
-        admin.hasPerm('welcomemsg', message)) { }
+        admin.hasPerm('welcomemsg', message)) {}
 }
 
 exports.leaverlog = async (config, client, message) => {
-    const args = message.content.trim().split(/ +/g);
-    args.shift();
-
+    const args = admin.cut_cmd(message);
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
-        admin.hasPerm('leaverlog', message)) { }
+        admin.hasPerm('leaverlog', message)) {}
 }

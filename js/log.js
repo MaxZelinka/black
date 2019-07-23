@@ -1,6 +1,7 @@
-const moment = require('moment');
-const fs = require('fs');
-
+//requiere
+const moment = require('moment'),
+    fs = require('fs');
+    
 const dir = './logs/';
 
 exports.log = function (data) {

@@ -1,10 +1,7 @@
-const fs = require('fs');
-const fspromise = require('fs.promises');
-var mysql = require('promise-mysql');
-const fetch = require("node-fetch");
-
-//own scripts
-const log = require("./log");
+//requiere
+const fspromise = require('fs.promises'),
+    mysql = require('promise-mysql'),
+    log = require("./log");
 
 async function get_fileconfig() {
     return await fspromise.readFile('./config.json', 'utf8').then(data => {
