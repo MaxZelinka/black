@@ -9,6 +9,7 @@
     "discord.js": "^11.5.1",
     "fs.promises": "^0.1.2",
     "moment": "^2.24.0",
+    "node-cache": "^4.2.0",
     "node-fetch": "^2.6.0",
     "promise-mysql": "^3.3.2",
     "punycode": "^2.1.1",

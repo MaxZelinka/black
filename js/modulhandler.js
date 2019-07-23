@@ -7,24 +7,6 @@ const cfg = require("./module/config");
 const lol = require("./module/leagueoflegends");
 const cmd = require("./module/commands");
 
-/*
-modulare bauweise
-
-const controller      = require('require-all')(__dirname + '/module/');
-
-const keys = Object.entries(controller).filter(val => {
-    if(Object.keys(val[1]).includes('cfg') == true){
-      return val[0];
-    } else {
-      console.log('module ' + val[0] + ' is missing cfg function.');
-    }
-  });
-
-  let cfg = keys.map(el => {
-    return eval('controller.' + el[0] + '.cfg')();
-  });
-*/
-
 exports.not = (client, message) => {
     msg_send.embedMessage(client, message.channel.id, 'Command', 'function currently disabled', '#ff0000', 5000);
 }

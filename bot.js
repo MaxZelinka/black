@@ -4,12 +4,16 @@ const Discord = require("discord.js"),
   fs = require('fs'),
   punycode = require('punycode');
 
+//https://www.npmjs.com/package/node-cache
+//https://www.npmjs.com/package/punycode
+
 //own scripts
 const log = require("./js/log"),
   status = require("./js/status"),
   db = require("./js/db"),
   msghandler = require("./js/messagehandler"),
-  modhandler = require("./js/modulhandler");
+  modhandler = require("./js/modulhandler"),
+  reactions = require("./module/reactions");
 
 //nodecashe
 
@@ -185,7 +189,7 @@ client.on('messageReactionAdd', async (reaction, user, message) => {
     const channelID = message.channel.id,
       messageID = message.id,
       emoteID = punycode.encode((reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : reaction.emoji.name),
-      response = await modhandler.get_reaction(message.guild, channelID, messageID, emoteID);
+      response = await reactions.get_reaction(message.guild, channelID, messageID, emoteID);
 
     if (response && response.length > 0) {
       message.guild.members.get(user.id).addRole(response[0].RoleID).catch((error) => {
@@ -201,7 +205,7 @@ client.on('messageReactionRemove', async (reaction, user, message) => {
     const channelID = message.channel.id,
       messageID = message.id,
       emoteID = punycode.encode((reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : reaction.emoji.name),
-      response = await modhandler.get_reaction(message.guild, channelID, messageID, emoteID);
+      response = await reactions.get_reaction(message.guild, channelID, messageID, emoteID);
 
     if (response && response.length > 0) {
       message.guild.members.get(user.id).removeRole(response[0].RoleID).catch((error) => {

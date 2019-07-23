@@ -3,9 +3,17 @@ const fetch = require("node-fetch"),
   msg_send = require("../msg_send"),
   admin = require("../admin"),
   Discord = require("discord.js"),
-  log = require("../log");
+  log = require("../log"),
+  NodeCache = require('node-cache');
 
 //const
+const Cache = new NodeCache({
+  stdTTL: 1800
+}); //30min ttl
+const champ_Chache = new NodeCache({
+  stdTTL: 86400
+}); //24H ttl
+
 const api_key = 'RGAPI-06ae383a-4045-4d80-b1ad-c0306de1e805',
   regio = {
     'ru': 'ru',
@@ -122,6 +130,19 @@ function get_masteries(region, summoner_id) {
   }
 }
 
+function filter_champs(id) {
+  const champs = (champ_Chache.get('champs')) ? champ_Chache.get('champs') : await get_champs();
+  if (!champ_Chache.get('champs')) champ_Chache.set('champs', champs);
+  return Object.values(champs.data).filter(champ => champ.key == id);
+}
+
+function get_champs() {
+  return fetch('http://ddragon.leagueoflegends.com/cdn/6.24.1/data/en_US/champion.json')
+    .then(champion => champion.json())
+    .catch(err => console.log(err));
+}
+
+/*
 function get_champion(id) {
   try {
     return fetch('http://ddragon.leagueoflegends.com/cdn/6.24.1/data/en_US/champion.json')
@@ -134,7 +155,7 @@ function get_champion(id) {
     log.log(err);
     return undefined;
   }
-}
+}*/
 
 exports.get_lol = async (config, client, message) => {
   const args = admin.cut_cmd(message);
@@ -155,12 +176,12 @@ exports.get_lol = async (config, client, message) => {
           if (summoner.id) {
             get_rank(region, summoner.id).then(rank => {
               get_masteries(region, summoner.id).then(async masteries => {
-                const thumb = (masteries.length > 0) ? 'http://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/' + (await get_champion(masteries[0].championId))[0].name.replace(/[^\w]/gm, '') + '.png' : '';
+                const thumb = (masteries.length > 0) ? 'http://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/' + (await filter_champs(masteries[0].championId))[0].name.replace(/[^\w]/gm, '') + '.png' : '';
                 const opgg = 'https://' + region + '.op.gg/summoner/userName=' + encodeURI(summoner.name);
 
-                const champ_0 = (masteries[0]) ? (await get_champion(masteries[0].championId))[0].name + ' (' + new Intl.NumberFormat().format(masteries[0].championPoints) + ') ' : '';
-                const champ_1 = (masteries[1]) ? (await get_champion(masteries[1].championId))[0].name + ' ( ' + new Intl.NumberFormat().format(masteries[1].championPoints) + ') ' : '';
-                const champ_2 = (masteries[2]) ? (await get_champion(masteries[2].championId))[0].name + ' ( ' + new Intl.NumberFormat().format(masteries[2].championPoints) + ') ' : '';
+                const champ_0 = (masteries[0]) ? (await filter_champs(masteries[0].championId))[0].name + ' (' + new Intl.NumberFormat().format(masteries[0].championPoints) + ') ' : '';
+                const champ_1 = (masteries[1]) ? (await filter_champs(masteries[1].championId))[0].name + ' ( ' + new Intl.NumberFormat().format(masteries[1].championPoints) + ') ' : '';
+                const champ_2 = (masteries[2]) ? (await filter_champs(masteries[2].championId))[0].name + ' ( ' + new Intl.NumberFormat().format(masteries[2].championPoints) + ') ' : '';
 
                 const solo_Q = rank.filter(rank => rank.queueType == 'RANKED_SOLO_5x5');
                 const flex_55 = rank.filter(rank => rank.queueType == 'RANKED_FLEX_SR');
