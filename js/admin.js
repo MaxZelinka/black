@@ -1,9 +1,11 @@
+//Checks
+
 exports.isUser = (arg) => {
-    return (arg !== undefined && arg.match(/^<@!?([0-9]{18})>$/gm) !== null) ? true : false;
+    return (arg && arg.match(/^<@!?([0-9]{18})>$/gm) !== null) ? true : false;
 }
 
 exports.isChannel = (arg) => {
-    return (arg !== undefined && arg.match(/^<#!?([0-9]{18})>$/gm) !== null) ? true : false;   
+    return (arg && arg.match(/^<#!?([0-9]{18})>$/gm) !== null) ? true : false;   
 }
 
 exports.isAdmin = (message) => {
@@ -19,7 +21,21 @@ exports.hasPerm = (func, message) => {
     return false;
 }
 
-//isURL
+exports.isURL = (arg) => {
+    return (arg && arg.match(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gm) !== null) ? true : false;
+}
+
+exports.isDigit = (arg) => {
+    return (arg && arg.match(/^[0-9]*$/gm) !== null) ? true : false;
+}
+
+//Gets
+
+exports.cut_cmd = async (msg) => {
+    const args = msg.content.trim().split(/ +/g);
+    args.shift();
+    return args;
+}
 
 exports.get_message = async (client, channel_ID, message_ID) => {
     return client.channels.get(channel_ID).fetchMessage(message_ID);

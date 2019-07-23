@@ -1,23 +1,21 @@
-const msg_send = require("../msg_send");
-const admin = require("../admin");
-const Discord = require("discord.js");
-const log = require("../log");
+//requiere
+const msg_send = require("../msg_send"),
+  admin = require("../admin"),
+  Discord = require("discord.js"),
+  log = require("../log");
 
 exports.clear = (client, message) => {
-  /*
-  https://discord.js.org/#/docs/main/stable/class/TextChannel?scrollTo=bulkDelete
-  */
   try {
-    const args = message.content.trim().split(/ +/g);
-    args.shift();
-
-    if (admin.isAdmin(message) === true ||
-      admin.isMod(message, config) === true ||
-      admin.hasPerm('serverinfo', message)) {
-
-      if (args[0].match(/[\d]*/gm) !== null) {
-        message.channel.bulkDelete(args[0]);
-        msg_send.embedMessage(client, message.channel.id, 'clear', args[0] + ' messages deleted.', '000000', 5000);
+    const args = admin.cut_cmd(message);
+    if (admin.isAdmin(message) || admin.isMod(message, config)) {
+      if (admin.isDigit(args[0])) {
+        if (args[0] <= 100) {
+          channel.bulkDelete(args[0])
+            .then(msg => msg_send.embedMessage(client, message.channel.id, 'clear', `${msg.size} messages deleted.`, '000000', 5000))
+            .catch(console.error);
+        } else {
+          msg_send.embedMessage(client, message.channel.id, 'clear', 'cant delete more than 100 messages at once.', 'ff0000', 5000);
+        }
       } else {
         msg_send.embedMessage(client, message.channel.id, 'clear', args[0] + ' isnt a number.', 'ff0000', 5000);
       }
@@ -29,43 +27,36 @@ exports.clear = (client, message) => {
 
 exports.serverinfo = async (config, message) => {
   try {
-    if (admin.isAdmin(message) === true ||
-      admin.isMod(message, config) === true ||
-      admin.hasPerm('serverinfo', message)) {
-
-      const guild = message.guild;
-
-      const timezones = {
-        'brazil': 'D/M/Y',
-        'eu-central': 'D/M/Y',
-        'hongkong': 'D/M/Y',
-        'india': 'D/M/Y',
-        'japan': 'Y/M/D',
-        'russia': 'D/M/Y',
-        'singapore': 'Y/M/D',
-        'southafrica': 'Y/M/D',
-        'sydney': 'D/M/Y',
-        'us-central': 'M/D/Y',
-        'us-east': 'M/D/Y',
-        'us-south': 'M/D/Y',
-        'us-west': 'M/D/Y',
-        'eu-west': 'D/M/Y'
-      }
-
-      const owner = guild.owner.user;
-      const timeformat = (Object.keys(timezones).includes(guild.region)) ? timezones[guild.region] : 'D/M/Y';
-      //const timeformat = 'D/M/Y';
-      const createdAt = timeformat.replace(/D/gmi, guild.createdAt.getDate()).replace(/M/gmi, guild.createdAt.getMonth() + 1).replace(/Y/gmi, guild.createdAt.getUTCFullYear());
-      const countroles = guild.roles.size;
-      const online = guild.presences.size;
-      const memberCount = guild.memberCount;
-      const bots = guild.members.filter(el => el.user.bot == true).size;
-      const member = guild.members.filter(el => el.user.bot == false).size;
-      const channels = guild.channels.size;
-      const textchannels = guild.channels.filter(el => el.type === 'text').size;
-      const voicechannels = guild.channels.filter(el => el.type === 'voice').size;
-
-      const exampleEmbed = new Discord.RichEmbed()
+    if (admin.isAdmin(message) || admin.isMod(message, config)) {
+      const guild = message.guild,
+        owner = guild.owner.user,
+        timezones = {
+          'brazil': 'D/M/Y',
+          'eu-central': 'D/M/Y',
+          'hongkong': 'D/M/Y',
+          'india': 'D/M/Y',
+          'japan': 'Y/M/D',
+          'russia': 'D/M/Y',
+          'singapore': 'Y/M/D',
+          'southafrica': 'Y/M/D',
+          'sydney': 'D/M/Y',
+          'us-central': 'M/D/Y',
+          'us-east': 'M/D/Y',
+          'us-south': 'M/D/Y',
+          'us-west': 'M/D/Y',
+          'eu-west': 'D/M/Y'
+        },
+        timeformat = (Object.keys(timezones).includes(guild.region)) ? timezones[guild.region] : 'D/M/Y',
+        createdAt = timeformat.replace(/D/gmi, guild.createdAt.getDate()).replace(/M/gmi, guild.createdAt.getMonth() + 1).replace(/Y/gmi, guild.createdAt.getUTCFullYear()),
+        countroles = guild.roles.size,
+        online = guild.presences.size,
+        memberCount = guild.memberCount,
+        bots = guild.members.filter(el => el.user.bot == true).size,
+        member = guild.members.filter(el => el.user.bot == false).size,
+        channels = guild.channels.size,
+        textchannels = guild.channels.filter(el => el.type === 'text').size,
+        voicechannels = guild.channels.filter(el => el.type === 'voice').size,
+        exampleEmbed = new Discord.RichEmbed()
         .setColor('#000000')
         .setTitle('Server-Info')
         .addField('Owner', owner, true)
@@ -83,19 +74,14 @@ exports.serverinfo = async (config, message) => {
 }
 
 exports.imgmsg = (config, client, message) => {
-  if (admin.isAdmin(message) ||
-    admin.isMod(message, config) ||
-    admin.hasPerm('imgmsg', message)) {
+  if (admin.isAdmin(message) || admin.isMod(message, config)) {
+    const args = admin.cut_cmd(message);
+    const rich = new Discord.RichEmbed()
+      .setImage(args[1])
+      .setColor('000');
 
-    const args = message.content.trim().split(/ +/g);
-    args.shift();
-
-    let rich = new Discord.RichEmbed();
-    rich.setImage(args[1]);
-    rich.setColor('000');
-
-    if (args[0] && admin.isChannel(args[0]) && args[1]) {
-      client.guilds.get(message.guild.id).channels.get(args[0].replace(/[<#>]/gm,'')).send(rich);
+    if (admin.isChannel(args[0]) && admin.isURL(args[1])) {
+      client.guilds.get(message.guild.id).channels.get(args[0].replace(/[<#>]/gm, '')).send(rich);
     }
   }
 }
