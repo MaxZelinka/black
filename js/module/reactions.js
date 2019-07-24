@@ -34,6 +34,7 @@ exports.addrole = async (config, client, message) => {
                             found.react(reaction);
                             const link = 'https://discordapp.com/channels/' + message.guild.id + '/' + channelID + '/' + messageID;
                             msg_send.embedMessage(client, message.channel.id, 'Reaction', 'created.\nReaction_ID: ' + reaction_ID[0].reactionsID + '\n' + link, '000000');
+                            reaction_cache.del(message.guild.id);
                         } else {
                             msg_send.embedMessage(client, message.channel.id, 'Reaction', 'cant create reaction. Double Entry?', '#ff0000', 5000);
                         }
@@ -67,6 +68,7 @@ exports.removerole = async (config, client, message) => {
                 db.query(`DELETE FROM reactions WHERE ServerID = ` + message.guild.id + ` AND reactionsID = ` + args[0] + `;`).then(response => {
                     if (response !== undefined) {
                         msg_send.embedMessage(client, message.channel.id, 'Reaction', 'reaction deleted.', '#000000');
+                        reaction_cache.del(message.guild.id);
                     } else {
                         msg_send.embedMessage(client, message.channel.id, 'Reaction', 'cant delete reaction.', '#ff0000', 5000);
                     }
