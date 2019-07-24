@@ -16,8 +16,8 @@ exports.handler = async (client, message) => {
     if (message.guild !== null) {
         db.get_config(message.guild).then((config) => {
             if (config && config[0]) {
-                const cf_channel = (config[0].Channel !== null) ? (config[0].Channel.includes(',')) ? [...config[0].Channel.replace(/[ ]/gm, '').split(',')] : [config[0].Channel.replace(/[ ]/gm, '')] : '',
-                    cf_blacklist = (config[0].blacklist !== null) ? (config[0].blacklist.includes(',')) ? [...config[0].blacklist.replace(/[ ]/gm, '').split(',')] : [config[0].blacklist.replace(/[ ]/gm, '')] : '',
+                const cf_channel = (config[0].Channel) ? (config[0].Channel.includes(',')) ? [...config[0].Channel.replace(/[ ]/gm, '').split(',')] : [config[0].Channel.replace(/[ ]/gm, '')] : '',
+                    cf_blacklist = (config[0].blacklist) ? (config[0].blacklist.includes(',')) ? [...config[0].blacklist.replace(/[ ]/gm, '').split(',')] : [config[0].blacklist.replace(/[ ]/gm, '')] : '',
                     cf_prefix = config[0].Prefix;
 
                 const args = message.content.trim().split(/ +/g);
@@ -25,8 +25,7 @@ exports.handler = async (client, message) => {
 
                 const regexPrefix = new RegExp('^(' + cf_prefix.replace(/\?/gm, '\\?') + ')\\S*', 'gm');
 
-                if (cf_blacklist.includes(message.author.id) &&
-                    message.content.match(regexPrefix) !== null) {
+                if (cf_blacklist.includes(message.author.id) && message.content.match(regexPrefix)) {
                     msg_send.embedMessage(client, message.channel.id, 'Blacklist', message.author.toString() + ' - you are blacklistet from using commands.', '#ff0000', 5000);
                 } else {
                     switch (command) {

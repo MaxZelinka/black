@@ -1,27 +1,26 @@
-const punycode = require('punycode');
-const Discord = require("discord.js");
+const punycode = require('punycode'),
+    Discord = require("discord.js");
 
-//own scripts
-const db = require("../db");
-const log = require("../log");
-const admin = require("../admin");
-const msg_send = require("../msg_send");
+const db = require("../db"),
+    log = require("../log"),
+    admin = require("../admin"),
+    msg_send = require("../msg_send");
 
 exports.addrole = async (config, client, message) => {
-    const args = message.content.trim().split(/ +/g);
-    args.shift();
-    if (admin.isAdmin(message) === true || admin.isMod(message, config) === true) {
+    const args = admin.cut_cmd(message);
+    if (admin.isAdmin(message) || admin.isMod(message, config)) {
         if (args[0] !== undefined &&
-            admin.isChannel(args[0]) === true &&
-            args[1] !== undefined &&
-            args[2] !== undefined &&
-            args[3] !== undefined) {
-            const channelID = args[0].replace(/[<#>]/gm, '');
-            const messageID = args[1];
-            const emoteID = punycode.encode((args[2].match(/[<>]/gm) !== null) ? args[2].replace(/^<>/gm, '') : args[2]);
-            const roleID = args[3].replace(/[<@&>]/gm, '');
+            admin.isChannel(args[0]) &&
+            args[1] &&
+            args[2] &&
+            args[3]) {
 
-            if (await message.guild.roles.find(el => el.id == roleID) !== null) {
+            const channelID = args[0].replace(/[<#>]/gm, ''),
+                messageID = args[1],
+                emoteID = punycode.encode((args[2].match(/[<>]/gm)) ? args[2].replace(/^<>/gm, '') : args[2]),
+                roleID = args[3].replace(/[<@&>]/gm, '');
+
+            if (await message.guild.roles.find(el => el.id == roleID)) {
                 admin.get_message(client, channelID, messageID).then((found) => {
                     db.set_reaction(message.guild, channelID, messageID, emoteID, roleID).then((reaction_ID) => {
                         if (reaction_ID !== undefined) {
@@ -132,16 +131,6 @@ exports.embedmsg = async (config, client, message) => {
                 let channel = args[0].replace(/[<#!>]/gmi, '');
                 let colorcode = parseInt(args[1].replace(/[#]/gm, ''), 16);
 
-                /*
-                const img = content.replace(regex_embedmessage_cmdv, '').replace(/[" ]/gmi, '');
-                const embedmsg = new Discord.RichEmbed()
-                .setColor(args[1])
-                .setAuthor(rest[0].replace(/\"/gm, ''))
-                .setDescription(rest[1].replace(/\"/gm, ''))
-                .setImage(img);
-                client.channels.get(channel).send(embedmsg);
-                */
-
                 client.channels.get(channel).send({
                     embed: {
                         color: colorcode,
@@ -182,7 +171,7 @@ exports.editmsg = async (config, client, message) => {
             const val = rest.toString().match(/("[^"]*")/g).toString().replace(/["]/g, '');
             const channelID = args[0].replace(/[<#>]/g, '');
 
-            if(val.length <= 1024){
+            if (val.length <= 1024) {
                 client.channels.get(channelID).fetchMessage(args[1]).then((msg) => {
                     msg.edit({
                         embed: {
@@ -199,9 +188,9 @@ exports.editmsg = async (config, client, message) => {
                 }).catch((error) => {
                     log.log('[editmsg] - ' + message.guild.id + ' : ' + error);
                 });
-            }  else {
+            } else {
                 msg_send.embedMessage(client, message.channel.id, 'Embed Message', 'max chars:\n title: 1024 \n body: 1024', '#ff0000', 5000);
-            }            
+            }
         }
     }
 }

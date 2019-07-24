@@ -12,9 +12,9 @@ const log = require("./js/log"),
   services = require("./js/services"),
   db = require("./js/db"),
   msghandler = require("./js/messagehandler"),
-  modhandler = require("./js/modulhandler"),
   reactions = require("./module/reactions");
 
+//modhandler = require("./js/modulhandler"),
 //Bot-Settings
 let arr_badwords = [];
 
