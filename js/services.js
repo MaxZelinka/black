@@ -2,8 +2,8 @@ const NodeCache = require('node-cache'),
     fspromise = require('fs.promises');
 
 const StatusCache = new NodeCache({
-    stdTTL: 86400
-}); //24H ttl
+    stdTTL: 86400 //24H ttl
+});
 
 exports.set_status = async () => {
     fspromise.readFile('config.json', 'utf8')

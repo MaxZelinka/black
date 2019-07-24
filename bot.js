@@ -80,14 +80,13 @@ client.on('guildCreate', async guild => {
   //Whether the guild is available to access. If it is not available, it indicates a server outage 
   if (guild.available) {
     //no config set
-    let config = await db.get_config(guild);
-    if (!config || config.length == 0) {
-      //set config with standard
-      db.set_config(guild);
-    } else {
-      //set guild active = true
-      db.set_guildactive(guild, 1);
-    }
+    db.get_config(guild).then(config => {
+      if (!config || config.length == 0) {
+        db.set_config(guild);
+      } else {
+        db.set_guildactive(guild, 1);
+      }
+    })
   }
 });
 
@@ -104,9 +103,7 @@ client.on('guildDelete', async guild => {
 client.on('guildMemberAdd', async member => {
   db.get_config(member.guild).then((config) => {
     if (config && config.length >= 0) {
-      if (config[0].welcome === 1 &&
-        config[0].welcome_channel !== null &&
-        config[0].botlog !== null) {
+      if (config[0].welcome === 1 && config[0].welcome_channel && config[0].botlog) {
 
         const chn = member.guild.channels.get(config[0].welcome_channel),
           server_icon = (member.guild.iconURL !== null) ? member.guild.iconURL : '';
