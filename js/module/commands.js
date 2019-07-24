@@ -16,7 +16,7 @@ const delCache = new NodeCache({
   },
   arr_del_msg = new Array();
 
-exports.del = async (client, message) => {
+exports.del = (client, message) => {
   try {
     const args = admin.cut_cmd(message);
     if (admin.isAdmin(message) || admin.isMod(message, config)) {
@@ -46,7 +46,7 @@ exports.del = async (client, message) => {
   }
 }
 
-exports.undel = async (client, message) => {
+exports.undel = (client, message) => {
   try {
     if (admin.isAdmin(message) || admin.isMod(message, config)) {
       delCache.get(message.guild.id + message.channel.id, (err, val) => {
