@@ -56,17 +56,14 @@ exports.addrole = async (config, client, message) => {
 }
 
 exports.removerole = async (config, client, message) => {
-    const args = message.content.trim().split(/ +/g);
-    args.shift();
-    if (admin.isAdmin(message) === true ||
-        admin.isMod(message, config) === true ||
-        admin.hasPerm('removerole', message)) {
-        if (args[0] !== undefined) {
+    const args = admin.cut_cmd(message);
+    if (admin.isAdmin(message) || admin.isMod(message, config)) {
+        if (args[0]) {
             db.query(`SELECT * FROM reactions WHERE ServerID = ` + message.guild.id + ` AND reactionsID = ` + args[0] + `;`).then(async role => {
                 const msg = await message.guild.channels.get(role[0].ChannelID).fetchMessage(role[0].MessageID);
                 msg.reactions.get(punycode.decode(role[0].EmoteID)).remove(client.user.id);
                 db.query(`DELETE FROM reactions WHERE ServerID = ` + message.guild.id + ` AND reactionsID = ` + args[0] + `;`).then(response => {
-                    if (response !== undefined) {
+                    if (response) {
                         msg_send.embedMessage(client, message.channel.id, 'Reaction', 'reaction deleted.', '#000000');
                         reaction_cache.del(message.guild.id);
                     } else {
@@ -147,22 +144,18 @@ exports.reactionid = async (config, client, message) => {
 
 exports.embedmsg = async (config, client, message) => {
     //?bembedmsg #💰-server-support #000 "Support" "We are grateful for every support we can get. :)" "img"
-    const args = message.content.trim().split(/ +/g);
-    args.shift();
-    if (admin.isAdmin(message) === true ||
-        admin.isMod(message, config) === true ||
-        admin.hasPerm('embedmsg', message) === true) {
+    const args = admin.cut_cmd(message);
+    if (admin.isAdmin(message) || admin.isMod(message, config)) {
 
-        const regex_embedmessage_cmd = new RegExp('^<#\\d{18}> *#([\\dA-F]){3,6} *("[^"]*" *){2}', 'gmi');
-        const regex_rest = new RegExp('("[^"]*")', 'gm');
-        const content = message.content.substring(message.content.indexOf(' ') + 1);
-        const rest = content.match(regex_rest);
+        const regex_embedmessage_cmd = new RegExp('^<#\\d{18}> *#([\\dA-F]){3,6} *("[^"]*" *){2}', 'gmi'),
+            regex_rest = new RegExp('("[^"]*")', 'gm'),
+            content = message.content.substring(message.content.indexOf(' ') + 1),
+            rest = content.match(regex_rest);
 
-        if (content.match(regex_embedmessage_cmd) !== null &&
-            rest !== null) {
+        if (content.match(regex_embedmessage_cmd) && rest) {
             if (rest[0].length <= 1026 && rest[1].length <= 1026) {
-                let channel = args[0].replace(/[<#!>]/gmi, '');
-                let colorcode = parseInt(args[1].replace(/[#]/gm, ''), 16);
+                let channel = args[0].replace(/[<#!>]/gmi, ''),
+                    colorcode = parseInt(args[1].replace(/[#]/gm, ''), 16);
 
                 client.channels.get(channel).send({
                     embed: {
@@ -188,16 +181,13 @@ exports.embedmsg = async (config, client, message) => {
 }
 
 exports.editmsg = async (config, client, message) => {
-    const args = message.content.trim().split(/ +/g);
-    args.shift();
-    if (admin.isAdmin(message) === true ||
-        admin.isMod(message, config) === true ||
-        admin.hasPerm('embedmsg', message) === true) {
+    const args = admin.cut_cmd(message);
+    if (admin.isAdmin(message) || admin.isMod(message, config)) {
 
-        const regex_editmsg_cmd = new RegExp('^<#[\\d]{18}> *[\\d]{18} *(\\bTitle\\b|\\bBody\\b) *("[^"]*")', 'gim');
-        const regex_rest = new RegExp('(\\bTitle\\b|\\bBody\\b) *("[^"]*")', 'gim');
-        const content = message.content.substring(message.content.indexOf(' ') + 1);
-        const rest = content.match(regex_rest);
+        const regex_editmsg_cmd = new RegExp('^<#[\\d]{18}> *[\\d]{18} *(\\bTitle\\b|\\bBody\\b) *("[^"]*")', 'gim'),
+            regex_rest = new RegExp('(\\bTitle\\b|\\bBody\\b) *("[^"]*")', 'gim'),
+            content = message.content.substring(message.content.indexOf(' ') + 1),
+            rest = content.match(regex_rest);
 
         if (content.match(regex_editmsg_cmd) !== null && rest !== null) {
             const mod = rest.toString().match(/(^[^"]*)/g).toString().trim().toLowerCase();
