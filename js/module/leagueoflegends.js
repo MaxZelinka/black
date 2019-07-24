@@ -6,14 +6,21 @@ const fetch = require("node-fetch"),
   log = require("../log"),
   NodeCache = require('node-cache');
 
-//const
-const Cache = new NodeCache({
-  stdTTL: 1800
-}); //30min ttl
+//Cache
 const champ_Chache = new NodeCache({
-  stdTTL: 86400
-}); //24H ttl
+    stdTTL: 86400 //24H ttl
+  }),
+  mastery_cache = new NodeCache({
+    stdTTL: 3600 //1h ttl
+  }),
+  rank_cache = new NodeCache({
+    stdTTL: 3600 //1h ttl
+  }),
+  summoner_cache = new NodeCache({
+    stdTTL: 3600 //1h ttl
+  });
 
+//Const
 const api_key = 'RGAPI-06ae383a-4045-4d80-b1ad-c0306de1e805',
   regio = {
     'ru': 'ru',
@@ -71,20 +78,58 @@ function createRoles(message) {
 }
 
 function get_thirdparty(region, summoner_id) {
-  try {
-    return fetch('https://' + regio[region] + '.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/' + summoner_id + '?api_key=' + api_key, {
-        method: 'GET'
-      })
-      .then(third_party => third_party.json())
-      .catch(err => {
-        throw err;
-      });
-  } catch (err) {
-    log.log(err);
-    return undefined;
-  }
+  return fetch(`https://${regio[region]}.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/${summoner_id}?api_key=${api_key}`)
+    .then(third_party => third_party.json())
+    .catch(err => {
+      throw err;
+    });
 }
 
+async function get_summoner(region, name) {
+  const summoner = (summoner_cache.get(name)) ? summoner_cache.get(name) :
+    await fetch(`https://${regio[region]}.api.riotgames.com/lol/summoner/v4/summoners/by-name/${encodeURI(name)}?api_key=${api_key}`)
+    .then(summoner => summoner.json())
+    .catch(err => {
+      throw err;
+    });
+  if (!summoner_cache.get(name)) summoner_cache.set(name, summoner);
+  return summoner;
+}
+
+async function get_rank(region, summoner_id) {
+  const rank = (rank_cache.get(summoner_id)) ? rank_cache.get(summoner_id) :
+    await fetch(`https://${regio[region]}.api.riotgames.com/lol/league/v4/entries/by-summoner/${summoner_id}?api_key=${api_key}`)
+    .then(rank => rank.json())
+    .catch(err => {
+      throw err;
+    });
+  if (!rank_cache.get(summoner_id)) rank_cache.set(summoner_id, rank);
+  return rank;
+}
+
+async function get_masteries(region, summoner_id) {
+  const mastery = (mastery_cache.get(summoner_id)) ? mastery_cache.get(summoner_id) :
+    await fetch(`https://${regio[region]}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${summoner_id}?api_key=${api_key}`)
+    .then(masteries => masteries.json())
+    .catch(err => {
+      throw err;
+    });
+  if (!mastery_cache.get(summoner_id)) mastery_cache.set(summoner_id, mastery);
+  return mastery;
+}
+
+async function get_champs(id) {
+  const champs = (champ_Chache.get('champs')) ? champ_Chache.get('champs') :
+    await fetch('http://ddragon.leagueoflegends.com/cdn/6.24.1/data/en_US/champion.json')
+    .then(champion => champion.json())
+    .catch(err => {
+      throw err;
+    });
+  if (!champ_Chache.get('champs')) champ_Chache.set('champs', champs);
+  return Object.values(champs.data).filter(champ => champ.key == id);
+}
+
+/*
 function get_summoner(region, name) {
   try {
     return fetch('https://' + regio[region] + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + encodeURI(name) + '?api_key=' + api_key, {
@@ -130,19 +175,6 @@ function get_masteries(region, summoner_id) {
   }
 }
 
-function filter_champs(id) {
-  const champs = (champ_Chache.get('champs')) ? champ_Chache.get('champs') : await get_champs();
-  if (!champ_Chache.get('champs')) champ_Chache.set('champs', champs);
-  return Object.values(champs.data).filter(champ => champ.key == id);
-}
-
-function get_champs() {
-  return fetch('http://ddragon.leagueoflegends.com/cdn/6.24.1/data/en_US/champion.json')
-    .then(champion => champion.json())
-    .catch(err => console.log(err));
-}
-
-/*
 function get_champion(id) {
   try {
     return fetch('http://ddragon.leagueoflegends.com/cdn/6.24.1/data/en_US/champion.json')
@@ -176,12 +208,12 @@ exports.get_lol = async (config, client, message) => {
           if (summoner.id) {
             get_rank(region, summoner.id).then(rank => {
               get_masteries(region, summoner.id).then(async masteries => {
-                const thumb = (masteries.length > 0) ? 'http://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/' + (await filter_champs(masteries[0].championId))[0].name.replace(/[^\w]/gm, '') + '.png' : '';
+                const thumb = (masteries.length > 0) ? 'http://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/' + (await get_champs(masteries[0].championId))[0].name.replace(/[^\w]/gm, '') + '.png' : '';
                 const opgg = 'https://' + region + '.op.gg/summoner/userName=' + encodeURI(summoner.name);
 
-                const champ_0 = (masteries[0]) ? (await filter_champs(masteries[0].championId))[0].name + ' (' + new Intl.NumberFormat().format(masteries[0].championPoints) + ') ' : '';
-                const champ_1 = (masteries[1]) ? (await filter_champs(masteries[1].championId))[0].name + ' ( ' + new Intl.NumberFormat().format(masteries[1].championPoints) + ') ' : '';
-                const champ_2 = (masteries[2]) ? (await filter_champs(masteries[2].championId))[0].name + ' ( ' + new Intl.NumberFormat().format(masteries[2].championPoints) + ') ' : '';
+                const champ_0 = (masteries[0]) ? (await get_champs(masteries[0].championId))[0].name + ' (' + new Intl.NumberFormat().format(masteries[0].championPoints) + ') ' : '';
+                const champ_1 = (masteries[1]) ? (await get_champs(masteries[1].championId))[0].name + ' ( ' + new Intl.NumberFormat().format(masteries[1].championPoints) + ') ' : '';
+                const champ_2 = (masteries[2]) ? (await get_champs(masteries[2].championId))[0].name + ' ( ' + new Intl.NumberFormat().format(masteries[2].championPoints) + ') ' : '';
 
                 const solo_Q = rank.filter(rank => rank.queueType == 'RANKED_SOLO_5x5');
                 const flex_55 = rank.filter(rank => rank.queueType == 'RANKED_FLEX_SR');
@@ -230,7 +262,7 @@ exports.get_lol = async (config, client, message) => {
         });
       });
     } else {
-      msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'region not found.\n avieleble regios: ' + Object.keys(regio).toString(), '#ff0000', 5000);
+      msg_send.embedMessage(client, message.channel.id, 'League of Legends', `region not found.\n available regios: ${Object.keys(regio).toString()}`, '#ff0000', 5000);
     }
   } else {
     msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'missing arguments.', '#ff0000', 5000);

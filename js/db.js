@@ -4,17 +4,13 @@ const fspromise = require('fs.promises'),
     log = require("./log");
 
 async function get_fileconfig() {
-    return await fspromise.readFile('./config.json', 'utf8').then(data => {
-            return data;
-        })
-        .catch(error => {
-            log.log('[get_fileconfig] - ' + error);
-        });
+    return await fspromise.readFile('./config.json', 'utf8')
+        .then(data => JSON.parse(data))
+        .catch(error => log.log('[get_fileconfig] - ' + error));
 }
 
 async function conn() {
     return await get_fileconfig().then(async DBconfig => {
-        DBconfig = JSON.parse(DBconfig).db;
         return result = await mysql.createConnection({
             host: DBconfig.servername,
             user: DBconfig.username,
