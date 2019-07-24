@@ -1,19 +1,25 @@
 const punycode = require('punycode'),
-    Discord = require("discord.js");
+    Discord = require("discord.js"),
+    NodeCache = require('node-cache');
 
 const db = require("../db"),
     log = require("../log"),
     admin = require("../admin"),
-    msg_send = require("../msg_send");
+    msg_send = require("../msg_send"),
+    reaction_cache = new NodeCache({
+        stdTTL: 3600 //1h ttl
+    });
+
+async function get_all_reactions(guild) {
+    const reactions = reaction_cache.get(guild) || await db.query(`SELECT * FROM reactions WHERE ServerID = ${guild};`);
+    if (!reaction_cache.get(guild)) reaction_cache.set(guild, reactions);
+    return reactions;
+}
 
 exports.addrole = async (config, client, message) => {
     const args = admin.cut_cmd(message);
     if (admin.isAdmin(message) || admin.isMod(message, config)) {
-        if (args[0] !== undefined &&
-            admin.isChannel(args[0]) &&
-            args[1] &&
-            args[2] &&
-            args[3]) {
+        if (admin.isChannel(args[0]) && args[1] && args[2] && args[3]) {
 
             const channelID = args[0].replace(/[<#>]/gm, ''),
                 messageID = args[1],
@@ -73,9 +79,34 @@ exports.removerole = async (config, client, message) => {
 }
 
 exports.reactionid = async (config, client, message) => {
-    if (admin.isAdmin(message) === true ||
-        admin.isMod(message, config) === true ||
-        admin.hasPerm('reactionid', message) === true) {
+    if (admin.isAdmin(message) || admin.isMod(message, config)) {
+        get_all_reactions(message.guild.id).then(reactions => {
+            let ReactionsEmbed = new Discord.RichEmbed()
+                .setColor('#000000')
+                .setTitle('Reaction IDs')
+                .setDescription('\u200b'),
+                count = 0,
+                rest = response.length;
+
+            reactions.map(el => {
+                count++;
+                const link = `https://discordapp.com/channels/${message.guild.id}/${el.ChannelID}/${el.MessageID}`;
+                ReactionsEmbed.addField(`${el.reactionsID} ${punycode.decode(el.EmoteID)} - ${message.guild.channels.get(el.ChannelID).name.toString()} - ${message.guild.roles.get(el.RoleID).name.toString()}`, link);
+                if (count == 25 || count == response.length || count == rest) {
+                    client.channels.get(message.channel.id).send(ReactionsEmbed);
+                    ReactionsEmbed = new Discord.RichEmbed()
+                        .setColor('#000000')
+                        .setTitle('Reaction IDs')
+                        .setDescription('\u200b');
+                    count = 0;
+                    rest = rest - 25;
+                }
+            });
+        }).catch(err => {
+            throw err;
+        });
+
+        /*
         db.query(`SELECT * FROM reactions WHERE ServerID = ` + message.guild.id + `;`).then(response => {
             if (response !== undefined) {
 
@@ -108,7 +139,7 @@ exports.reactionid = async (config, client, message) => {
             } else {
                 msg_send.embedMessage(client, message.channel.id, 'Reaction', 'cant read reaction.', '#ff0000', 5000);
             }
-        });
+        });*/
     }
 }
 
