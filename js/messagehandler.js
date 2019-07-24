@@ -84,6 +84,12 @@ exports.handler = async (client, message) => {
                             case cf_prefix + 'img':
                                 cmd.imgmsg(config, client, message);
                                 break;
+                            case cf_prefix + 'del':
+                                cmd.del(client, message);
+                                break;
+                            case cf_prefix + 'undel':
+                                cmd.undel(client, message);
+                                break;
 
                                 //MODUL
                             case cf_prefix + 'modul':

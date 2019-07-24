@@ -2,7 +2,70 @@
 const msg_send = require("../msg_send"),
   admin = require("../admin"),
   Discord = require("discord.js"),
-  log = require("../log");
+  log = require("../log"),
+  NodeCache = require('node-cache');
+
+const delCache = new NodeCache({
+    stdTTL: 300 //5min ttl
+  }),
+  class_del_msg = class class_del_msg {
+    constructor(user, content) {
+      this.user = user;
+      this.content = content;
+    }
+  },
+  arr_del_msg = new Array();
+
+exports.del = async (client, message) => {
+  try {
+    const args = admin.cut_cmd(message);
+    if (admin.isAdmin(message) || admin.isMod(message, config)) {
+      if (admin.isDigit(args[0])) {
+        if (args <= 100) {
+          message.channel.bulkDelete(args[0]).then(msg => {
+            msg.map(el => {
+              let obj = new class_del_msg(el.author.username, el.content);
+              arr_del_msg.push(obj);
+            }).then(() => {
+              delCache.set(message.guild.id + message.channel.id, arr_del_msg);
+            }).then(msg => {
+              msg_send.embedMessage(client, message.channel.id, 'clear', `${msg.size} messages deleted.`, '000000', 5000);
+            }).catch(err => {
+              throw err;
+            });
+          });
+        } else {
+          msg_send.embedMessage(client, message.channel.id, 'clear', 'cant delete more than 100 messages at once.', 'ff0000', 5000);
+        }
+      } else {
+        msg_send.embedMessage(client, message.channel.id, 'clear', `${args[0]} isnt an digit`, 'ff0000', 5000);
+      }
+    }
+  } catch (err) {
+    throw err;
+  }
+}
+
+exports.undel = async (client, message) => {
+  try {
+    if (admin.isAdmin(message) || admin.isMod(message, config)) {
+      let del_msg = delCache.get(message.guild.id + message.channel.id);
+      let ReactionsEmbed = new Discord.RichEmbed()
+        .setColor('#000000')
+        .setTitle('Recover');
+
+      del_msg.map(el => {
+        let content = el.content || '_(cant recover)_';
+        ReactionsEmbed.addField(el.user, content);
+      });
+
+      message.channel.send(ReactionsEmbed);
+    }
+  } catch (err) {
+    throw err;
+  }
+}
+
 
 exports.clear = (client, message) => {
   try {
@@ -10,7 +73,7 @@ exports.clear = (client, message) => {
     if (admin.isAdmin(message) || admin.isMod(message, config)) {
       if (admin.isDigit(args[0])) {
         if (args[0] <= 100) {
-          channel.bulkDelete(args[0])
+          message.channel.bulkDelete(args[0])
             .then(msg => msg_send.embedMessage(client, message.channel.id, 'clear', `${msg.size} messages deleted.`, '000000', 5000))
             .catch(console.error);
         } else {
