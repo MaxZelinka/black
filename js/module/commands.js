@@ -49,17 +49,12 @@ exports.del = async (client, message) => {
 exports.undel = async (client, message) => {
   try {
     if (admin.isAdmin(message) || admin.isMod(message, config)) {
-      let del_msg = delCache.get(message.guild.id + message.channel.id);
-      let ReactionsEmbed = new Discord.RichEmbed()
-        .setColor('#000000')
-        .setTitle('Recover');
-
-      del_msg.map(el => {
-        let content = el.content || '_(cant recover)_';
-        ReactionsEmbed.addField(el.user, content);
+      delCache.get(message.guild.id + message.channel.id, (err, val) => {
+        if (!err) {
+          message.channel.send('**__Recover:__**');
+          val.map(el => message.channel.send('**' + el.user + ':** ' + (content = el.content || '_(cant recover)_')));
+        }
       });
-
-      message.channel.send(ReactionsEmbed);
     }
   } catch (err) {
     throw err;
