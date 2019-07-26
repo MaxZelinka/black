@@ -325,3 +325,148 @@ exports.set_lol = async (config, client, message) => {
     msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'missing argument.', '#ff0000', 5000);
   }
 }
+
+
+module.exports = class LeagueOfLegends {
+  constructor(region, name, client, message) {
+      this.region = region;
+      this.name = name;
+      this.client = client;
+      this.message = message;
+
+      this.summoner;
+      this.rank;
+      this.masteries;
+      this.champion;
+      this.thirdparty;
+
+      this.api_key = 'RGAPI-06ae383a-4045-4d80-b1ad-c0306de1e805';
+      this.regio = {
+          'ru': 'ru',
+          'kr': 'kr',
+          'br': 'br1',
+          'oce': 'oc1',
+          'jp': 'jp1',
+          'na': 'na1',
+          'eune': 'eun1',
+          'euw': 'euw1',
+          'tr': 'tr1',
+          'lan': 'la1',
+          'las': 'la2'
+      };
+      this.img_url = {
+          'Challenger': 'https://i.ibb.co/5FBN7pV/Emblem-Challenger.png',
+          'Grandmaster': 'https://i.ibb.co/rbmqZ5Q/Emblem-Grandmaster.png',
+          'Master': 'https://i.ibb.co/4Vx1L2P/Emblem-Master.png',
+          'Diamond': 'https://i.ibb.co/QdQHh1B/Emblem-Diamond.png',
+          'Platinum': 'https://i.ibb.co/xLt1g2m/Emblem-Platinum.png',
+          'Gold': 'https://i.ibb.co/5G8stwK/Emblem-Gold.png',
+          'Silver': 'https://i.ibb.co/d0dMCBQ/Emblem-Silver.png',
+          'Bronze': 'https://i.ibb.co/D13bBRN/Emblem-Bronze.png',
+          'Iron': 'https://i.ibb.co/8PN8YHm/Emblem-Iron.png'
+      };
+      this.ranks = {
+          'I': 1,
+          'II': 2,
+          'III': 3,
+          'IV': 4,
+          'V': 5
+      };
+      this.tiers = [
+          'Challenger',
+          'Grandmaster',
+          'Master',
+          'Diamond',
+          'Platinum',
+          'Gold',
+          'Silver',
+          'Bronze',
+          'Iron'
+      ];
+      this.champ_Chache = new NodeCache({
+          stdTTL: 86400 //24H ttl
+      });
+      this.mastery_cache = new NodeCache({
+          stdTTL: 3600 //1h ttl
+      });
+      this.rank_cache = new NodeCache({
+          stdTTL: 3600 //1h ttl
+      });
+      this.summoner_cache = new NodeCache({
+          stdTTL: 3600 //1h ttl
+      });
+  }
+
+  async get_lol() {
+      this.get_summoner();
+      const Summoner = await this.Summoner;
+      this.get_rank(Summoner);
+      this.get_masteries(Summoner);
+      this.get_champion();
+
+      // const args = admin.cut_cmd(message);
+      // if (args[0] && args[1]) {
+      //     const region = args[0].toLowerCase();
+      //     args.shift();
+      //     const user = args.toString().replace(/[,]/gm, ' ');
+
+      if (Object.keys(regio).includes(region)) {
+          // const loading = new Discord.RichEmbed()
+          //     .setColor('#000')
+          //     .setURL('https://discord.js.org/')
+          //     .setAuthor('loading', 'https://media1.tenor.com/images/50337fc1e603a4726067ed3a5127ee9e/tenor.gif?itemid=5488360', 'https://discord.js.org')
+          //     .setDescription(user);
+      }
+
+      // }
+  }
+
+  async set_lol() {}
+
+  async get_champion() {}
+
+  get_summoner() {
+      this.Summoner = this.summoner_cache.get(this.name) ||
+          fetch(`https://${this.regio[this.region]}.api.riotgames.com/lol/summoner/v4/summoners/by-name/${encodeURI(this.name)}?api_key=${this.api_key}`)
+          .then(summoner => summoner.json())
+          .catch(err => {
+              throw err;
+          });
+      if (!this.summoner_cache.get(this.name)) this.summoner_cache.set(this.name, this.summoner);
+  }
+  get_rank(Summoner) {
+      this.rank = this.rank_cache.get(Summoner.id) ||
+          fetch(`https://${this.regio[this.region]}.api.riotgames.com/lol/league/v4/entries/by-summoner/${Summoner.id}?api_key=${this.api_key}`)
+          .then(rank => rank.json())
+          .catch(err => {
+              throw err;
+          });
+      if (!this.rank_cache.get(Summoner.id)) this.rank_cache.set(Summoner.id, this.rank);
+  }
+  get_masteries(Summoner) {
+      this.masteries = this.mastery_cache.get(Summoner.id) ||
+          fetch(`https://${this.regio[this.region]}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${Summoner.id}?api_key=${this.api_key}`)
+          .then(masteries => masteries.json())
+          .catch(err => {
+              throw err;
+          });
+      if (!this.mastery_cache.get(Summoner.id)) this.mastery_cache.set(Summoner.id, this.masteries);
+  }
+  get_champion() {
+      this.champion = this.champ_Chache.get('champions') ||
+          fetch('http://ddragon.leagueoflegends.com/cdn/6.24.1/data/en_US/champion.json')
+          .then(champion => champion.json())
+          .catch(err => {
+              throw err;
+          });
+      if (!this.champ_Chache.get('champions')) this.champ_Chache.set('champions', this.champion);
+      //return Object.values(champs.data).filter(champ => champ.key == id);
+  }
+  get_thirdparty(Summoner) {
+      this.thirdparty = fetch(`https://${this.regio[this.region]}.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/${Summoner.id}?api_key=${this.api_key}`)
+          .then(third_party => third_party.json())
+          .catch(err => {
+              throw err;
+          });
+  }
+}
