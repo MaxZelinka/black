@@ -85,12 +85,13 @@ exports.reactionid = async (config, client, message) => {
                 .setTitle('Reaction IDs')
                 .setDescription('\u200b'),
                 count = 0,
-                rest = response.length;
+                rest = reactions.length;
 
             reactions.map(el => {
                 count++;
                 const link = `https://discordapp.com/channels/${message.guild.id}/${el.ChannelID}/${el.MessageID}`;
-                ReactionsEmbed.addField(`${el.reactionsID} ${punycode.decode(el.EmoteID)} - ${message.guild.channels.get(el.ChannelID).name.toString()} - ${message.guild.roles.get(el.RoleID).name.toString()}`, link);
+                const emote = punycode.decode(el.EmoteID);
+                ReactionsEmbed.addField(`${el.reactionsID} ${emote} - ${message.guild.channels.get(el.ChannelID).name.toString()} - ${message.guild.roles.get(el.RoleID).name.toString()}`, link);
                 if (count == 25 || count == response.length || count == rest) {
                     client.channels.get(message.channel.id).send(ReactionsEmbed);
                     ReactionsEmbed = new Discord.RichEmbed()
@@ -104,41 +105,6 @@ exports.reactionid = async (config, client, message) => {
         }).catch(err => {
             throw err;
         });
-
-        /*
-        db.query(`SELECT * FROM reactions WHERE ServerID = ` + message.guild.id + `;`).then(response => {
-            if (response !== undefined) {
-
-                let ReactionsEmbed = new Discord.RichEmbed()
-                    .setColor('#000000')
-                    .setTitle('Reaction IDs')
-                    .setDescription('\u200b');
-
-                let count = 0;
-                let rest = response.length;
-                response.map(el => {
-                    count++;
-                    const link = 'https://discordapp.com/channels/' + message.guild.id + '/' + el.ChannelID + '/' + el.MessageID;
-
-                    //const emote = (el.EmoteID.includes(':')) ? '<:' + el.EmoteID + '>' : el.EmoteID;
-                    const emote = punycode.decode(el.EmoteID);
-                    ReactionsEmbed.addField(el.reactionsID + ' ' + emote + ' - ' +
-                        message.guild.channels.get(el.ChannelID).name.toString() + ' - ' +
-                        message.guild.roles.get(el.RoleID).name.toString(), link);
-                    if (count == 25 || count == response.length || count == rest) {
-                        client.channels.get(message.channel.id).send(ReactionsEmbed);
-                        ReactionsEmbed = new Discord.RichEmbed()
-                            .setColor('#000000')
-                            .setTitle('Reaction IDs')
-                            .setDescription('\u200b');
-                        count = 0;
-                        rest = rest - 25;
-                    }
-                });
-            } else {
-                msg_send.embedMessage(client, message.channel.id, 'Reaction', 'cant read reaction.', '#ff0000', 5000);
-            }
-        });*/
     }
 }
 

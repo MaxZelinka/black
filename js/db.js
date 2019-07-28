@@ -12,10 +12,10 @@ async function get_fileconfig() {
 async function conn() {
     return await get_fileconfig().then(async DBconfig => {
         return result = await mysql.createConnection({
-            host: DBconfig.servername,
-            user: DBconfig.username,
-            password: DBconfig.password,
-            database: DBconfig.dbname
+            host: DBconfig.db.servername,
+            user: DBconfig.db.username,
+            password: DBconfig.db.password,
+            database: DBconfig.db.dbname
         });
     });
 }
