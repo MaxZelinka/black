@@ -92,7 +92,7 @@ exports.reactionid = async (config, client, message) => {
                 const link = `https://discordapp.com/channels/${message.guild.id}/${el.ChannelID}/${el.MessageID}`;
                 const emote = punycode.decode(el.EmoteID);
                 ReactionsEmbed.addField(`${el.reactionsID} ${emote} - ${message.guild.channels.get(el.ChannelID).name.toString()} - ${message.guild.roles.get(el.RoleID).name.toString()}`, link);
-                if (count == 25 || count == response.length || count == rest) {
+                if (count == 25 || count == reactions.length || count == rest) {
                     client.channels.get(message.channel.id).send(ReactionsEmbed);
                     ReactionsEmbed = new Discord.RichEmbed()
                         .setColor('#000000')
