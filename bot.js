@@ -12,7 +12,7 @@ const log = require("./js/log"),
   services = require("./js/services"),
   db = require("./js/db"),
   msghandler = require("./js/messagehandler"),
-  reactions = require("./module/reactions");
+  reactions = require("./js/module/reactions");
 
 //modhandler = require("./js/modulhandler"),
 //Bot-Settings
