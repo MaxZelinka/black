@@ -1,4 +1,6 @@
-const NodeCache = require('node-cache'),
+const Discord = require("discord.js"),
+    client = new Discord.Client(),
+    NodeCache = require('node-cache'),
     fspromise = require('fs.promises');
 
 const StatusCache = new NodeCache({

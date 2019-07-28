@@ -3,7 +3,7 @@ const msg_send = require("../msg_send"),
     admin = require("../admin");
 
 exports.prefix = async (config, client, message) => {
-    const args = admin.cut_cmd(message);
+    const args = await admin.cut_cmd(message);
     if (admin.isAdmin(message) || admin.isMod(message, config)) {
         if (args[0]) {
             if (args[0].length <= 20) {
@@ -34,7 +34,7 @@ exports.prefix = async (config, client, message) => {
 }
 
 exports.channel = async (config, client, message) => {
-    const args = admin.cut_cmd(message);
+    const args = await admin.cut_cmd(message);
     if (admin.isAdmin(message) || admin.isMod(message, config)) {
 
         db.query(`SELECT Channel FROM config WHERE ServerID = '` + message.guild.id + `' LIMIT 1;`).then(get => {
@@ -79,7 +79,7 @@ exports.channel = async (config, client, message) => {
 }
 
 exports.mod = async (config, client, message) => {
-    const args = admin.cut_cmd(message);
+    const args = await admin.cut_cmd(message);
     if (admin.isAdmin(message) || admin.isMod(message, config)) {
         db.query(`SELECT Moderator FROM config WHERE ServerID = ` + message.guild.id + ` LIMIT 1;`).then(async get => {
             if (get) {
@@ -120,7 +120,7 @@ exports.mod = async (config, client, message) => {
 }
 
 exports.botlog = async (config, client, message) => {
-    const args = admin.cut_cmd(message);
+    const args = await admin.cut_cmd(message);
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
         admin.hasPerm('botlog', message)) {
@@ -150,7 +150,7 @@ exports.botlog = async (config, client, message) => {
 }
 
 exports.modlog = async (config, client, message) => {
-    const args = admin.cut_cmd(message);
+    const args = await admin.cut_cmd(message);
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
         admin.hasPerm('modlog', message)) {
@@ -180,7 +180,7 @@ exports.modlog = async (config, client, message) => {
 }
 
 exports.blacklist = async (config, client, message) => {
-    const args = admin.cut_cmd(message);
+    const args = await admin.cut_cmd(message);
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
         admin.hasPerm('blacklist', message)) {
@@ -207,28 +207,28 @@ exports.blacklist = async (config, client, message) => {
 }
 
 exports.automod = async (config, client, message) => {
-    const args = admin.cut_cmd(message);
+    const args = await admin.cut_cmd(message);
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
         admin.hasPerm('automod', message)) {}
 }
 
 exports.welcome = async (config, client, message) => {
-    const args = admin.cut_cmd(message);
+    const args = await admin.cut_cmd(message);
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
         admin.hasPerm('welcome', message)) {}
 }
 
 exports.welcomemsg = async (config, client, message) => {
-    const args = admin.cut_cmd(message);
+    const args = await admin.cut_cmd(message);
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
         admin.hasPerm('welcomemsg', message)) {}
 }
 
 exports.leaverlog = async (config, client, message) => {
-    const args = admin.cut_cmd(message);
+    const args = await admin.cut_cmd(message);
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
         admin.hasPerm('leaverlog', message)) {}

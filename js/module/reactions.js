@@ -17,7 +17,7 @@ async function get_all_reactions(guild) {
 }
 
 exports.addrole = async (config, client, message) => {
-    const args = admin.cut_cmd(message);
+    const args = await admin.cut_cmd(message);
     if (admin.isAdmin(message) || admin.isMod(message, config)) {
         if (admin.isChannel(args[0]) && args[1] && args[2] && args[3]) {
 
@@ -56,7 +56,7 @@ exports.addrole = async (config, client, message) => {
 }
 
 exports.removerole = async (config, client, message) => {
-    const args = admin.cut_cmd(message);
+    const args = await admin.cut_cmd(message);
     if (admin.isAdmin(message) || admin.isMod(message, config)) {
         if (args[0]) {
             db.query(`SELECT * FROM reactions WHERE ServerID = ` + message.guild.id + ` AND reactionsID = ` + args[0] + `;`).then(async role => {
