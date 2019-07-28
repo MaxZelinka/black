@@ -8,7 +8,7 @@ const StatusCache = new NodeCache({
 });
 
 exports.set_status = async () => {
-    fspromise.readFile('config.json', 'utf8')
+    fspromise.readFile('../config.json', 'utf8')
         .then(data => JSON.parse(data))
         .then(data => {
             setInterval(status, data.statusIntervall);
@@ -18,7 +18,7 @@ exports.set_status = async () => {
 }
 
 async function status() {
-    let status_text = (StatusCache.get('status')) ? StatusCache.get('status') : await fspromise.readFile('status.json', 'utf8').then(data => JSON.parse(data));
+    let status_text = (StatusCache.get('status')) ? StatusCache.get('status') : await fspromise.readFile('../status.json', 'utf8').then(data => JSON.parse(data));
     if (!StatusCache.get('status')) StatusCache.set('status', status_text);
 
     let rand = Math.round(Math.random() * (status_text.status.length - 1) + 0);
