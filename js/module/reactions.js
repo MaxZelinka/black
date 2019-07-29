@@ -110,7 +110,7 @@ exports.reactionid = async (config, client, message) => {
 
 exports.embedmsg = async (config, client, message) => {
     //?bembedmsg #💰-server-support #000 "Support" "We are grateful for every support we can get. :)" "img"
-    const args = admin.cut_cmd(message);
+    const args = await admin.cut_cmd(message);
     if (admin.isAdmin(message) || admin.isMod(message, config)) {
 
         const regex_embedmessage_cmd = new RegExp('^<#\\d{18}> *#([\\dA-F]){3,6} *("[^"]*" *){2}', 'gmi'),
@@ -147,7 +147,7 @@ exports.embedmsg = async (config, client, message) => {
 }
 
 exports.editmsg = async (config, client, message) => {
-    const args = admin.cut_cmd(message);
+    const args = await admin.cut_cmd(message);
     if (admin.isAdmin(message) || admin.isMod(message, config)) {
 
         const regex_editmsg_cmd = new RegExp('^<#[\\d]{18}> *[\\d]{18} *(\\bTitle\\b|\\bBody\\b) *("[^"]*")', 'gim'),

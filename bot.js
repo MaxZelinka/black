@@ -29,7 +29,7 @@ Patreon Page
 client.on('ready', async () => {
   //log.log('[ready] - bot start');
   console.log('ready');
-  services.set_status();
+  services.set_status(client);
 });
 /**************************************************************************************************************/
 /* ERROR HANDLING                                                                                             */
