@@ -63,7 +63,7 @@ exports.removerole = async (config, client, message) => {
                 message.guild.channels.get(role[0].ChannelID).fetchMessage(role[0].MessageID).then(msg => {
                     msg.reactions.get(punycode.decode(role[0].EmoteID)).remove(client.user.id);
                 }).catch(err => {
-                    console.log(err);
+                    //console.log(err);
                 });
                 db.query(`DELETE FROM reactions WHERE ServerID = ` + message.guild.id + ` AND reactionsID = ` + args[0] + `;`).then(response => {
                     if (response) {
@@ -91,11 +91,12 @@ exports.reactionid = async (config, client, message) => {
                 rest = reactions.length;
 
             reactions.map(el => {
-                /*
                 count++;
-                const link = `https://discordapp.com/channels/${message.guild.id}/${el.ChannelID}/${el.MessageID}`;
+                let link = `https://discordapp.com/channels/${message.guild.id}/${el.ChannelID}/${el.MessageID}`;
+                let channel = message.guild.channels.get(el.ChannelID).name.toString() || 'deleted channel';
+                let role = message.guild.roles.get(el.RoleID).name.toString() || 'deleted role';
                 const emote = punycode.decode(el.EmoteID);
-                // ReactionsEmbed.addField(`${el.reactionsID} ${emote} - ${message.guild.channels.get(el.ChannelID).name.toString()} - ${message.guild.roles.get(el.RoleID).name.toString()}`, link);
+                ReactionsEmbed.addField(`${el.reactionsID} ${emote} - ${channel} - ${role}`, link);
                 if (count == 25 || count == reactions.length || count == rest) {
                     client.channels.get(message.channel.id).send(ReactionsEmbed);
                     ReactionsEmbed = new Discord.RichEmbed()
@@ -104,7 +105,7 @@ exports.reactionid = async (config, client, message) => {
                         .setDescription('\u200b');
                     count = 0;
                     rest = rest - 25;
-                }*/
+                }
             });
         }).catch(err => {
             throw err;
