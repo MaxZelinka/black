@@ -93,8 +93,8 @@ exports.reactionid = async (config, client, message) => {
             reactions.map(el => {
                 count++;
                 let link = `https://discordapp.com/channels/${message.guild.id}/${el.ChannelID}/${el.MessageID}`;
-                let channel = message.guild.channels.get(el.ChannelID) ? message.guild.channels.get(el.ChannelID).name.toString() : 'deleted channel';
-                let role = message.guild.roles.get(el.RoleID) ? message.guild.roles.get(el.RoleID).name.toString() : 'deleted role';
+                let channel = message.guild.channels.get(el.ChannelID) ? message.guild.channels.get(el.ChannelID).name.toString() : '[deleted channel]';
+                let role = message.guild.roles.get(el.RoleID) ? message.guild.roles.get(el.RoleID).name.toString() : '[deleted role]';
                 const emote = punycode.decode(el.EmoteID);
                 ReactionsEmbed.addField(`${el.reactionsID} ${emote} - ${channel} - ${role}`, link);
                 if (count == 25 || count == reactions.length || count == rest) {
