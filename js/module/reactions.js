@@ -60,8 +60,11 @@ exports.removerole = async (config, client, message) => {
     if (admin.isAdmin(message) || admin.isMod(message, config)) {
         if (args[0]) {
             db.query(`SELECT * FROM reactions WHERE ServerID = ` + message.guild.id + ` AND reactionsID = ` + args[0] + `;`).then(async role => {
-                const msg = await message.guild.channels.get(role[0].ChannelID).fetchMessage(role[0].MessageID);
-                msg.reactions.get(punycode.decode(role[0].EmoteID)).remove(client.user.id);
+                message.guild.channels.get(role[0].ChannelID).fetchMessage(role[0].MessageID).then(msg => {
+                    msg.reactions.get(punycode.decode(role[0].EmoteID)).remove(client.user.id);
+                }).catch(err => {
+                    console.log(err);
+                });
                 db.query(`DELETE FROM reactions WHERE ServerID = ` + message.guild.id + ` AND reactionsID = ` + args[0] + `;`).then(response => {
                     if (response) {
                         msg_send.embedMessage(client, message.channel.id, 'Reaction', 'reaction deleted.', '#000000');
@@ -88,10 +91,11 @@ exports.reactionid = async (config, client, message) => {
                 rest = reactions.length;
 
             reactions.map(el => {
+                /*
                 count++;
                 const link = `https://discordapp.com/channels/${message.guild.id}/${el.ChannelID}/${el.MessageID}`;
                 const emote = punycode.decode(el.EmoteID);
-                ReactionsEmbed.addField(`${el.reactionsID} ${emote} - ${message.guild.channels.get(el.ChannelID).name.toString()} - ${message.guild.roles.get(el.RoleID).name.toString()}`, link);
+                // ReactionsEmbed.addField(`${el.reactionsID} ${emote} - ${message.guild.channels.get(el.ChannelID).name.toString()} - ${message.guild.roles.get(el.RoleID).name.toString()}`, link);
                 if (count == 25 || count == reactions.length || count == rest) {
                     client.channels.get(message.channel.id).send(ReactionsEmbed);
                     ReactionsEmbed = new Discord.RichEmbed()
@@ -100,7 +104,7 @@ exports.reactionid = async (config, client, message) => {
                         .setDescription('\u200b');
                     count = 0;
                     rest = rest - 25;
-                }
+                }*/
             });
         }).catch(err => {
             throw err;
