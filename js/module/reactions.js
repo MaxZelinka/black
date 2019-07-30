@@ -30,7 +30,7 @@ exports.addrole = async (config, client, message) => {
                 admin.get_message(client, channelID, messageID).then((found) => {
                     db.set_reaction(message.guild, channelID, messageID, emoteID, roleID).then((reaction_ID) => {
                         if (reaction_ID !== undefined) {
-                            let reaction = (args[2].match(/[<>]/gm) !== null) ? args[2].replace(/[^<>]/gm, '') : args[2];
+                            let reaction = (args[2].match(/[<>]/gm) != null) ? args[2].replace(/[<>]/gm, '') : args[2]; //
                             found.react(reaction);
                             const link = 'https://discordapp.com/channels/' + message.guild.id + '/' + channelID + '/' + messageID;
                             msg_send.embedMessage(client, message.channel.id, 'Reaction', 'created.\nReaction_ID: ' + reaction_ID[0].reactionsID + '\n' + link, '000000');
