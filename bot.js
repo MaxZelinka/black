@@ -1,8 +1,22 @@
 const Discord = require("discord.js"),
   client = new Discord.Client(),
   auth = require("./auth.json"),
-  fs = require('fs'),
   punycode = require('punycode');
+
+const modules = {
+  /*extern*/
+  punycode: require('punycode'),
+  NodeCache: require('node-cache'),
+  fspromise: require('fs.promises'),
+
+  /*intern*/
+  admin: require('./js/admin'),
+  db: require('./js/db'),
+  log: require('./js/log'),
+  msghandler: require('./js/messagehandler'),
+  msgsend: require('./js/msg_send'),
+  services: require('./js/services'),
+}
 
 //https://www.npmjs.com/package/node-cache
 //https://www.npmjs.com/package/punycode
@@ -27,9 +41,9 @@ Patreon Page
 /* BOT STARTS                                                                                                 */
 /**************************************************************************************************************/
 client.on('ready', async () => {
-  //log.log('[ready] - bot start');
-  console.log('ready');
-  services.set_status(client);
+  console.log('[bot started] ready');
+  modules.services.set_status(client);
+  //services.set_status(client);
 });
 /**************************************************************************************************************/
 /* ERROR HANDLING                                                                                             */
