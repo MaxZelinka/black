@@ -41,9 +41,8 @@ Patreon Page
 /* BOT STARTS                                                                                                 */
 /**************************************************************************************************************/
 client.on('ready', async () => {
-  console.log('[bot started] ready');
+  console.log('[bot started]');
   modules.services.set_status(client);
-  //services.set_status(client);
 });
 /**************************************************************************************************************/
 /* ERROR HANDLING                                                                                             */
@@ -192,8 +191,9 @@ client.on('messageReactionAdd', async (reaction, user, message) => {
   if (reaction.me && message && !user.bot) {
     const channelID = message.channel.id,
       messageID = message.id,
-      emoteID = punycode.encode((reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : reaction.emoji.name),
-      response = await reactions.get_reaction(message.guild, channelID, messageID, emoteID);
+      emoteID = punycode.encode((reaction.emoji.id !== null) ? '<:' + reaction.emoji.name + ':' + reaction.emoji.id + '>' : reaction.emoji.name);
+
+    const response = await reactions.get_reaction(message.guild, channelID, messageID, emoteID);
 
     if (response && response.length > 0) {
       message.guild.members.get(user.id).addRole(response[0].RoleID).catch((error) => {
@@ -208,7 +208,7 @@ client.on('messageReactionRemove', async (reaction, user, message) => {
   if (reaction.me && message && !user.bot) {
     const channelID = message.channel.id,
       messageID = message.id,
-      emoteID = punycode.encode((reaction.emoji.id !== null) ? reaction.emoji.name + ':' + reaction.emoji.id : reaction.emoji.name),
+      emoteID = punycode.encode((reaction.emoji.id !== null) ? '<:' + reaction.emoji.name + ':' + reaction.emoji.id + '>' : reaction.emoji.name),
       response = await reactions.get_reaction(message.guild, channelID, messageID, emoteID);
 
     if (response && response.length > 0) {

@@ -190,5 +190,5 @@ exports.editmsg = async (config, client, message) => {
 }
 
 exports.get_reaction = async (guild, channelID, messageID, emoteID) => {
-    return db.get_reaction(guild, channelID, messageID, emoteID);
+    return await db.get_reaction(guild, channelID, messageID, emoteID);
 }
