@@ -1,7 +1,6 @@
 const Discord = require("discord.js"),
   client = new Discord.Client(),
-  auth = require("./auth.json"),
-  punycode = require('punycode');
+  auth = require("./auth.json");
 
 const modules = {
   /*extern*/
@@ -23,7 +22,6 @@ const modules = {
 
 //own scripts
 const log = require("./js/log"),
-  services = require("./js/services"),
   db = require("./js/db"),
   msghandler = require("./js/messagehandler"),
   reactions = require("./js/module/reactions");
@@ -191,7 +189,7 @@ client.on('messageReactionAdd', async (reaction, user, message) => {
   if (reaction.me && message && !user.bot) {
     const channelID = message.channel.id,
       messageID = message.id,
-      emoteID = punycode.encode((reaction.emoji.id !== null) ? '<:' + reaction.emoji.name + ':' + reaction.emoji.id + '>' : reaction.emoji.name);
+      emoteID = modules.punycode.encode((reaction.emoji.id !== null) ? '<:' + reaction.emoji.name + ':' + reaction.emoji.id + '>' : reaction.emoji.name);
 
     const response = await reactions.get_reaction(message.guild, channelID, messageID, emoteID);
 
@@ -208,7 +206,7 @@ client.on('messageReactionRemove', async (reaction, user, message) => {
   if (reaction.me && message && !user.bot) {
     const channelID = message.channel.id,
       messageID = message.id,
-      emoteID = punycode.encode((reaction.emoji.id !== null) ? '<:' + reaction.emoji.name + ':' + reaction.emoji.id + '>' : reaction.emoji.name),
+      emoteID = modules.punycode.encode((reaction.emoji.id !== null) ? '<:' + reaction.emoji.name + ':' + reaction.emoji.id + '>' : reaction.emoji.name),
       response = await reactions.get_reaction(message.guild, channelID, messageID, emoteID);
 
     if (response && response.length > 0) {
