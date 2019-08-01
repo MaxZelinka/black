@@ -7,13 +7,13 @@ exports.isURL = (arg) => (arg && arg.match(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.
 exports.isDigit = (arg) => (arg && arg.match(/^[0-9]*$/gm) !== null);
 
 //get
-exports.cut_cmd = (msg) => {
-    const args = msg.content.trim().split(/ +/g);
-    args.shift();
-    return args;
-}
 exports.get_message = (client, channel_ID, message_ID) => client.channels.get(channel_ID).fetchMessage(message_ID);
 exports.get_channel = (client, channel_ID) => client.channels.get(channel_ID);
 
 //convert
 exports.to_colorcode = (color) => parseInt(color, 16);
+exports.cut_cmd = (msg) => {
+    const args = msg.content.trim().split(/ +/g);
+    args.shift();
+    return args;
+}
