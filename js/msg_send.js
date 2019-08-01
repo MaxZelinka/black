@@ -9,9 +9,7 @@ exports.embedMessage = function (client, channel_id, name, value, color, timer) 
       }]
     }
   }).then(msg => {
-    if (timer !== undefined) {
-      msg.delete(timer);
-    }
+    if (timer) msg.delete(timer);
   });
 }
 
