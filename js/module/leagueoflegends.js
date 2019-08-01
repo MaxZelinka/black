@@ -8,8 +8,8 @@ const fetch = require("node-fetch"),
 
 //Cache
 const champ_Chache = new NodeCache({
-  stdTTL: 86400 //24H ttl
-}),
+    stdTTL: 86400 //24H ttl
+  }),
   mastery_cache = new NodeCache({
     stdTTL: 3600 //1h ttl
   }),
@@ -88,10 +88,10 @@ function get_thirdparty(region, summoner_id) {
 async function get_summoner(region, name) {
   const summoner = summoner_cache.get(name) ||
     await fetch(`https://${regio[region]}.api.riotgames.com/lol/summoner/v4/summoners/by-name/${encodeURI(name)}?api_key=${api_key}`)
-      .then(summoner => summoner.json())
-      .catch(err => {
-        throw err;
-      });
+    .then(summoner => summoner.json())
+    .catch(err => {
+      throw err;
+    });
   if (!summoner_cache.get(name)) summoner_cache.set(name, summoner);
   return summoner;
 }
@@ -99,10 +99,10 @@ async function get_summoner(region, name) {
 async function get_rank(region, summoner_id) {
   const rank = rank_cache.get(summoner_id) ||
     await fetch(`https://${regio[region]}.api.riotgames.com/lol/league/v4/entries/by-summoner/${summoner_id}?api_key=${api_key}`)
-      .then(rank => rank.json())
-      .catch(err => {
-        throw err;
-      });
+    .then(rank => rank.json())
+    .catch(err => {
+      throw err;
+    });
   if (!rank_cache.get(summoner_id)) rank_cache.set(summoner_id, rank);
   return rank;
 }
@@ -110,10 +110,10 @@ async function get_rank(region, summoner_id) {
 async function get_masteries(region, summoner_id) {
   const mastery = mastery_cache.get(summoner_id) ||
     await fetch(`https://${regio[region]}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/${summoner_id}?api_key=${api_key}`)
-      .then(masteries => masteries.json())
-      .catch(err => {
-        throw err;
-      });
+    .then(masteries => masteries.json())
+    .catch(err => {
+      throw err;
+    });
   if (!mastery_cache.get(summoner_id)) mastery_cache.set(summoner_id, mastery);
   return mastery;
 }
@@ -121,10 +121,10 @@ async function get_masteries(region, summoner_id) {
 async function get_champs(id) {
   const champs = champ_Chache.get('champs') ||
     await fetch('http://ddragon.leagueoflegends.com/cdn/6.24.1/data/en_US/champion.json')
-      .then(champion => champion.json())
-      .catch(err => {
-        throw err;
-      });
+    .then(champion => champion.json())
+    .catch(err => {
+      throw err;
+    });
   if (!champ_Chache.get('champs')) champ_Chache.set('champs', champs);
   return Object.values(champs.data).filter(champ => champ.key == id);
 }

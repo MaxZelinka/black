@@ -16,11 +16,6 @@ exports.isMod = (message, config) => {
     return [...config[0].Moderator].includes(message.author.id);
 }
 
-exports.hasPerm = (func, message) => {
-    //function for the right_system
-    return false;
-}
-
 exports.isURL = (arg) => {
     return (arg && arg.match(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gm) !== null) ? true : false;
 }
