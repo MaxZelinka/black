@@ -1,6 +1,5 @@
 //own scripts
-const badwords = require("./badwords"),
-    db = require("./db"),
+const db = require("./db"),
     msg_send = require("./msg_send"),
     help = require("./module/help"),
     reactions = require("./module/reactions"),
@@ -82,7 +81,10 @@ exports.handler = async (discord, client, modules, message) => {
                                 cmd.clear(client, message);
                                 break;
                             case cf_prefix + 'img':
-                                cmd.imgmsg(config, client, message);
+                                cmd.img(config, client, message);
+                                break;
+                            case cf_prefix + 'embedimg':
+                                cmd.embedimg(config, client, message);
                                 break;
                             case cf_prefix + 'del':
                                 cmd.del(client, message);

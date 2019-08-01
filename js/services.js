@@ -5,10 +5,10 @@ const StatusCache = new NodeCache({
     stdTTL: 86400 //24H ttl
 });
 
-exports.set_status = async (client) => {
-    fspromise.readFile('./config.json', 'utf8')
+exports.set_status = async (client, modules) => {
+    modules.fspromise.readFile('./config.json', 'utf8')
         .then(data => JSON.parse(data))
-        .then(data => {
+        .then(() => {
             status(client);
             //setInterval(status, data.statusIntervall);
             console.log('[service started] status');

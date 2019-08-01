@@ -37,7 +37,7 @@ const log = require("./js/log"),
 /**************************************************************************************************************/
 client.on('ready', async () => {
   console.log('[bot started]');
-  modules.services.set_status(client);
+  modules.services.set_status(client, modules);
 });
 
 /**************************************************************************************************************/

@@ -6,8 +6,8 @@ const msg_send = require("../msg_send"),
   NodeCache = require('node-cache');
 
 const delCache = new NodeCache({
-  stdTTL: 300 //5min ttl
-}),
+    stdTTL: 300 //5min ttl
+  }),
   class_del_msg = class class_del_msg {
     constructor(user, content) {
       this.user = user;
@@ -117,14 +117,14 @@ exports.serverinfo = async (config, message) => {
         textchannels = guild.channels.filter(el => el.type === 'text').size,
         voicechannels = guild.channels.filter(el => el.type === 'voice').size,
         exampleEmbed = new Discord.RichEmbed()
-          .setColor('#000000')
-          .setTitle('Server-Info')
-          .addField('Owner', owner, true)
-          .addField('Premium', false, true)
-          .addField('Server created', createdAt, true)
-          .addField('Total Roles', countroles, true)
-          .addField('Total Members', memberCount + ' members (' + online + ' online)\n' + bots + ' bots  \n' + member + ' human ', true)
-          .addField('Total Channels', channels + ' channels\n' + textchannels + ' text \n' + voicechannels + ' voice ', true);
+        .setColor('#000000')
+        .setTitle('Server-Info')
+        .addField('Owner', owner, true)
+        .addField('Premium', false, true)
+        .addField('Server created', createdAt, true)
+        .addField('Total Roles', countroles, true)
+        .addField('Total Members', memberCount + ' members (' + online + ' online)\n' + bots + ' bots  \n' + member + ' human ', true)
+        .addField('Total Channels', channels + ' channels\n' + textchannels + ' text \n' + voicechannels + ' voice ', true);
 
       message.channel.send(exampleEmbed);
     }
@@ -133,15 +133,26 @@ exports.serverinfo = async (config, message) => {
   }
 }
 
-exports.imgmsg = async (config, client, message) => {
+exports.img = async (config, client, message) => {
   if (admin.isAdmin(message) || admin.isMod(message, config)) {
     const args = await admin.cut_cmd(message);
-    const rich = new Discord.RichEmbed()
-      .setImage(args[1])
-      .setColor('000');
+    if (admin.isChannel(args[0]) &&
+      client.channels(args[0]) &&
+      args[1] &&
+      admin.isURL(args[1])) {
+      msg_send.img(client, args[0].replace(/[<#>]/gm, ''), args[1]);
+    }
+  }
+}
 
-    if (admin.isChannel(args[0]) && admin.isURL(args[1])) {
-      client.guilds.get(message.guild.id).channels.get(args[0].replace(/[<#>]/gm, '')).send(rich);
+exports.embedimg = async (config, client, message) => {
+  if (admin.isAdmin(message) || admin.isMod(message, config)) {
+    const args = await admin.cut_cmd(message);
+    if (admin.isChannel(args[0]) &&
+      client.channels(args[0]) &&
+      args[1] &&
+      admin.isURL(args[1])) {
+      msg_send.img(client, args[0].replace(/[<#>]/gm, ''), args[1]);
     }
   }
 }
