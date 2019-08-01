@@ -1,5 +1,5 @@
-const Discord = require("discord.js"),
-  client = new Discord.Client(),
+const discord = require("discord.js"),
+  client = new discord.Client(),
   auth = require("./auth.json");
 
 const modules = {
@@ -7,6 +7,7 @@ const modules = {
   punycode: require('punycode'),
   NodeCache: require('node-cache'),
   fspromise: require('fs.promises'),
+  moment: require('moment'),
 
   /*intern*/
   admin: require('./js/admin'),
@@ -15,26 +16,22 @@ const modules = {
   msghandler: require('./js/messagehandler'),
   msgsend: require('./js/msg_send'),
   services: require('./js/services'),
+  cmd: require("./js/module/commands"),
+  cfg: require("./js/module/config"),
+  help: require("./js/module/help"),
+  lol: require("./js/module/leagueoflegends"),
+  reactions: require("./js/module/reactions"),
 }
 
-//https://www.npmjs.com/package/node-cache
 //https://www.npmjs.com/package/punycode
+//https://www.npmjs.com/package/node-cache
+//https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_promises_api
+//https://momentjs.com/docs/
 
-//own scripts
 const log = require("./js/log"),
   db = require("./js/db"),
-  msghandler = require("./js/messagehandler"),
   reactions = require("./js/module/reactions");
 
-//modhandler = require("./js/modulhandler"),
-//Bot-Settings
-let arr_badwords = [];
-
-/*
-Patreon Page
-*/
-
-//Events
 /**************************************************************************************************************/
 /* BOT STARTS                                                                                                 */
 /**************************************************************************************************************/
@@ -42,91 +39,58 @@ client.on('ready', async () => {
   console.log('[bot started]');
   modules.services.set_status(client);
 });
+
 /**************************************************************************************************************/
 /* ERROR HANDLING                                                                                             */
 /**************************************************************************************************************/
-
 //Emitted whenever the client's WebSocket encounters a connection error.
-client.on('error', error => {
-  log.log('[error]');
-  console.log(error);
-});
-
-//Emitted when the client hits a rate limit while making a request
-client.on('rateLimit', rateLimit => {
-  //log.log('[rateLimit] - ' + rateLimit);
-  //console.log('[rateLimit]');
-});
-
+client.on('error', error => console.log(error));
 //Emitted when the client's WebSocket disconnects and will no longer attempt to reconnect.
-client.on('disconnect', disconnect => {
-  log.log('[disconnect]');
-  console.log(disconnect);
-});
-
+client.on('disconnect', disconnect => console.log(disconnect));
 //Emitted whenever the client tries to reconnect to the WebSocket.
-client.on('reconnecting', reconnecting => {
-  //log.log('[reconnecting] - ' + reconnecting);
-  console.log('[reconnecting]');
-});
-
+client.on('reconnecting', reconnecting => console.log('[reconnecting]'));
 //Emitted for general warnings.
-client.on('warn', warn => {
-  log.log('[warn]');
-  console.log(warn);
-});
-
-//Emitted whenever a guild text channel has its webhooks changed.
-client.on('webhookUpdate', webhookUpdate => {
-  //log.log('[webhookUpdate] - ' + webhookUpdate);
-  //console.log('[webhookUpdate]');
-});
+client.on('warn', warn => console.log(warn));
 
 /**************************************************************************************************************/
 /* GUILD                                                                                                      */
 /**************************************************************************************************************/
-
 //Emitted whenever the client joins a guild.
 client.on('guildCreate', async guild => {
   //Whether the guild is available to access. If it is not available, it indicates a server outage 
   if (guild.available) {
-    //no config set
-    db.get_config(guild).then(config => {
+    modules.db.get_config(guild).then(config => {
       if (!config || config.length == 0) {
-        db.set_config(guild);
+        modules.db.set_config(guild);
       } else {
-        db.set_guildactive(guild, 1);
+        modules.db.set_guildactive(guild, 1);
       }
     })
   }
 });
-
 //Emitted whenever a guild is deleted/left.
-client.on('guildDelete', async guild => {
-  db.set_guildactive(guild, 0);
-});
+client.on('guildDelete', async guild => modules.db.set_guildactive(guild, 0));
 
 /**************************************************************************************************************/
 /* MEMBER                                                                                                     */
 /**************************************************************************************************************/
-
 //Emitted whenever a user joins a guild.
 client.on('guildMemberAdd', async member => {
   db.get_config(member.guild).then((config) => {
-    if (config && config.length >= 0) {
+    if (config && config.length > 0) {
       if (config[0].welcome === 1 && config[0].welcome_channel && config[0].botlog) {
 
         const chn = member.guild.channels.get(config[0].welcome_channel),
           server_icon = (member.guild.iconURL !== null) ? member.guild.iconURL : '';
         if (!member.user.bot) {
-          const welcomemsg = new Discord.RichEmbed()
+          const welcomemsg = new discord.RichEmbed()
             .setColor('#000000')
             .setAuthor('Welcome', server_icon)
             .setDescription(member.user.toString() + ' Welcome to the LPGG-Discord, enjoy your stay!')
             .setImage('https://steamuserimages-a.akamaihd.net/ugc/845963567852349042/400307109ECE5B0975C57845FFFB2B5C023A3841/');
           chn.send(welcomemsg);
         } else {
-          const welcomemsg = new Discord.RichEmbed()
+          const welcomemsg = new discord.RichEmbed()
             .setColor('#000000')
             .setDescription(member.user.toString() + ' (bot) joined');
           chn.send(welcomemsg);
@@ -178,8 +142,8 @@ client.on('raw', async event => {
 
   if (!reaction) {
     // Create an object that can be passed through the event like normal
-    const emoji = new Discord.Emoji(client.guilds.get(data.guild_id), data.emoji);
-    reaction = new Discord.MessageReaction(message, emoji, 1, data.user_id === client.user.id);
+    const emoji = new discord.Emoji(client.guilds.get(data.guild_id), data.emoji);
+    reaction = new discord.MessageReaction(message, emoji, 1, data.user_id === client.user.id);
   }
   client.emit(events[event.t], reaction, user, message);
 });
@@ -223,7 +187,7 @@ client.on('messageReactionRemove', async (reaction, user, message) => {
 
 //Emitted whenever a message is created.
 client.on("message", async message => {
-  msghandler.handler(client, message);
+  modules.msghandler.handler(discord, client, modules, message);
 });
 
 client.login(auth.token);

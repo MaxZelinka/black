@@ -12,7 +12,7 @@ function not(client, message) {
     msg_send.embedMessage(client, message.channel.id, 'Command', 'function currently disabled', '#ff0000', 5000);
 }
 
-exports.handler = async (client, message) => {
+exports.handler = async (discord, client, modules, message) => {
     if (message.guild !== null) {
         db.get_config(message.guild).then((config) => {
             if (config && config[0]) {
