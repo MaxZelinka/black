@@ -60,11 +60,13 @@ exports.removerole = async (config, client, message) => {
     if (admin.isAdmin(message) || admin.isMod(message, config)) {
         if (args[0]) {
             db.query(`SELECT * FROM reactions WHERE ServerID = ` + message.guild.id + ` AND reactionsID = ` + args[0] + `;`).then(async role => {
-                message.guild.channels.get(role[0].ChannelID).fetchMessage(role[0].MessageID).then(msg => {
-                    msg.reactions.get(punycode.decode(role[0].EmoteID)).remove(client.user.id);
-                }).catch(err => {
-                    //console.log(err);
-                });
+                if(message.guild.channels.get(role[0].ChannelID)){
+                    message.guild.channels.get(role[0].ChannelID).fetchMessage(role[0].MessageID).then(msg => {
+                        msg.reactions.get(punycode.decode(role[0].EmoteID)).remove(client.user.id);
+                    }).catch(err => {
+                        //console.log(err);
+                    });
+                }
                 db.query(`DELETE FROM reactions WHERE ServerID = ` + message.guild.id + ` AND reactionsID = ` + args[0] + `;`).then(response => {
                     if (response) {
                         msg_send.embedMessage(client, message.channel.id, 'Reaction', 'reaction deleted.', '#000000');
