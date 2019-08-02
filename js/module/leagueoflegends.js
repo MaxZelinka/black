@@ -271,6 +271,7 @@ exports.get_lol = async (config, client, message) => {
 
 exports.set_lol = async (config, client, message) => {
   const args = await admin.cut_cmd(message);
+  message.delete();
   if (args[0] && args[1]) {
     const region = args[0].toLowerCase();
     args.shift();
@@ -287,12 +288,17 @@ exports.set_lol = async (config, client, message) => {
               get_rank(region, summoner.id).then(rank => {
                 const solo_Q = rank.filter(rank => rank.queueType == 'RANKED_SOLO_5x5');
                 if (solo_Q.length > 0) {
-                  const tiername = solo_Q[0].tier.substr(0, 1) + solo_Q[0].tier.substr(1).toLowerCase(),
-                    roles = message.guild.roles.filter(el => tiers.includes(el.name));
+                  const tiername = solo_Q[0].tier.substr(0, 1) + solo_Q[0].tier.substr(1).toLowerCase();
+                  const roles = message.guild.roles.filter(el => tiers.includes(el.name));
                   roles.map(role => {
-                    if (role.name === tiername) {
-                      message.member.addRole(role.id);
-                      msg_send.embedMessage(client, message.channel.id, 'League of Legends', `set Rank: ${role.name}`, '#000000', 5000);
+                    if (role.name == tiername) {
+                      console.log(message.member);
+                      message.member.addRole(role.id).then(() => {
+                        msg_send.embedMessage(client, message.channel.id, 'League of Legends', `set Rank: ${role.name}`, '#000000', 5000);
+                      }).catch(err => {
+                        msg_send.embedMessage(client, message.channel.id, 'League of Legends', `smth went wrong :(`, '#ff0000', 5000);
+                        console.log(err);
+                      });
                     } else {
                       message.member.removeRole(role.id);
                     }
