@@ -63,7 +63,8 @@ const api_key = 'RGAPI-06ae383a-4045-4d80-b1ad-c0306de1e805',
     'Silver',
     'Bronze',
     'Iron'
-  ];
+  ],
+  set_lol_val = "black";
 
 function createRoles(message) {
   let roles = message.guild.roles.filter(el => tiers.includes(el.name));
@@ -284,7 +285,7 @@ exports.set_lol = async (config, client, message) => {
       get_summoner(region, user).then(summoner => {
         if (summoner.id) {
           get_thirdparty(region, summoner.id).then(third_party => {
-            if (third_party == summoner.name) {
+            if (third_party == set_lol_val) {
               get_rank(region, summoner.id).then(rank => {
                 const solo_Q = rank.filter(rank => rank.queueType == 'RANKED_SOLO_5x5');
                 if (solo_Q.length > 0) {
@@ -292,7 +293,6 @@ exports.set_lol = async (config, client, message) => {
                   const roles = message.guild.roles.filter(el => tiers.includes(el.name));
                   roles.map(role => {
                     if (role.name == tiername) {
-                      console.log(message.member);
                       message.member.addRole(role.id).then(() => {
                         msg_send.embedMessage(client, message.channel.id, 'League of Legends', `set Rank: ${role.name}`, '#000000', 5000);
                       }).catch(err => {
@@ -311,10 +311,10 @@ exports.set_lol = async (config, client, message) => {
                 log.log(err);
               });
             } else {
-              message.member.send(`Set the Third-Party-Key to: ${summoner.name} \n\nhttps://i.imgur.com/HPo8ztC.png`);
+              message.member.send(`Set the Third-Party-Key to: ${set_lol_val} \n\nhttps://i.imgur.com/HPo8ztC.png`);
             }
           }).catch(() => {
-            message.member.send(`No Third-Party-Key set yet or RIOT API Error.\nSet your Third-Party-Key to: ${summoner.name} \n\nhttps://i.imgur.com/HPo8ztC.png`);
+            message.member.send(`No Third-Party-Key set yet or RIOT API Error.\nSet your Third-Party-Key to: ${set_lol_val} \n\nhttps://i.imgur.com/HPo8ztC.png`);
           });
         } else {
           msg_send.embedMessage(client, message.channel.id, 'League of Legends', 'Cant find summoner.', '#ff0000', 5000);
