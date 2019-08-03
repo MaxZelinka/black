@@ -2,7 +2,7 @@
 const fetch = require("node-fetch"),
   msg_send = require("../msg_send"),
   admin = require("../admin"),
-  Discord = require("discord.js"),
+  discord = require("discord.js"),
   log = require("../log"),
   NodeCache = require('node-cache');
 
@@ -130,15 +130,15 @@ async function get_champs(id) {
   return Object.values(champs.data).filter(champ => champ.key == id);
 }
 
-exports.get_lol = async (config, client, modules, message) => {
-  const args = await modules.admin.cut_cmd(message);
+exports.get_lol = async (config, client, message) => {
+  const args = await admin.cut_cmd(message);
   if (args[0] && args[1]) {
     const region = args[0].toLowerCase();
     args.shift();
     const user = args.toString().replace(/[,]/gm, ' ');
 
     if (Object.keys(regio).includes(region)) {
-      const loading = new modules.discord.RichEmbed()
+      const loading = new discord.RichEmbed()
         .setColor('#000')
         .setURL('https://discord.js.org/')
         .setAuthor('loading', 'https://media1.tenor.com/images/50337fc1e603a4726067ed3a5127ee9e/tenor.gif?itemid=5488360', 'https://discord.js.org')
@@ -160,7 +160,7 @@ exports.get_lol = async (config, client, modules, message) => {
                 const flex_55 = rank.filter(rank => rank.queueType == 'RANKED_FLEX_SR');
                 const flex_TT = rank.filter(rank => rank.queueType == 'RANKED_FLEX_TT');;
 
-                const Embed = new Discord.RichEmbed()
+                const Embed = new discord.RichEmbed()
                   .setColor('#000000')
                   .setAuthor(summoner.name, thumb, opgg)
                   .setDescription(champ_0 + '\n' + champ_1 + '\n' + champ_2);
@@ -210,7 +210,7 @@ exports.get_lol = async (config, client, modules, message) => {
   }
 }
 
-exports.set_lol = async (config, client, modules, message) => {
+exports.set_lol = async (config, client, message) => {
   const args = await admin.cut_cmd(message);
   message.delete();
   if (args[0] && args[1]) {

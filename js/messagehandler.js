@@ -58,7 +58,7 @@ exports.handler = async (discord, client, modules, message) => {
                                 cfg.modlog(config, client, message);
                                 break;
                             case cf_prefix + 'blacklist':
-                                not(client, message);
+                                cfg.blacklist(config, client, modules, message);
                                 break;
                             case cf_prefix + 'automod':
                                 not(client, message);
@@ -117,10 +117,10 @@ exports.handler = async (discord, client, modules, message) => {
 
                                 //LEAGUEOFLEGENDS
                             case cf_prefix + 'getlol':
-                                lol.get_lol(config, client, modules, message);
+                                lol.get_lol(config, client, message);
                                 break;
                             case cf_prefix + 'setlol':
-                                lol.set_lol(config, client, modules, message);
+                                lol.set_lol(config, client, message);
                                 break;
                         }
                     }
