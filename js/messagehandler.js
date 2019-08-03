@@ -117,10 +117,10 @@ exports.handler = async (discord, client, modules, message) => {
 
                                 //LEAGUEOFLEGENDS
                             case cf_prefix + 'getlol':
-                                lol.get_lol(config, client, message);
+                                lol.get_lol(config, client, modules, message);
                                 break;
                             case cf_prefix + 'setlol':
-                                lol.set_lol(config, client, message);
+                                lol.set_lol(config, client, modules, message);
                                 break;
                         }
                     }
