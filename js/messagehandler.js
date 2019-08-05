@@ -19,6 +19,13 @@ exports.handler = async (discord, client, modules, cache, message) => {
                     cf_blacklist = (config[0].blacklist) ? (config[0].blacklist.includes(',')) ? [...config[0].blacklist.replace(/[ ]/gm, '').split(',')] : [config[0].blacklist.replace(/[ ]/gm, '')] : '',
                     cf_prefix = config[0].Prefix;
 
+                const blacklist = (modules.cache.get(message.guild.id)) || await modules.db.query(`SELECT user_id FROM blacklist WHERE server_id = ${message.guild.id}`)
+                    .catch(err => modules.msgsend.error(client, message, message.channel.id, 'Blacklist', err));
+
+                if (blacklist[0].includes(message.author.id)) {
+                    console.log('blacklisted');
+                }
+
                 const args = message.content.trim().split(/ +/g);
                 const command = args.shift().toLowerCase();
 
