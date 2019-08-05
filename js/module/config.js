@@ -179,7 +179,7 @@ exports.modlog = async (config, client, message) => {
     }
 }
 
-exports.blacklist = async (config, client, modules, message) => {
+exports.blacklist = async (config, client, modules, cache, message) => {
     if (admin.isAdmin(message) || admin.isMod(message, config)) {
         const args = await admin.cut_cmd(message);
         if (args[0]) {
@@ -188,25 +188,29 @@ exports.blacklist = async (config, client, modules, message) => {
                 args.shift();
                 const reason = args.toString().replace(/[,]/gm, ' ');
                 modules.db.query(`SELECT * FROM blacklist WHERE server_id = ${message.guild.id} AND user_id = ${user}`).then(get => {
-                    const query = (get[0]) ? `DELETE FROM blacklist WHERE server_id = ${message.guild.id} AND user_id = ${user}`
-                        : `INSERT INTO blacklist (server_id, user_id, reason) VALUES ('${message.guild.id}', '${user}', '${reason}');`;
-                    const msg = (get[0]) ? `<@${user}> is not longer blocklistet from using commands at your server.` : `<@${user}> is now blocklistet from using commands at your server.`;
-                    modules.db.query(query).then(modules.msgsend.embedMessage(client, message.channel.id, 'Blacklist', msg, '#000000')).catch(err => {
-                        modules.msgsend.embedMessage(client, message.channel.id, 'Blacklist', 'oops smth went wrong :(', '#ff0000', 5000);
-                        modules.log.log(err);
-                    });
+                    const query = (get[0]) ? `DELETE FROM blacklist WHERE server_id = ${message.guild.id} AND user_id = ${user}` :
+                        `INSERT INTO blacklist (server_id, user_id, reason) VALUES ('${message.guild.id}', '${user}', '${reason}');`;
+                    const msg = (get[0]) ? `<@${user}> is not longer blocklistet from using commands at your server.` : `<@${user}> is now blocklisted from using commands at your server.`;
+                    modules.db.query(query).then(modules.msgsend.embedMessage(client, message.channel.id, 'Blacklist', msg, '#000000')).then(() => {
+                        cache.blacklist.del(message.guild.id);
+                    }).catch(err => modules.msgsend.error(client, message, message.channel.id, 'Blacklist', err));
                 });
             } else {
                 modules.msgsend.embedMessage(client, message.channel.id, 'Blacklist', args[0] + ' isnt an user.', '#ff0000', 5000);
             }
         } else {
+            const blacklist = await cache.blacklist.get(message.guild.id) || await modules.db.query(`SELECT * FROM blacklist WHERE server_id = ${message.guild.id}`)
+                .catch(err => modules.msgsend.error(client, message, message.channel.id, 'Blacklist', err));
+            const msg = (blacklist[0]) ? blacklist.map(el => `<@${el.user_id}> (${el.time})\n ${el.reason}\n\n`).toString().replace(/[,]/gm, '') : 'empty';
+            modules.msgsend.embedMessage(client, message.channel.id, 'Blacklist', msg, '#000000');
+            /*
             modules.db.query(`SELECT * FROM blacklist WHERE server_id = ${message.guild.id}`).then(get => {
-                const msg = (get[0]) ? get.map(el => `<@${el.user_id}> (${el.time})\n ${el.reason}\n\n`).toString().replace(/[,]/gm,'') : 'empty';
+                const msg = (get[0]) ? get.map(el => `<@${el.user_id}> (${el.time})\n ${el.reason}\n\n`).toString().replace(/[,]/gm, '') : 'empty';
                 modules.msgsend.embedMessage(client, message.channel.id, 'Blacklist', msg, '#000000');
             }).catch(err => {
                 modules.msgsend.embedMessage(client, message.channel.id, 'Blacklist', 'cant get/set user.', '#ff0000', 5000);
                 modules.log.log(err);
-            });
+            });*/
         }
     }
 }
@@ -215,26 +219,26 @@ exports.automod = async (config, client, message) => {
     const args = await admin.cut_cmd(message);
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
-        admin.hasPerm('automod', message)) { }
+        admin.hasPerm('automod', message)) {}
 }
 
 exports.welcome = async (config, client, message) => {
     const args = await admin.cut_cmd(message);
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
-        admin.hasPerm('welcome', message)) { }
+        admin.hasPerm('welcome', message)) {}
 }
 
 exports.welcomemsg = async (config, client, message) => {
     const args = await admin.cut_cmd(message);
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
-        admin.hasPerm('welcomemsg', message)) { }
+        admin.hasPerm('welcomemsg', message)) {}
 }
 
 exports.leaverlog = async (config, client, message) => {
     const args = await admin.cut_cmd(message);
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
-        admin.hasPerm('leaverlog', message)) { }
+        admin.hasPerm('leaverlog', message)) {}
 }

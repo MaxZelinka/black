@@ -27,3 +27,18 @@ exports.embedimg = (client, channel_id, url) => {
     }
   });
 }
+
+exports.error = (client, message, channel_id, title, err) => {
+  client.channels.get(channel_id).send({
+    embed: {
+      color: 'ff0000',
+      fields: [{
+        name: title,
+        value: 'oops smth went wrong :('
+      }]
+    }
+  }).then(msg => {
+    msg.delete(5000);
+  });
+  modules.log.log(err);
+}

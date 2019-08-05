@@ -23,6 +23,10 @@ const modules = {
   reactions: require("./js/module/reactions"),
 }
 
+const cache = {
+  blacklist = new modules.NodeCache(),
+}
+
 //https://www.npmjs.com/package/punycode
 //https://www.npmjs.com/package/node-cache
 //https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_promises_api
@@ -187,7 +191,7 @@ client.on('messageReactionRemove', async (reaction, user, message) => {
 
 //Emitted whenever a message is created.
 client.on("message", async message => {
-  modules.msghandler.handler(discord, client, modules, message);
+  modules.msghandler.handler(discord, client, modules, cache, message);
 });
 
 client.login(auth.token);

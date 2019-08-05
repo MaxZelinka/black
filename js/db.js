@@ -21,13 +21,14 @@ async function conn() {
 }
 
 async function _query(query) {
-    console.log(query);
+    //console.log(query);
     try {
         return conn().then(async (conn) => {
             let result = await conn.query(query);
             conn.end();
             return result;
         }).catch((error) => {
+            log.log(query);
             throw error;
         });
     } catch (err) {

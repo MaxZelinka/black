@@ -11,7 +11,7 @@ function not(client, message) {
     msg_send.embedMessage(client, message.channel.id, 'Command', 'function currently disabled', '#ff0000', 5000);
 }
 
-exports.handler = async (discord, client, modules, message) => {
+exports.handler = async (discord, client, modules, cache, message) => {
     if (message.guild !== null) {
         db.get_config(message.guild).then((config) => {
             if (config && config[0]) {
@@ -58,7 +58,7 @@ exports.handler = async (discord, client, modules, message) => {
                                 cfg.modlog(config, client, message);
                                 break;
                             case cf_prefix + 'blacklist':
-                                cfg.blacklist(config, client, modules, message);
+                                cfg.blacklist(config, client, modules, cache, message);
                                 break;
                             case cf_prefix + 'automod':
                                 not(client, message);
