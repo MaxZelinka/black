@@ -23,8 +23,9 @@ const modules = {
   reactions: require("./js/module/reactions"),
 }
 
+
 const cache = {
-  blacklist = new modules.NodeCache(),
+  blacklist : new modules.NodeCache(),
 }
 
 //https://www.npmjs.com/package/punycode

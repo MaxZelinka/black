@@ -13,17 +13,18 @@ function not(client, message) {
 
 exports.handler = async (discord, client, modules, cache, message) => {
     if (message.guild !== null) {
-        db.get_config(message.guild).then((config) => {
+        db.get_config(message.guild).then(async (config) => {
             if (config && config[0]) {
                 const cf_channel = (config[0].Channel) ? (config[0].Channel.includes(',')) ? [...config[0].Channel.replace(/[ ]/gm, '').split(',')] : [config[0].Channel.replace(/[ ]/gm, '')] : '',
                     cf_blacklist = (config[0].blacklist) ? (config[0].blacklist.includes(',')) ? [...config[0].blacklist.replace(/[ ]/gm, '').split(',')] : [config[0].blacklist.replace(/[ ]/gm, '')] : '',
                     cf_prefix = config[0].Prefix;
 
-                const blacklist = (modules.cache.get(message.guild.id)) || await modules.db.query(`SELECT user_id FROM blacklist WHERE server_id = ${message.guild.id}`)
+                let blacklist = (cache.blacklist.get(message.guild.id)) || await modules.db.query(`SELECT user_id FROM blacklist WHERE server_id = ${message.guild.id}`)
                     .catch(err => modules.msgsend.error(client, message, message.channel.id, 'Blacklist', err));
+                blacklist = blacklist.map(el => el.user_id);
 
-                if (blacklist[0].includes(message.author.id)) {
-                    console.log('blacklisted');
+                if(blacklist.includes(message.author.id)){
+                    console.log('test');
                 }
 
                 const args = message.content.trim().split(/ +/g);
