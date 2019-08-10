@@ -28,7 +28,7 @@ exports.embedimg = (client, channel_id, url) => {
   });
 }
 
-exports.error = (client, message, channel_id, title, err) => {
+exports.error = (modules, client, message, channel_id, title, err) => {
   client.channels.get(channel_id).send({
     embed: {
       color: 'ff0000',

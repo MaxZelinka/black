@@ -211,18 +211,37 @@ exports.blacklist = async (config, client, modules, cache, message) => {
     }
 }
 
-exports.automod = async (config, client, message) => {
+exports.automod = async (config, client, modules, cache, message) => {
     const args = await admin.cut_cmd(message);
     if (admin.isAdmin(message) === true ||
         admin.isMod(message, config) === true ||
         admin.hasPerm('automod', message)) { }
 }
 
-exports.welcome = async (config, client, message) => {
-    const args = await admin.cut_cmd(message);
-    if (admin.isAdmin(message) === true ||
-        admin.isMod(message, config) === true ||
-        admin.hasPerm('welcome', message)) { }
+exports.welcome = async (config, client, modules, cache, message) => {
+    if (modules.admin.isAdmin(message) || modules.admin.isMod(message, config)) {
+        const args = await modules.admin.cut_cmd(message);
+        if (args[0]) {
+            const channel = args[0].replace(/[<!#>]/gm, '');
+            if (modules.admin.isChannel(args[0])) {
+                modules.db.query(`UPDATE welcome SET welcome_channel = ${channel} WHERE ServerID = ${message.guild.id};`).then(update => {
+                    if (update.affectedRows == 0) {
+                        modules.db.query(`INSERT INTO welcome (ServerID, welcome_channel) VALUES (${message.guild.id}, ${channel});`).then(insert => {
+                            modules.msgsend.embedMessage(client, message.channel.id, 'Welcome', 'welcome-channel set.', '#000000');
+                        }).catch(err => modules.msgsend.error(modules, client, message, message.channel.id, 'Welcome', err));
+                    } else {
+                        modules.msgsend.embedMessage(client, message.channel.id, 'Welcome', 'welcome-channel changed.', '#000000');
+                    }
+                }).catch(err => modules.msgsend.error(modules, client, message, message.channel.id, 'Welcome', err));
+            } else {
+                modules.msgsend.embedMessage(client, message.channel.id, 'Welcome', args[0] + ' isnt an channel.', '#ff0000', 5000);
+            }
+        } else {
+            modules.db.query(`SELECT welcome_channel FROM welcome WHERE ServerID = ${message.guild.id};`).then(select => {
+                modules.msgsend.embedMessage(client, message.channel.id, 'Welcome', `welcome-channel: <#${select[0].welcome_channel}>`, '#000000');
+            }).catch(err => modules.msgsend.error(modules, client, message, message.channel.id, 'Welcome', err));
+        }
+    }
 }
 
 exports.welcomemsg = async (config, client, message) => {

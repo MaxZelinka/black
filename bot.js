@@ -33,8 +33,12 @@ const cache = {
 //https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_promises_api
 //https://momentjs.com/docs/
 
-const log = require("./js/log"),
-  db = require("./js/db"),
+/* 
+added welcome db (ID, ServerID, welcome_channel, welcome_msg)
+added leaver db (ID, ServerID, leaver_channel, leaver_msg)
+*/
+
+const db = require("./js/db"),
   reactions = require("./js/module/reactions");
 
 /**************************************************************************************************************/
@@ -103,7 +107,7 @@ client.on('guildMemberAdd', async member => {
       }
     }
   }).catch((error) => {
-    log.log('[guildMemberAdd] - ' + member.guild.id + ' : ' + error);
+    modules.log.log('[guildMemberAdd] - ' + member.guild.id + ' : ' + error);
   });
 });
 
@@ -116,7 +120,7 @@ client.on('guildMemberRemove', async member => {
       }
     }
   }).catch((error) => {
-    log.log('[guildMemberRemove] - ' + member.guild.id + ' : ' + error);
+    modules.log.log('[guildMemberRemove] - ' + member.guild.id + ' : ' + error);
   });
 });
 
