@@ -21,7 +21,7 @@ async function conn() {
 }
 
 async function _query(query) {
-    console.log(query);
+    //console.log(query);
     try {
         return conn().then(async (conn) => {
             let result = await conn.query(query);
