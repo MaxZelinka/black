@@ -52,7 +52,7 @@ exports.undel = (client, message) => {
   try {
     if (admin.isAdmin(message) || admin.isMod(message, config)) {
       delCache.get(message.guild.id + message.channel.id, (err, val) => {
-        if (!err) {
+        if (!err && val) {
           message.channel.send('**__Recover:__**');
           val.map(el => message.channel.send('**' + el.user + ':** ' + (content = el.content || '_(cant recover)_')));
         }
@@ -136,11 +136,12 @@ exports.serverinfo = async (config, message) => {
 exports.img = async (config, client, message) => {
   if (admin.isAdmin(message) || admin.isMod(message, config)) {
     const args = await admin.cut_cmd(message);
+    const channel_id = args[0].replace(/[<#!>]/gm,'');
     if (admin.isChannel(args[0]) &&
-      client.channels(args[0]) &&
+      client.channels.get(channel_id) &&
       args[1] &&
       admin.isURL(args[1])) {
-      msg_send.img(client, args[0].replace(/[<#>]/gm, ''), args[1]);
+      msg_send.img(client, channel_id, args[1]);
     }
   }
 }
@@ -148,11 +149,12 @@ exports.img = async (config, client, message) => {
 exports.embedimg = async (config, client, message) => {
   if (admin.isAdmin(message) || admin.isMod(message, config)) {
     const args = await admin.cut_cmd(message);
+    const channel_id = args[0].replace(/[<#!>]/gm,'');
     if (admin.isChannel(args[0]) &&
-      client.channels(args[0]) &&
+      client.channels.get(channel_id) &&
       args[1] &&
       admin.isURL(args[1])) {
-      msg_send.img(client, args[0].replace(/[<#>]/gm, ''), args[1]);
+      msg_send.embedimg(client, channel_id, args[1]);
     }
   }
 }

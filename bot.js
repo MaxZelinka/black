@@ -1,5 +1,5 @@
 const discord = require("discord.js"),
-  client = new discord.Client(),
+  client = new discord.Client({autoReconnect:true}),
   auth = require("./auth.json");
 
 const modules = {
@@ -33,10 +33,6 @@ const cache = {
 //https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_promises_api
 //https://momentjs.com/docs/
 
-/* 
-added welcome db (ID, ServerID, welcome_channel, welcome_msg)
-added leaver db (ID, ServerID, leaver_channel, leaver_msg)
-*/
 
 const db = require("./js/db"),
   reactions = require("./js/module/reactions");
@@ -53,7 +49,12 @@ client.on('ready', async () => {
 /* ERROR HANDLING                                                                                             */
 /**************************************************************************************************************/
 //Emitted whenever the client's WebSocket encounters a connection error.
-client.on('error', error => console.log(error));
+client.on('error', error => {
+  console.log(error);
+  client.guilds.get('312477482836295681').channels.get('562208160329498624').send('[error] - resetting ...')
+  .then(() => client.destroy())
+  .then(() => client.login(auth.token));
+});
 //Emitted when the client's WebSocket disconnects and will no longer attempt to reconnect.
 client.on('disconnect', disconnect => console.log(disconnect));
 //Emitted whenever the client tries to reconnect to the WebSocket.
