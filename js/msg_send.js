@@ -14,9 +14,11 @@ exports.embedMessage = function (client, channel_id, name, value, color, timer) 
 }
 
 exports.img = (client, channel_id, url) => {
-  client.channels.get(channel_id).send('Test', {
+	console.log(url);
+  /*
+	client.channels.get(channel_id).send('Test', {
     files: url
-  });
+  });*/
 }
 
 exports.embedimg = (client, channel_id, url) => {
