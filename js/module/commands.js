@@ -141,7 +141,8 @@ exports.img = async (config, client, message) => {
       client.channels.get(channel_id) &&
       args[1] &&
       admin.isURL(args[1])) {
-      msg_send.img(client, channel_id, args[1]);
+		console.log(args[1]);
+      //msg_send.img(client, channel_id, args[1]);
     }
   }
 }
