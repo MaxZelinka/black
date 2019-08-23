@@ -4,5 +4,6 @@ auth.json
 auth.json
 
 node_modules/
+downloads/
 logs/
 package-lock.json

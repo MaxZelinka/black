@@ -14,18 +14,14 @@ exports.embedMessage = function (client, channel_id, name, value, color, timer) 
 }
 
 exports.img = (client, channel_id, url) => {
-	console.log(url);
-  /*
-	client.channels.get(channel_id).send('Test', {
-    files: url
-  });*/
+  client.channels.get(channel_id).send({ files: [url] });
 }
 
 exports.embedimg = (client, channel_id, url) => {
   client.channels.get(channel_id).send({
     color: 000,
     image: {
-      url: url
+      url: 'http://shadersmods.com/wp-content/uploads/2016/08/shadersmods-logo.png'
     }
   });
 }

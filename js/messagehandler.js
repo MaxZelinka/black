@@ -100,6 +100,12 @@ exports.handler = async (discord, client, modules, cache, message) => {
                             case cf_prefix + 'undel':
                                 cmd.undel(client, message);
                                 break;
+                            case cf_prefix + 'hi':
+                                cmd.hi(modules, client, message);
+                                break;
+                            case cf_prefix + 'download':
+                                cmd.download(modules, client, message);
+                                break;
 
                                 //MODUL
                             case cf_prefix + 'modul':

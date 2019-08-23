@@ -8,6 +8,8 @@ const modules = {
   NodeCache: require('node-cache'),
   fspromise: require('fs.promises'),
   moment: require('moment'),
+  request: require("request"),
+  fs: require("fs"),
 
   /*intern*/
   admin: require('./js/admin'),
@@ -30,7 +32,7 @@ const cache = {
 
 //https://www.npmjs.com/package/punycode
 //https://www.npmjs.com/package/node-cache
-//https://nodejs.org/dist/latest-v10.x/docs/api/fs.html#fs_fs_promises_api
+//npm install promise-fs
 //https://momentjs.com/docs/
 
 
@@ -198,6 +200,7 @@ client.on('messageReactionRemove', async (reaction, user, message) => {
 //Emitted whenever a message is created.
 client.on("message", async message => {
   modules.msghandler.handler(discord, client, modules, cache, message);
+  
 });
 
 client.login(auth.token);

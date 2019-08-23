@@ -16,6 +16,33 @@ const delCache = new NodeCache({
   },
   arr_del_msg = new Array();
 
+exports.download = async (modules, client, message) => {
+  try {
+    if (message.author.id == '287281691746238464' || message.author.id == '369502541811286018') {
+      const args = await admin.cut_cmd(message);
+      if (admin.isURL(args[0])) {
+        let filename = args[0].substr(args[0].lastIndexOf("/") + 1);
+        modules.request.get(args[0])
+          .on('error', console.error)
+          .pipe(modules.fs.createWriteStream('downloads/' + filename));
+        msg_send.embedMessage(client, message.channel.id, 'download', 'Downloadpath: downloads/' + filename, '000');
+      } else {
+        msg_send.embedMessage(client, message.channel.id, 'download', 'no valid url', 'ff0000', 5000);
+      }
+    }
+  } catch (err) {
+    msg_send.error(modules, client, message, message.channel.id, 'download', err);
+  }
+}
+
+exports.hi = async (modules, client, message) => {
+  try {
+    msg_send.embedMessage(client, message.channel.id, 'hi', 'hi there! :)', '000');
+  } catch (err) {
+    msg_send.error(modules, client, message, message.channel.id, 'hi', err);
+  }
+}
+
 exports.del = async (client, message) => {
   try {
     const args = await admin.cut_cmd(message);
@@ -136,11 +163,10 @@ exports.serverinfo = async (config, message) => {
 exports.img = async (config, client, message) => {
   if (admin.isAdmin(message) || admin.isMod(message, config)) {
     const args = await admin.cut_cmd(message);
-    const channel_id = args[0].replace(/[<#!>]/gm,'');
+    const channel_id = args[0].replace(/[<#!>]/gm, '');
     if (admin.isChannel(args[0]) &&
       client.channels.get(channel_id) &&
-      args[1] &&
-      admin.isURL(args[1])) {
+      args[1]) {
       msg_send.img(client, channel_id, args[1]);
     }
   }
@@ -149,11 +175,10 @@ exports.img = async (config, client, message) => {
 exports.embedimg = async (config, client, message) => {
   if (admin.isAdmin(message) || admin.isMod(message, config)) {
     const args = await admin.cut_cmd(message);
-    const channel_id = args[0].replace(/[<#!>]/gm,'');
+    const channel_id = args[0].replace(/[<#!>]/gm, '');
     if (admin.isChannel(args[0]) &&
       client.channels.get(channel_id) &&
-      args[1] &&
-      admin.isURL(args[1])) {
+      args[1]) {
       msg_send.embedimg(client, channel_id, args[1]);
     }
   }
