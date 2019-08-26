@@ -26,8 +26,10 @@ exports.download = async (modules, config, client, message) => {
           add();
           break;
         case 'del':
+          del();
           break;
         case 'list':
+          list();
           break;
         case 'help':
           info();
@@ -35,6 +37,26 @@ exports.download = async (modules, config, client, message) => {
         default:
           info();
           break;
+      }
+
+      function del() {
+
+      }
+
+      function list(){
+        const directoryPath = modules.path.join(__dirname, 'downloads');
+        //passsing directoryPath and callback function
+        modules.fs.readdir(directoryPath, function (err, files) {
+            //handling error
+            if (err) {
+                return console.log('Unable to scan directory: ' + err);
+            } 
+            //listing all files using forEach
+            files.forEach(function (file) {
+                // Do whatever you want to do with the file
+                console.log(file); 
+            });
+        });
       }
 
       function add() {
@@ -53,7 +75,7 @@ exports.download = async (modules, config, client, message) => {
       function info() {
         msg_send.embedMessage(client, message.channel.id, 'Help', `Avialeble commands:
         ${cf_prefix}add [url] - download/add an file
-        ${cf_prefix}del [position] - delete an file
+        ${cf_prefix}del [position/filename] - delete an file
         ${cf_prefix}list - list all files
         ${cf_prefix}help - show help(this)`, '000');
       }
