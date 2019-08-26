@@ -125,7 +125,7 @@ exports.clear = async (client, message) => {
     if (admin.isAdmin(message) || admin.isMod(message, config)) {
       if (admin.isDigit(args[0])) {
         if (args[0] <= 100) {
-          message.channel.bulkDelete(args[0])
+          message.channel.bulkDelete(args[0] + 1)
             .then(msg => msg_send.embedMessage(client, message.channel.id, 'clear', `${msg.size} messages deleted.`, '000000', 5000))
             .catch(console.error);
         } else {
