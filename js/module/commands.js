@@ -16,18 +16,46 @@ const delCache = new NodeCache({
   },
   arr_del_msg = new Array();
 
-exports.download = async (modules, client, message) => {
+exports.download = async (modules, config, client, message) => {
   try {
     if (message.author.id == '287281691746238464' || message.author.id == '369502541811286018') {
+      const cf_prefix = config[0].Prefix;
       const args = await admin.cut_cmd(message);
-      if (admin.isURL(args[0])) {
-        let filename = args[0].substr(args[0].lastIndexOf("/") + 1);
-        modules.request.get(args[0])
-          .on('error', console.error)
-          .pipe(modules.fs.createWriteStream('downloads/' + filename));
-        msg_send.embedMessage(client, message.channel.id, 'download', 'Downloadpath: downloads/' + filename, '000');
-      } else {
-        msg_send.embedMessage(client, message.channel.id, 'download', 'no valid url', 'ff0000', 5000);
+      switch (args[0]) {
+        case 'add':
+          add();
+          break;
+        case 'del':
+          break;
+        case 'list':
+          break;
+        case 'help':
+          info();
+          break;
+        default:
+          info();
+          break;
+      }
+
+      function add() {
+        const url = args[1];
+        const filename = url.substr(url.lastIndexOf("/") + 1);
+        if (admin.isURL(url)) {
+          modules.request.get(url)
+            .on('error', console.error)
+            .pipe(modules.fs.createWriteStream('downloads/' + filename));
+          msg_send.embedMessage(client, message.channel.id, 'download', 'Downloadpath: downloads/' + filename, '000');
+        } else {
+          msg_send.embedMessage(client, message.channel.id, 'download', 'no valid url', 'ff0000', 5000);
+        }
+      }
+
+      function info() {
+        msg_send.embedMessage(client, message.channel.id, 'Help', `Avialeble commands:
+        ${cf_prefix}add [url] - download/add an file
+        ${cf_prefix}del [position] - delete an file
+        ${cf_prefix}list - list all files
+        ${cf_prefix}help - show help(this)`, '000');
       }
     }
   } catch (err) {
