@@ -40,30 +40,45 @@ exports.download = async (modules, config, client, message) => {
       }
 
       function del() {
-        const filename = args[1];
-        try {
-          modules.fs.unlink(path.join(__dirname, 'downloads/' + filename), (err) => {
-            if (err) msg_send.embedMessage(client, message.channel.id, 'download', 'no such file', 'ff0000', 5000);
-            msg_send.embedMessage(client, message.channel.id, 'Files', `File ${filename} deleted.`);
-          });
-        } catch (err) {
-          modules.msg_send.error(modules, client, message, message.channel.id, 'downloads', err);
+        args.shift();
+        if (args) {
+          const filename = args.toString().replace(/[,]/gm, ' ');
+          try {
+            modules.fs.unlink('./downloads/' + filename, (err) => {
+              if (err) {
+                msg_send.embedMessage(client, message.channel.id, 'download', 'no such file', '#ff0000', 5000)
+              } else {
+                msg_send.embedMessage(client, message.channel.id, 'Files', `File ${filename} deleted.`, '#000');
+              }
+            });
+          } catch (err) {
+            modules.msg_send.error(modules, client, message, message.channel.id, 'downloads', err);
+          }
         }
+
       }
 
       function list() {
         try {
-          modules.fs.readdir(modules.path.join(__dirname, 'downloads'), (err, files) => {
-            if (err) msg_send.embedMessage(client, message.channel.id, 'download', 'Unable to scan directory.', 'ff0000', 5000);
-            let file_arr = new Array();
-            files.map((file, index) => {
-              if (index >= 15) {
-                msg_send.embedMessage(client, message.channel.id, 'Files', file_arr.toString().replace(/[,]/gm, '\n'));
-                file_arr.length = 0;
-              }
-              file_arr.push(file);
+          modules.fs.readdir(modules.path.join('./downloads'), (err, files) => {
+            if (err) msg_send.embedMessage(client, message.channel.id, 'download', 'Unable to scan directory.', '#ff0000', 5000);
+
+            files.forEach(file => {
+              message.channel.send(file);
             });
-            msg_send.embedMessage(client, message.channel.id, 'Files', file_arr.toString().replace(/[,]/gm, '\n'));
+            // let file_arr = new Array();
+            // let loop = 0;
+            // if(files){              
+            //   files.map((file) => {
+            //     if (loop >= 2) {
+            //       msg_send.embedMessage(client, message.channel.id, 'Files', file_arr.toString().replace(/[,]/gm, '\n'), '#000');
+            //       file_arr.length = 0;
+            //     }
+            //     file_arr.push(file);
+            //   });
+            //   loop++;
+            // }
+            // msg_send.embedMessage(client, message.channel.id, 'Files', file_arr.toString().replace(/[,]/gm, '\n'), '#000');
           });
         } catch (err) {
           modules.msg_send.error(modules, client, message, message.channel.id, 'downloads', err);
