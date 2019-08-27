@@ -64,7 +64,7 @@ exports.download = async (modules, config, client, message) => {
             if (err) msg_send.embedMessage(client, message.channel.id, 'download', 'Unable to scan directory.', '#ff0000', 5000);
 
             files.forEach(file => {
-              message.channel.send(file);
+              message.channel.send('downloads/' + file);
             });
             // let file_arr = new Array();
             // let loop = 0;
