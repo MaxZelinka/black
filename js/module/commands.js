@@ -40,23 +40,34 @@ exports.download = async (modules, config, client, message) => {
       }
 
       function del() {
-
+        const filename = args[1];
+        try {
+          modules.fs.unlink(path.join(__dirname, 'downloads/' + filename), (err) => {
+            if (err) msg_send.embedMessage(client, message.channel.id, 'download', 'no such file', 'ff0000', 5000);
+            msg_send.embedMessage(client, message.channel.id, 'Files', `File ${filename} deleted.`);
+          });
+        } catch (err) {
+          modules.msg_send.error(modules, client, message, message.channel.id, 'downloads', err);
+        }
       }
 
-      function list(){
-        const directoryPath = modules.path.join(__dirname, 'downloads');
-        //passsing directoryPath and callback function
-        modules.fs.readdir(directoryPath, function (err, files) {
-            //handling error
-            if (err) {
-                return console.log('Unable to scan directory: ' + err);
-            } 
-            //listing all files using forEach
-            files.forEach(function (file) {
-                // Do whatever you want to do with the file
-                console.log(file); 
+      function list() {
+        try {
+          modules.fs.readdir(modules.path.join(__dirname, 'downloads'), (err, files) => {
+            if (err) msg_send.embedMessage(client, message.channel.id, 'download', 'Unable to scan directory.', 'ff0000', 5000);
+            let file_arr = new Array();
+            files.map((file, index) => {
+              if (index >= 15) {
+                msg_send.embedMessage(client, message.channel.id, 'Files', file_arr.toString().replace(/[,]/gm, '\n'));
+                file_arr.length = 0;
+              }
+              file_arr.push(file);
             });
-        });
+            msg_send.embedMessage(client, message.channel.id, 'Files', file_arr.toString().replace(/[,]/gm, '\n'));
+          });
+        } catch (err) {
+          modules.msg_send.error(modules, client, message, message.channel.id, 'downloads', err);
+        }
       }
 
       function add() {
@@ -75,7 +86,7 @@ exports.download = async (modules, config, client, message) => {
       function info() {
         msg_send.embedMessage(client, message.channel.id, 'Help', `Avialeble commands:
         ${cf_prefix}add [url] - download/add an file
-        ${cf_prefix}del [position/filename] - delete an file
+        ${cf_prefix}del [filename] - delete an file
         ${cf_prefix}list - list all files
         ${cf_prefix}help - show help(this)`, '000');
       }
