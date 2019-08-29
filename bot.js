@@ -10,7 +10,7 @@ const modules = {
   moment: require('moment'),
   request: require("request"),
   fs: require("fs"),
-  path: require("path"),
+  naturalCompare: require("natural-compare"),
 
   /*intern*/
   admin: require('./js/admin'),

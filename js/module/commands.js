@@ -16,7 +16,7 @@ const delCache = new NodeCache({
   },
   arr_del_msg = new Array();
 
-exports.download = async (modules, config, client, message) => {
+exports.file = async (modules, config, client, message) => {
   try {
     if (message.author.id == '287281691746238464' || message.author.id == '369502541811286018') {
       const cf_prefix = config[0].Prefix;
@@ -39,6 +39,27 @@ exports.download = async (modules, config, client, message) => {
           break;
       }
 
+      function get_files(path) {
+        return fs.readdirSync(path).sort((a, b) => naturalCompare(a, b));
+      }
+
+      function add() {
+        try {
+          const url = args[1];
+          if (admin.isURL(url)) {
+            const filename = url.substr(url.lastIndexOf("/") + 1);
+            modules.request.get(url)
+              .on('error', console.error)
+              .pipe(modules.fs.createWriteStream('downloads/' + filename));
+            msg_send.embedMessage(client, message.channel.id, 'download', 'Downloadpath: downloads/' + filename, '000');
+          } else {
+            msg_send.embedMessage(client, message.channel.id, 'download', 'no valid url', 'ff0000', 5000);
+          }
+        } catch (err) {
+          modules.msg_send.error(modules, client, message, message.channel.id, 'downloads', err);
+        }
+      }
+
       function del() {
         args.shift();
         if (args) {
@@ -55,55 +76,46 @@ exports.download = async (modules, config, client, message) => {
             modules.msg_send.error(modules, client, message, message.channel.id, 'downloads', err);
           }
         }
-
       }
 
       function list() {
         try {
-          modules.fs.readdir(modules.path.join('./downloads'), (err, files) => {
-            if (err) msg_send.embedMessage(client, message.channel.id, 'download', 'Unable to scan directory.', '#ff0000', 5000);
-
-            files.forEach(file => {
-              message.channel.send('downloads/' + file);
-            });
-            // let file_arr = new Array();
-            // let loop = 0;
-            // if(files){              
-            //   files.map((file) => {
-            //     if (loop >= 2) {
-            //       msg_send.embedMessage(client, message.channel.id, 'Files', file_arr.toString().replace(/[,]/gm, '\n'), '#000');
-            //       file_arr.length = 0;
-            //     }
-            //     file_arr.push(file);
-            //   });
-            //   loop++;
-            // }
-            // msg_send.embedMessage(client, message.channel.id, 'Files', file_arr.toString().replace(/[,]/gm, '\n'), '#000');
-          });
+          let choosen = (args[1]) ? args[1] : 0;
+          let files = get_files('./downloads');
+          const a_arr = 10;
+          const b_arr = Math.ceil(files.length / a_arr);
+          const arr = new Array(b_arr);
+          for (let i_b = 0; i_b < b_arr; i_b++) {
+            let arr_cache = new Array(a_arr);
+            for (let i_a = 0; i_a < a_arr; i_a++) {
+              arr_cache[i_a] = files.shift();
+            }
+            arr[i_b] = arr_cache;
+          }
+          for (let index = 0; index < a_arr; index++) {
+            message.channel.send('downloads/' + arr[choosen][index]);
+          }
         } catch (err) {
-          modules.msg_send.error(modules, client, message, message.channel.id, 'downloads', err);
+          msg_send.error(modules, client, message, message.channel.id, 'downloads', err);
         }
-      }
-
-      function add() {
-        const url = args[1];
-        const filename = url.substr(url.lastIndexOf("/") + 1);
-        if (admin.isURL(url)) {
-          modules.request.get(url)
-            .on('error', console.error)
-            .pipe(modules.fs.createWriteStream('downloads/' + filename));
-          msg_send.embedMessage(client, message.channel.id, 'download', 'Downloadpath: downloads/' + filename, '000');
-        } else {
-          msg_send.embedMessage(client, message.channel.id, 'download', 'no valid url', 'ff0000', 5000);
-        }
+        // try {
+        //   modules.fs.readdir(modules.path.join('./downloads'), (err, files) => {
+        //     if (err) msg_send.embedMessage(client, message.channel.id, 'download', 'Unable to scan directory.', '#ff0000', 5000);
+        //     files.forEach(file => {
+        //       message.channel.send('downloads/' + file);
+        //     });
+        //   });
+        // } catch (err) {
+        //   modules.msg_send.error(modules, client, message, message.channel.id, 'downloads', err);
+        // }
       }
 
       function info() {
         msg_send.embedMessage(client, message.channel.id, 'Help', `Avialeble commands:
-        ${cf_prefix}add [url] - download/add an file
-        ${cf_prefix}del [filename] - delete an file
-        ${cf_prefix}list - list all files
-        ${cf_prefix}help - show help(this)`, '000');
+        ${cf_prefix}file add [url] - download/add an file
+        ${cf_prefix}file del [filename] - delete an file
+        ${cf_prefix}file list [index] - list all files
+        ${cf_prefix}file help - show help(this)`, '000');
       }
     }
   } catch (err) {

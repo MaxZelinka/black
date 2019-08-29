@@ -103,7 +103,7 @@ exports.handler = async (discord, client, modules, cache, message) => {
                             case cf_prefix + 'hi':
                                 cmd.hi(modules, client, message);
                                 break;
-                            case cf_prefix + 'download':
+                            case cf_prefix + 'file':
                                 cmd.download(modules, config, client, message);
                                 break;
 
