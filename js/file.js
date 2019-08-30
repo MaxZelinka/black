@@ -22,7 +22,7 @@ function readdir(modules, path) {
 
 function unlink(modules, path) {
     try {
-        return modules.fs.unlink(path, (err) => (err) ? false : true);
+        return modules.fs.unlink(path, err => err);
     } catch (err) {
         console.log(err);
     }
@@ -75,7 +75,7 @@ exports.file = async (modules, config, client, message) => {
                 if (args) {
                     const filename = args.toString().replace(/[,]/gm, ' ');
                     try {
-                        if(unlink(modules, dir + filename)){
+                        if (!unlink(modules, dir + filename)) {
                             modules.msgsend.embedMessage(client, message.channel.id, 'file', `file ${filename} deleted.`, '#000');
                         } else {
                             modules.msgsend.embedMessage(client, message.channel.id, 'file', 'no such file', '#ff0000', 5000)
@@ -101,7 +101,9 @@ exports.file = async (modules, config, client, message) => {
                         arr[i_b] = arr_cache;
                     }
                     for (let index = 0; index < a_arr; index++) {
-                        message.channel.send(dir + arr[choosen][index]);
+                        if (arr[choosen][index]) {
+                            message.channel.send(dir + arr[choosen][index]);
+                        }
                     }
                 } catch (err) {
                     modules.msgsend.error(modules, client, message, message.channel.id, 'file', err);

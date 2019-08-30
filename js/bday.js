@@ -9,7 +9,7 @@ Required modules:
  - db
 */
 
-exports.bday = (modules, config, client, message) => {
+exports.bday = async (modules, config, client, message) => {
     try {
         const cf_prefix = config[0].Prefix;
         const args = await modules.admin.cut_cmd(message);
