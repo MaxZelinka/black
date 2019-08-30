@@ -24,18 +24,14 @@ const modules = {
   help: require("./js/module/help"),
   lol: require("./js/module/leagueoflegends"),
   reactions: require("./js/module/reactions"),
+  file: require("./js/file"),
+  bday: require("./js/bday"),
 }
 
 
 const cache = {
   blacklist : new modules.NodeCache(),
 }
-
-//https://www.npmjs.com/package/punycode
-//https://www.npmjs.com/package/node-cache
-//npm install promise-fs
-//https://momentjs.com/docs/
-
 
 const db = require("./js/db"),
   reactions = require("./js/module/reactions");
@@ -111,7 +107,7 @@ client.on('guildMemberAdd', async member => {
       }
     }
   }).catch((error) => {
-    modules.log.log('[guildMemberAdd] - ' + member.guild.id + ' : ' + error);
+    modules.log.log_(modules, '[guildMemberAdd] - ' + member.guild.id + ' : ' + error);
   });
 });
 
@@ -124,7 +120,7 @@ client.on('guildMemberRemove', async member => {
       }
     }
   }).catch((error) => {
-    modules.log.log('[guildMemberRemove] - ' + member.guild.id + ' : ' + error);
+    modules.log.log_(modules, '[guildMemberRemove] - ' + member.guild.id + ' : ' + error);
   });
 });
 
