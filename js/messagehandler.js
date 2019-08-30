@@ -23,7 +23,7 @@ exports.handler = async (discord, client, modules, cache, message) => {
                     .catch(err => modules.msgsend.error(client, message, message.channel.id, 'Blacklist', err));
                 blacklist = blacklist.map(el => el.user_id);
 
-                if(blacklist.includes(message.author.id)){
+                if (blacklist.includes(message.author.id)) {
                     console.log('test');
                 }
 
@@ -103,8 +103,8 @@ exports.handler = async (discord, client, modules, cache, message) => {
                             case cf_prefix + 'hi':
                                 cmd.hi(modules, client, message);
                                 break;
-                            case cf_prefix + 'download':
-                                cmd.download(modules, config, client, message);
+                            case cf_prefix + 'file':
+                                modules.file.file(modules, config, client, message);
                                 break;
 
                                 //MODUL
