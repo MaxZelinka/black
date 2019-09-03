@@ -11,6 +11,8 @@ const modules = {
   request: require("request"),
   fs: require("fs"),
   naturalCompare: require("natural-compare"),
+  cron: require('node-cron'),
+  path: require('path'),
 
   /*intern*/
   admin: require('./js/admin'),
@@ -41,7 +43,8 @@ const db = require("./js/db"),
 /**************************************************************************************************************/
 client.on('ready', async () => {
   console.log('[bot started]');
-  modules.services.set_status(client, modules);
+  // modules.services.set_status(client, modules);
+  modules.services.start(client, modules);
 });
 
 /**************************************************************************************************************/
