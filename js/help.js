@@ -1,4 +1,4 @@
-const msg_send = require("../msg_send");
+const msg_send = require("./msg_send");
 
 exports.first = (config, client, message) => {
     message.delete();

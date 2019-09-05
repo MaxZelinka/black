@@ -1,9 +1,9 @@
 //require
 const fetch = require("node-fetch"),
-  msg_send = require("../msg_send"),
-  admin = require("../admin"),
+  msg_send = require("./msg_send"),
+  admin = require("./admin"),
   discord = require("discord.js"),
-  log = require("../log"),
+  log = require("./log"),
   NodeCache = require('node-cache');
 
 //Cache
