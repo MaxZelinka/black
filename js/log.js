@@ -24,24 +24,24 @@ exports.log_ = (modules, data) => {
     } catch (err) {
         console.log(err);
     }
-    del_(modules);
+    // del_(modules);
 }
 
-function del_(modules) {
-    try {
-        modules.file.readdir(modules, dir).forEach(file => {
-            if (file.match(/\d{4}-\d{2}.\blog\b/gm)) {
-                if (modules.moment(file.replace(/.\blog\b/gm, '')).isBefore(modules.moment().subtract(6, 'month'))) {
-                    if (!modules.file.unlink(modules, dir + file)) {
-                        console.log(`${file} not deleted.`);
-                    }
-                }
-            }
-        });
-    } catch (err) {
-        console.log(err);
-    }
-}
+// function del_(modules) {
+//     try {
+//         modules.file.readdir(modules, dir).forEach(file => {
+//             if (file.match(/\d{4}-\d{2}.\blog\b/gm)) {
+//                 if (modules.moment(file.replace(/.\blog\b/gm, '')).isBefore(modules.moment().subtract(6, 'month'))) {
+//                     if (!modules.file.unlink(modules, dir + file)) {
+//                         console.log(`${file} not deleted.`);
+//                     }
+//                 }
+//             }
+//         });
+//     } catch (err) {
+//         console.log(err);
+//     }
+// }
 
 /********************/
 

@@ -29,6 +29,7 @@ function unlink(modules, path) {
 }
 
 exports.readdir = (modules, path) => readdir(modules, path);
+exports.unlink = (modules, path) => unlink(modules, path);
 
 exports.file = async (modules, config, client, message) => {
     try {

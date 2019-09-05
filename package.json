@@ -5,7 +5,7 @@
   "main": "bot.js",
   "author": "Necromant#0916",
   "dependencies": {
-    "async": "^2.6.2",
+    "async": "^2.6.3",
     "discord.js": "^11.5.1",
     "fs.promises": "^0.1.2",
     "moment": "^2.24.0",

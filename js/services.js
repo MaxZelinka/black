@@ -27,22 +27,11 @@ async function status_(client, modules) {
 }
 
 async function file_observer(modules) {
+    console.log('[service started] file observer');
 
-    // readdir(modules, 'downloads/').forEach(file => {
-
-    // });
-
-    // modules.file.readdir(modules, dir).forEach(file => {
-    //     if (file.match(/\d{4}-\d{2}.\blog\b/gm)) {
-    //         if (modules.moment(file.replace(/.\blog\b/gm, '')).isBefore(modules.moment().subtract(6, 'month'))) {
-    //             if (!modules.file.unlink(modules, dir + file)) {
-    //                 console.log(`${file} not deleted.`);
-    //             }
-    //         }
-    //     }
-    // });
-
-    // console.log('[service started] file observer');
+    modules.cron.schedule('* * * 31 *', () => {
+        modules.file.readdir('logs/').filter(f => modules.file.path.extname(f) == '.log' && modules.file.moment(f.replace(/(.log)/g, '')).isBefore(modules.file.moment().subtract(6, 'month'))).map(el => (modules.file.unlink(modules, 'logs/' + el)) ? console.log(`${el} was deleted.`) : '');
+    });
 }
 
 exports.set_status = async (client, modules) => {
