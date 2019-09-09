@@ -10,6 +10,7 @@ exports.start = async (client, modules) => {
 }
 
 async function status_(client, modules) {
+    console.log('[service started] status');
     let status_text = (StatusCache.get('status')) ? StatusCache.get('status') : await modules.fspromise.readFile('./status.json', 'utf8').then(data => JSON.parse(data));
     if (!StatusCache.get('status')) StatusCache.set('status', status_text);
     modules.cron.schedule('* 2 * * *', () => {
@@ -23,14 +24,32 @@ async function status_(client, modules) {
             status: (status_text.status[rand].status) ? status_text.status[rand].status : ''
         });
     });
-    console.log('[service started] status');
 }
 
 async function file_observer(modules) {
     console.log('[service started] file observer');
 
+    // modules.cron.schedule('* * * 31 *', () => {
+    //     modules.file.readdir('logs/').filter(f => modules.file.path.extname(f) == '.log' && modules.file.moment(f.replace(/(.log)/g, '')).isBefore(modules.file.moment().subtract(6, 'month'))).map(el => (modules.file.unlink(modules, 'logs/' + el)) ? console.log(`${el} was deleted.`) : '');
+    // });
+
     modules.cron.schedule('* * * 31 *', () => {
-        modules.file.readdir('logs/').filter(f => modules.file.path.extname(f) == '.log' && modules.file.moment(f.replace(/(.log)/g, '')).isBefore(modules.file.moment().subtract(6, 'month'))).map(el => (modules.file.unlink(modules, 'logs/' + el)) ? console.log(`${el} was deleted.`) : '');
+        try {
+            let files = modules.file.readdir('logs/').filter(file => {
+                if (modules.file.path.extname(file) == '.log') {
+                    if (modules.file.moment(file.replace(/(.log)/g, '')).isBefore(modules.file.moment().subtract(6, 'month'))) {
+                        return file;
+                    }
+                }
+            });
+            files.map(file => {
+                if (modules.file.unlink(modules, `logs/${file}`)) {
+                    modules.log.log_(modules, `${file} was deleted.`);
+                };
+            });
+        } catch (err) {
+            modules.log.log_(modules, err);
+        }
     });
 }
 
