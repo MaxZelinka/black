@@ -1,10 +1,10 @@
 //own scripts
 const db = require("./db"),
     msg_send = require("./msg_send"),
-    help = require("./module/help"),
-    reactions = require("./module/reactions"),
+    help = require("./help"),
+    reactions = require("./reactions"),
     cfg = require("./module/config"),
-    lol = require("./module/leagueoflegends"),
+    lol = require("./leagueoflegends"),
     cmd = require("./module/commands");
 
 function not(client, message) {

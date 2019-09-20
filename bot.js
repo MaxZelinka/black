@@ -22,10 +22,10 @@ const modules = {
   msgsend: require('./js/msg_send'),
   services: require('./js/services'),
   cmd: require("./js/module/commands"),
-  cfg: require("./js/config"),
+  cfg: require("./js/module/config"),
   help: require("./js/help"),
   lol: require("./js/leagueoflegends"),
-  reactions: require("./js/module/reactions"),
+  reactions: require("./js/reactions"),
   file: require("./js/file"),
   bday: require("./js/bday"),
 }
@@ -36,7 +36,7 @@ const cache = {
 }
 
 const db = require("./js/db"),
-  reactions = require("./js/module/reactions");
+  reactions = require("./js/reactions");
 
 /**************************************************************************************************************/
 /* BOT STARTS                                                                                                 */

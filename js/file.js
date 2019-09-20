@@ -37,15 +37,19 @@ exports.file = async (modules, config, client, message) => {
             const cf_prefix = config[0].Prefix;
             const args = await modules.admin.cut_cmd(message);
             switch (args[0]) {
+                case 'a':
                 case 'add':
                     add();
                     break;
+                case 'd':
                 case 'del':
                     del();
                     break;
+                case 'l':
                 case 'list':
                     list();
                     break;
+                case 'h':
                 case 'help':
                     info();
                     break;
@@ -89,23 +93,26 @@ exports.file = async (modules, config, client, message) => {
 
             function list() {
                 try {
-                    let choosen = (args[1]) ? args[1] : 0;
+
                     let files = readdir(modules, './downloads');
-                    const a_arr = 10;
-                    const b_arr = Math.ceil(files.length / a_arr);
-                    const arr = new Array(b_arr);
-                    for (let i_b = 0; i_b < b_arr; i_b++) {
-                        let arr_cache = new Array(a_arr);
-                        for (let i_a = 0; i_a < a_arr; i_a++) {
-                            arr_cache[i_a] = files.shift();
-                        }
-                        arr[i_b] = arr_cache;
-                    }
-                    for (let index = 0; index < a_arr; index++) {
-                        if (arr[choosen][index]) {
-                            message.channel.send(dir + arr[choosen][index]);
-                        }
-                    }
+
+                    // let choosen = (args[1]) ? args[1] : 0;
+                    // let files = readdir(modules, './downloads');
+                    // const a_arr = 10;
+                    // const b_arr = Math.ceil(files.length / a_arr);
+                    // const arr = new Array(b_arr);
+                    // for (let i_b = 0; i_b < b_arr; i_b++) {
+                    //     let arr_cache = new Array(a_arr);
+                    //     for (let i_a = 0; i_a < a_arr; i_a++) {
+                    //         arr_cache[i_a] = files.shift();
+                    //     }
+                    //     arr[i_b] = arr_cache;
+                    // }
+                    // for (let index = 0; index < a_arr; index++) {
+                    //     if (arr[choosen][index]) {
+                    //         message.channel.send(dir + arr[choosen][index]);
+                    //     }
+                    // }
                 } catch (err) {
                     modules.msgsend.error(modules, client, message, message.channel.id, 'file', err);
                 }

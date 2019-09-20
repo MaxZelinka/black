@@ -2,10 +2,10 @@ const punycode = require('punycode'),
     Discord = require("discord.js"),
     NodeCache = require('node-cache');
 
-const db = require("../db"),
-    log = require("../log"),
-    admin = require("../admin"),
-    msg_send = require("../msg_send"),
+const db = require("./db"),
+    log = require("./log"),
+    admin = require("./admin"),
+    msg_send = require("./msg_send"),
     reaction_cache = new NodeCache({
         stdTTL: 3600 //1h ttl
     });
