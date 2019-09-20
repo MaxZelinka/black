@@ -200,7 +200,7 @@ client.on('messageReactionRemove', async (reaction, user, message) => {
 //Emitted whenever a message is created.
 client.on("message", async message => {
   modules.msghandler.handler(discord, client, modules, cache, message);
-  
+
 });
 
 client.login(auth.token);

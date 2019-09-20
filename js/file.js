@@ -11,6 +11,7 @@ Required modules:
 */
 
 const dir = 'downloads/';
+const discord = require("discord.js");
 
 function readdir(modules, path) {
     try {
@@ -93,8 +94,28 @@ exports.file = async (modules, config, client, message) => {
 
             function list() {
                 try {
-
                     let files = readdir(modules, './downloads');
+
+                    let exampleEmbed = new discord.RichEmbed();
+                                   
+                    files.forEach((file, index) => {
+                        exampleEmbed.setColor('000');
+                        exampleEmbed.addField(index, file);
+                        if(index % 25 == 24 || index == (files.length - 1)){
+                            message.channel.send(exampleEmbed);
+                            exampleEmbed = new discord.RichEmbed();
+                        }
+                        
+                        
+                    });
+
+                    // for(let i = 0; i < (Math.ceil(files.length / 2)); i++){
+                    //     console.log(i);
+                    // }
+
+
+
+                   
 
                     // let choosen = (args[1]) ? args[1] : 0;
                     // let files = readdir(modules, './downloads');
