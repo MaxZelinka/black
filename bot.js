@@ -53,7 +53,7 @@ client.on('ready', async () => {
 //Emitted whenever the client's WebSocket encounters a connection error.
 client.on('error', error => {
   console.log(error);
-  client.guilds.get('312477482836295681').channels.get('562208160329498624').send('[error] - resetting ...')
+  client.guilds.get('312477482836295681').channels.get('562208160329498624').send('[error] - restart')
   .then(() => client.destroy())
   .then(() => client.login(auth.token));
 });

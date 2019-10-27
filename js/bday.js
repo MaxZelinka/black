@@ -9,6 +9,14 @@ Required modules:
  - db
 */
 
+/*
+db: birthday_user
+ID, UserID, Birthday
+
+db: birthday_config
+ID, ServerID, distRoles 1/0
+*/
+
 exports.bday = async (modules, config, client, message) => {
     try {
         const cf_prefix = config[0].Prefix;
@@ -18,13 +26,24 @@ exports.bday = async (modules, config, client, message) => {
             case 'help':
                 info();
                 break;
+            case 'del' :
+                del();
+                break;
+            case 'role' :
+                role();
+                break;
+            case 'add' :
             default:
-                info();
+                add();
                 break;
         }
 
         function add() {
-
+            /**
+             * E: 19.11.1993 | 
+             * V: timestamp
+             * A: B-Day saved
+             */
         }
 
         function del() {
