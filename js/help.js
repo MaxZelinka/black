@@ -69,7 +69,7 @@ __Reaction Role__`;
 **addrole** [channel] [messageID] [emote] [role]: add Reaction Role
 **removerole** [reactionID]: remove Reaction Role
 **reactionid** : show all currently used reactionIDs
-**embedmsg** [channel] "[title]" "[body]": create an embedmessage
+**embedmsg** [channel] [color(hexcode)] "[title]" "[body]": create an embedmessage
 **editmsg** [channel] [messageID] title/body "[value]": change embedmessage value
 
 __League of Legends__`;
