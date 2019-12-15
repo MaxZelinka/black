@@ -1,6 +1,8 @@
 const discord = require("discord.js"),
   client = new discord.Client({autoReconnect:true}),
   auth = require("./auth.json");
+  
+let modulhandler = require('./js/modulhandler');
 
 const modules = {
   /*extern*/
@@ -44,6 +46,9 @@ const db = require("./js/db"),
 client.on('ready', async () => {
   console.log('[bot started]');
   // modules.services.set_status(client, modules);
+
+  // modulhandler.init();
+
   modules.services.start(client, modules);
 });
 
