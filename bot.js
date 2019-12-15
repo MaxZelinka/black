@@ -2,7 +2,7 @@ const discord = require("discord.js"),
   client = new discord.Client({autoReconnect:true}),
   auth = require("./auth.json");
   
-let modulhandler = require('./js/modulhandler');
+const modulhandler = require('./js/modulhandler');
 
 const modules = {
   /*extern*/
