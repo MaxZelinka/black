@@ -1,8 +1,8 @@
 const discord = require("discord.js"),
-  client = new discord.Client({autoReconnect:true}),
+  client = new discord.Client({ autoReconnect: true }),
   auth = require("./auth.json");
-  
-const modulhandler = require('./js/modulhandler');
+
+const modulhandler = require('./_modulhandler');
 
 const modules = {
   /*extern*/
@@ -34,7 +34,7 @@ const modules = {
 
 
 const cache = {
-  blacklist : new modules.NodeCache(),
+  blacklist: new modules.NodeCache(),
 }
 
 const db = require("./js/db"),
@@ -45,9 +45,17 @@ const db = require("./js/db"),
 /**************************************************************************************************************/
 client.on('ready', async () => {
   console.log('[bot started]');
-  // modules.services.set_status(client, modules);
+  modules.services.set_status(client, modules);
 
-  // modulhandler.init();
+  // modulhandler.init().then((data, err) => {
+  //   if (!err) {
+  //     return data;
+  //   } else {
+  //     console.log('Module konnten nicht geladen werden.\n' + err);
+  //   }
+  // }).then(bot_module => {
+  //   console.log(bot_module);
+  // });
 
   modules.services.start(client, modules);
 });
@@ -59,8 +67,8 @@ client.on('ready', async () => {
 client.on('error', error => {
   console.log(error);
   client.guilds.get('312477482836295681').channels.get('562208160329498624').send('[error] - restart')
-  .then(() => client.destroy())
-  .then(() => client.login(auth.token));
+    .then(() => client.destroy())
+    .then(() => client.login(auth.token));
 });
 //Emitted when the client's WebSocket disconnects and will no longer attempt to reconnect.
 client.on('disconnect', disconnect => console.log(disconnect));
