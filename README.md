@@ -5,7 +5,7 @@ The bot is currently in the **beta phase** and is currently running with Xampp o
 
 The bot is currently based on the server-side language _NodeJs_ and uses _MySQL_ for data storage.
 
-In addition, the following extensions are (19.12.2019):
+In addition, the following extensions are:
 - **[discord.js](https://discord.js.org/)**
 - [punycode](https://www.npmjs.com/package/punycode)
 - [node-cache](https://www.npmjs.com/package/node-cache)
