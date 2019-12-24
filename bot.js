@@ -2,7 +2,7 @@ var start = new Date();
 
 const discord = require("discord.js"),
   client = new discord.Client({ autoReconnect: true }),
-  auth = require("./auth.json");
+  auth = require("./config/auth.json");
 
   const modul = require('./modul');
   const event = require('./event');

@@ -11,7 +11,7 @@ exports.start = async (client, modules) => {
 
 async function status_(client, modules) {
     console.log('[service started] status');
-    let status_text = (StatusCache.get('status')) ? StatusCache.get('status') : await modules.fspromise.readFile('./status.json', 'utf8').then(data => JSON.parse(data));
+    let status_text = (StatusCache.get('status')) ? StatusCache.get('status') : await modules.fspromise.readFile('./config/status.json', 'utf8').then(data => JSON.parse(data));
     if (!StatusCache.get('status')) StatusCache.set('status', status_text);
     modules.cron.schedule('* * 2 * * *', () => {
         let rand = Math.round(Math.random() * (status_text.status.length - 1) + 0);
@@ -54,7 +54,7 @@ async function file_observer(modules) {
 }
 
 exports.set_status = async (client, modules) => {
-    modules.fspromise.readFile('./config.json', 'utf8')
+    modules.fspromise.readFile('./config/config.json', 'utf8')
         .then(data => JSON.parse(data))
         .then(() => {
             status(client);
@@ -65,7 +65,7 @@ exports.set_status = async (client, modules) => {
 }
 
 async function status(client) {
-    let status_text = (StatusCache.get('status')) ? StatusCache.get('status') : await fspromise.readFile('./status.json', 'utf8').then(data => JSON.parse(data));
+    let status_text = (StatusCache.get('status')) ? StatusCache.get('status') : await fspromise.readFile('./config/status.json', 'utf8').then(data => JSON.parse(data));
     if (!StatusCache.get('status')) StatusCache.set('status', status_text);
     let rand = Math.round(Math.random() * (status_text.status.length - 1) + 0);
     client.user.setPresence({

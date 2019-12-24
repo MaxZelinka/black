@@ -4,7 +4,7 @@ const fspromise = require('fs.promises'),
     log = require("./log");
 
 async function get_fileconfig() {
-    return await fspromise.readFile('./config.json', 'utf8')
+    return await fspromise.readFile('./config/config.json', 'utf8')
         .then(data => JSON.parse(data))
         .catch(error => log.log('[get_fileconfig] - ' + error));
 }
