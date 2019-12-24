@@ -1,8 +1,12 @@
+var start = new Date();
+
 const discord = require("discord.js"),
   client = new discord.Client({ autoReconnect: true }),
   auth = require("./auth.json");
 
-const modulhandler = require('./_modulhandler');
+  const modul = require('./modul');
+  const event = require('./event');
+  const message = require('./message');
 
 const modules = {
   /*extern*/
@@ -43,19 +47,14 @@ const db = require("./js/db"),
 /**************************************************************************************************************/
 /* BOT STARTS                                                                                                 */
 /**************************************************************************************************************/
-client.on('ready', async () => {
-  console.log('[bot started]');
+client.on('ready', async  (ready) => {
+  // console.log('[bot started]');
   modules.services.set_status(client, modules);
 
-  // modulhandler.init().then((data, err) => {
-  //   if (!err) {
-  //     return data;
-  //   } else {
-  //     console.log('Module konnten nicht geladen werden.\n' + err);
-  //   }
-  // }).then(bot_module => {
-  //   console.log(bot_module);
-  // });
+  var time = new Date() - start;
+  console.log('------------------------------------------');
+  console.log('[bot started] used time: ' + time/1000 + 's');
+  event.call(modul.get_module(), 'ready', ready);
 
   modules.services.start(client, modules);
 });
@@ -215,5 +214,52 @@ client.on("message", async message => {
   modules.msghandler.handler(discord, client, modules, cache, message);
 
 });
+
+client.on('channelCreate', data => event.call(modul.get_module(), 'channelCreate', client, data));
+client.on('channelDelete', data => event.call(modul.get_module(), 'channelDelete', client, data));
+client.on('channelPinsUpdate', data => event.call(modul.get_module(), 'channelPinsUpdate', client, data));
+client.on('channelUpdate', data => event.call(modul.get_module(), 'channelUpdate', client, data));
+client.on('clientUserGuildSettingsUpdate', data => event.call(modul.get_module(), 'clientUserGuildSettingsUpdate', client, data));
+client.on('clientUserSettingsUpdate', data => event.call(modul.get_module(), 'clientUserSettingsUpdate', client, data));
+client.on('debug', data => event.call(modul.get_module(), 'debug', client, data));
+client.on('disconnect', data => event.call(modul.get_module(), 'disconnect', client, data));
+client.on('emojiCreate', data => event.call(modul.get_module(), 'emojiCreate', client, data));
+client.on('emojiDelete', data => event.call(modul.get_module(), 'emojiDelete', client, data));
+client.on('emojiUpdate', data => event.call(modul.get_module(), 'emojiUpdate', client, data));
+client.on('error', data => event.call(modul.get_module(), 'error', client, data));
+client.on('guildBanAdd', data => event.call(modul.get_module(), 'guildBanAdd', client, data));
+client.on('guildBanRemove', data => event.call(modul.get_module(), 'guildBanRemove', client, data));
+client.on('guildCreate', data => event.call(modul.get_module(), 'guildCreate', client, data));
+client.on('guildDelete', data => event.call(modul.get_module(), 'guildDelete', client, data));
+client.on('guildIntegrationsUpdate', data => event.call(modul.get_module(), 'guildIntegrationsUpdate', client, data));
+client.on('guildMemberAdd', data => event.call(modul.get_module(), 'guildMemberAdd', client, data));
+client.on('guildMemberAvailable', data => event.call(modul.get_module(), 'guildMemberAvailable', client, data));
+client.on('guildMemberRemove', data => event.call(modul.get_module(), 'guildMemberRemove', client, data));
+client.on('guildMembersChunk', data => event.call(modul.get_module(), 'guildMembersChunk', client, data));
+client.on('guildMemberSpeaking', data => event.call(modul.get_module(), 'guildMemberSpeaking', client, data));
+client.on('guildMemberUpdate', data => event.call(modul.get_module(), 'guildMemberUpdate', client, data));
+client.on('guildUnavailable', data => event.call(modul.get_module(), 'guildUnavailable', client, data));
+client.on('guildUpdate', data => event.call(modul.get_module(), 'guildUpdate', client, data));
+client.on('message', data => event.call(modul.get_module(), 'message', client, data));
+client.on('messageDelete', data => event.call(modul.get_module(), 'messageDelete', client, data));
+client.on('messageDeleteBulk', data => event.call(modul.get_module(), 'messageDeleteBulk', client, data));
+client.on('messageReactionAdd', data => event.call(modul.get_module(), 'messageReactionAdd', client, data));
+client.on('messageReactionRemove', data => event.call(modul.get_module(), 'messageReactionRemove', client, data));
+client.on('messageReactionRemoveAll', data => event.call(modul.get_module(), 'messageReactionRemoveAll', client, data));
+client.on('messageUpdate', data => event.call(modul.get_module(), 'messageUpdate', client, data));
+client.on('presenceUpdate', data => event.call(modul.get_module(), 'presenceUpdate', client, data));
+client.on('rateLimit', data => event.call(modul.get_module(), 'rateLimit', client, data));
+client.on('reconnecting', data => event.call(modul.get_module(), 'reconnecting', client, data));
+client.on('resume', data => event.call(modul.get_module(), 'resume', client, data));
+client.on('roleCreate', data => event.call(modul.get_module(), 'roleCreate', client, data));
+client.on('roleDelete', data => event.call(modul.get_module(), 'roleDelete', client, data));
+client.on('roleUpdate', data => event.call(modul.get_module(), 'roleUpdate', client, data));
+client.on('typingStart', data => event.call(modul.get_module(), 'typingStart', client, data));
+client.on('typingStop', data => event.call(modul.get_module(), 'typingStop', client, data));
+client.on('userNoteUpdate', data => event.call(modul.get_module(), 'userNoteUpdate', client, data));
+client.on('userUpdate', data => event.call(modul.get_module(), 'userUpdate', client, data));
+client.on('voiceStateUpdate', data => event.call(modul.get_module(), 'voiceStateUpdate', client, data));
+client.on('warn', data => event.call(modul.get_module(), 'warn', client, data));
+client.on('webhookUpdate', data => event.call(modul.get_module(), 'webhookUpdate', client, data));
 
 client.login(auth.token);
