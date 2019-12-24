@@ -16,6 +16,6 @@ const channel = '312477482836295681';
 
 exports.welcome = (client, args) => {
     if(args && args.user && !args.user.bot){
-        message.send_embed_message(client, args.guild.id, channel, '#000', 'Willkommen', 'Willkommen ' + args.user + '!', 36000);
+        message.send_embed_message(client, args.guild.id, channel, '#000', 'Willkommen', 'Willkommen ' + args.user + '!');
     }  
 }
