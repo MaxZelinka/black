@@ -7,6 +7,9 @@ const discord = require("discord.js"),
   const modul = require('./modul');
   const event = require('./event');
   const message = require('./message');
+  const database = require('./database');
+  const log = require('./log');
+  const service = require('./service');
 
 const modules = {
   /*extern*/
@@ -50,6 +53,8 @@ const db = require("./js/db"),
 client.on('ready', async  (ready) => {
   // console.log('[bot started]');
   modules.services.set_status(client, modules);
+
+  database.query('SELECT * FROM general');
 
   var time = new Date() - start;
   console.log('------------------------------------------');

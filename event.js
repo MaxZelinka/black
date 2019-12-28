@@ -1,3 +1,9 @@
+const log = require('./log');
+
+(function init() {
+    
+}());
+
 let events = {
     channelCreate: [],
     channelDelete: [],
@@ -56,6 +62,10 @@ exports.add_event = (event, modul, func) => {
 
 exports.call = (bot_module, event, client, args) => {
     events[event].map(modul => {
-        bot_module[Object.keys(modul)][Object.values(modul)](client, args);
+        try {
+            bot_module[Object.keys(modul)][Object.values(modul)](client, args);
+        } catch (err) {
+            log.log(err);
+        }
     });
 }
