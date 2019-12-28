@@ -7,7 +7,6 @@ const log = require("./log");
 }());
 
 exports.query = (query) => {
-
     try {
         fspromise.readFile('./config/config.json', 'utf8')
             .then(data => JSON.parse(data))
@@ -18,12 +17,14 @@ exports.query = (query) => {
                 database: data.db.dbname
             }))
             .then(data => {
-                data.query(query).then(result => {
-                    console.log(result);
+                return data.query(query).then(result => {
+                    data.end();
+                }).catch(err => {
+                    log.log(err);
+                    data.end();
                 });
-                data.end();             
             })
-            .catch(error => log.log('[get_fileconfig] - ' + error));
+            .catch(err => log.log(err));
     } catch (err) {
         log.log(err);
     }
