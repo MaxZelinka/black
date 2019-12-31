@@ -10,6 +10,7 @@ Description:    Send Welcome-Messages for new Members
 /*init*/
 (function init() {
     event.add_event('guildMemberAdd', 'welcome', 'welcome');
+    event.add_event('guildMemberRemove', 'welcome', 'leaver');
 }());
 
 const channel = '312477482836295681';
