@@ -39,29 +39,16 @@ exports.welcome = (client, args) => {
 
 exports.leaver = (client, args) => {
 
-    let user = userlist.filter(member => member.user_id == args.user.id);
+    let user = userlist.filter(member => {
+        if(member.user_id == args.user.id){
+            return member;
+        }
+    });
+
+    console.log(user);
 
     user.map(user => {
         client.guilds.get('581147107033874455').channels.get('581147107487121439').fetchMessage(user.msg_id)
         .then(msg => msg.delete());
     })
-
-
-    // client.guilds.get('581147107033874455').channels.get('581147107487121439').fetchMessage('661588938154049596')
-    // .then(message => message.edit(embed))
-    // .catch(console.error);
-    
-
-    // client.guilds.get('312477482836295681').fetchMember('287281691746238464').then(el => {
-
-    //     const now = moment();
-
-    //     if(now.subtract('1','hour').toISOString() > now.subtract('2','hour').toISOString()){
-    //       console.log(now.subtract('1','hour').toISOString());
-    //     }
-
-
-
-    //     // console.log(moment(el.joinedTimestamp).add('7','years').toISOString());
-    //   })
 }
