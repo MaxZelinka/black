@@ -39,18 +39,10 @@ exports.welcome = (client, args) => {
 }
 
 exports.leaver = (client, args) => {
-
-    let user = userlist.filter(member => {
-        console.log(member);
-        if(member.user_id == args.user.id){
-            return member;
+    userlist.filter(member => {
+        if (member.user_id == args.user.id) {
+            client.guilds.get('581147107033874455').channels.get('581147107487121439').fetchMessage(member.msg_id)
+                .then(msg => msg.delete());
         }
     });
-
-    console.log(user);
-
-    user.map(user => {
-        client.guilds.get('581147107033874455').channels.get('581147107487121439').fetchMessage(user.msg_id)
-        .then(msg => msg.delete());
-    })
 }
