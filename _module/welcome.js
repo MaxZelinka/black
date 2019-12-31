@@ -41,6 +41,7 @@ exports.welcome = (client, args) => {
 exports.leaver = (client, args) => {
 
     let user = userlist.filter(member => {
+        console.log(member);
         if(member.user_id == args.user.id){
             return member;
         }
