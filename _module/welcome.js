@@ -1,5 +1,6 @@
 const discord = require("discord.js");
 const event = require('../event');
+const database = require('../database');
 
 /*
 Autor:          Necromant
@@ -11,6 +12,7 @@ Description:    Send Welcome-Messages for new Members
 (function init() {
     event.add_event('guildMemberAdd', 'welcome', 'welcome');
     event.add_event('guildMemberRemove', 'welcome', 'leaver');
+    event.add_event('message', 'welcome', 'settings');
 }());
 
 const welcome_channel = '312477482836295681';
@@ -18,6 +20,37 @@ const leaver_channel = '513444670123147276';
 const role = '425584194522054656';
 
 let userlist = [];
+
+exports.settings = (client, args) => {
+
+    const argument = args.content.trim().split(/ +/g)
+
+    const command = argument.shift().toLowerCase();
+
+    switch (command) {
+        case '?bwelcome':
+            set_welcome();
+            break;
+        case '?bleaver':
+            set_leaver();
+            break;
+        case '?brole':
+            set_role();
+            break;
+        default:
+            break;
+    }
+
+    function set_welcome(){
+        if(argument[0].match(/<#[0-9]*>/g) !== null){
+            database.query('INSERT INTO welcome (welcome_channel) VALUES (' + argument[0] + ');').then(result => {
+                console.log(result);
+            });
+        } 
+    }
+    function set_leaver(){}
+    function set_role(){}
+}
 
 exports.welcome = (client, args) => {
     if (args && args.user && !args.user.bot) {
