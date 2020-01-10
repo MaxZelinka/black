@@ -1,10 +1,9 @@
 const discord = require("discord.js");
 const event = require('../event');
-const message = require('../message');
 
 /*
 Autor:          Necromant
-Date:           24.12.2020
+Date:           10.01.2020
 Description:    Send Welcome-Messages for new Members
 */
 
@@ -14,26 +13,27 @@ Description:    Send Welcome-Messages for new Members
     event.add_event('guildMemberRemove', 'welcome', 'leaver');
 }());
 
-const channel = '312477482836295681';
+const welcome_channel = '312477482836295681';
+const leaver_channel = '513444670123147276';
 const role = '425584194522054656';
 
 let userlist = [];
 
 exports.welcome = (client, args) => {
     if (args && args.user && !args.user.bot) {
-        // message.send_embed_message(client, args.guild.id, channel, '#000', 'Willkommen', 'Willkommen ' + args.user.name + '!');
-
         const embed = new discord.RichEmbed()
+            .setColor('[44, 47, 51]')
             .setDescription('Willkommen ' + args.user + '!');
 
-        client.guilds.get(args.guild.id).channels.get(channel).send({ embed })
+        client.guilds.get(args.guild.id).channels.get(welcome_channel).send({
+                embed
+            })
             .then(msg => {
-                let user = {
+                userlist.push({
                     user_id: args.user.id,
                     username: args.user.username,
                     msg_id: msg.id
-                }
-                userlist.push(user);
+                });
             });
 
         if (args.guild.roles.get(role)) args.addRoles([role]);
@@ -41,10 +41,16 @@ exports.welcome = (client, args) => {
 }
 
 exports.leaver = (client, args) => {
-    userlist.filter(member => {
-        if (member.user_id == args.user.id) {
-            client.guilds.get(args.guild.id).channels.get(channel).fetchMessage(member.msg_id)
-                .then(msg => msg.delete());
-        }
+    userlist.filter(member => member.user_id == args.user.id).map(member => {
+        client.guilds.get(args.guild.id).channels.get(welcome_channel).fetchMessage(member.msg_id)
+            .then(msg => msg.delete());
+    });
+
+    const embed = new discord.RichEmbed()
+        .setColor('[44, 47, 51]')
+        .setDescription(args.user);
+
+    client.guilds.get(args.guild.id).channels.get(leaver_channel).send({
+        embed
     });
 }
