@@ -72,7 +72,7 @@ exports.handler = async (discord, client, modules, cache, message) => {
                                 not(client, message);
                                 break;
                             case cf_prefix + 'welcome':
-                                modules.cfg.welcome(config, client, modules, cache, message);
+                                // modules.cfg.welcome(config, client, modules, cache, message);
                                 break;
                             case cf_prefix + 'welcomemsg':
                                 not(client, message);
