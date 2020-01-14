@@ -15,7 +15,7 @@ const options = "./config/modul.json";
                     return files.filter(file => resolve[file.replace('.js', '')] || resolve[file.replace('.js', '')] == undefined);
                 }))
                 .then(files => {
-                    set_modul_option(files);
+                    // set_modul_option(files);
                     files.map(file => {
                         modules[file.replace('.js', '')] = require(path + file);
                         console.log('[start modul] ' + file.replace('.js', ''));

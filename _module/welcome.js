@@ -1,7 +1,7 @@
 const discord = require("discord.js");
 const event = require('../event');
 const database = require('../database');
-const log = require('../log');
+const _general = require('./_general');
 
 /*
 Autor:          Necromant
@@ -41,11 +41,10 @@ exports.settings = (client, args) => {
     const argument = args.content.trim().split(/ +/g)
     const command = argument.shift().toLowerCase();
 
-    if (args.member.hasPermission('ADMINISTRATOR')) {
-
+    if (_general.isAdmin(args)) {
         switch (command) {
             case '?bwelcome':
-                if (argument[0].match(/<#[0-9]*>/g) !== null) {
+                if (argument[0].match(/<#[0-9]*>/g)) {
                     database.query('UPDATE `lpggbot_`.`welcome` SET `Welcome_ID`= ' + argument[0].replace(/[<>#]/g, '') + ' WHERE `Server_ID` = ' + args.guild.id + ';').then(rp => {
                         if (rp && rp.affectedRows) args.channel.send(new discord.RichEmbed()
                             .setColor('000000')
@@ -56,7 +55,7 @@ exports.settings = (client, args) => {
                 }
                 break;
             case '?bleaver':
-                if (argument[0].match(/<#[0-9]*>/g) !== null) {
+                if (argument[0].match(/<#[0-9]*>/g)) {
                     database.query('UPDATE `lpggbot_`.`welcome` SET `Leaver_ID`= ' + argument[0].replace(/[<>#]/g, '') + ' WHERE `Server_ID` = ' + args.guild.id + ';').then(rp => {
                         if (rp && rp.affectedRows) args.channel.send(new discord.RichEmbed()
                             .setColor('000000')
@@ -67,7 +66,7 @@ exports.settings = (client, args) => {
                 }
                 break;
             case '?bwelcome-role':
-                if (argument[0].match(/<@&[0-9]*>/g) !== null) {
+                if (argument[0].match(/<@&[0-9]*>/g)) {
                     database.query('UPDATE `lpggbot_`.`welcome` SET `Welcome_Role`= ' + argument[0].replace(/[<>@&]/g, '') + ' WHERE `Server_ID` = ' + args.guild.id + ';').then(rp => {
                         if (rp && rp.affectedRows) args.channel.send(new discord.RichEmbed()
                             .setColor('000000')
