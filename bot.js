@@ -216,7 +216,6 @@ client.on('messageReactionRemove', async (reaction, user, message) => {
 //Emitted whenever a message is created.
 client.on("message", async message => {
   modules.msghandler.handler(discord, client, modules, cache, message);
-
 });
 
 client.on('channelCreate', data => event.call(modul.get_module(), 'channelCreate', client, data));

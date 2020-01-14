@@ -8,7 +8,7 @@ const log = require("./log");
 
 exports.query = (query) => {
     try {
-        fspromise.readFile('./config/config.json', 'utf8')
+        return fspromise.readFile('./config/config.json', 'utf8')
             .then(data => JSON.parse(data))
             .then(data => mysql.createConnection({
                 host: data.db.servername,
@@ -19,6 +19,7 @@ exports.query = (query) => {
             .then(data => {
                 return data.query(query).then(result => {
                     data.end();
+                    return result;
                 }).catch(err => {
                     log.log(err);
                     data.end();
