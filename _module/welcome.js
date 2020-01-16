@@ -136,7 +136,7 @@ exports.leaver = (client, args) => {
         if (args.guild.channels.get(rp[0].Leaver_ID)) {
             const embed = new discord.RichEmbed()
                 .setColor('000000')
-                .setDescription(args.user);
+                .setDescription(args.user.username);
 
             client.guilds.get(args.guild.id).channels.get(rp[0].Leaver_ID).send({
                 embed
