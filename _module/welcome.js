@@ -97,25 +97,27 @@ function get_leaver(args) {
 exports.welcome = (client, args) => {
     if (args && args.user && !args.user.bot) get_welcome(args).then(rp => {
         if (args.guild.channels.get(rp[0].Welcome_ID)) {
-            const embed = new discord.RichEmbed()
-                .setColor('000000')
-                .setDescription('Willkommen ' + args.user + '!');
+            client.fetchUser(args.member.id).then(user => {
+                const embed = new discord.RichEmbed()
+                    .setColor('000000')
+                    .setDescription('Willkommen ' + user + '!');
 
-            client.guilds.get(args.guild.id).channels.get(rp[0].Welcome_ID).send({
-                embed
-            })
-                .then(msg => {
-                    userlist.push({
-                        user_id: args.user.id,
-                        username: args.user.username,
-                        msg_id: msg.id
+                client.guilds.get(args.guild.id).channels.get(rp[0].Welcome_ID).send({
+                    embed
+                })
+                    .then(msg => {
+                        userlist.push({
+                            user_id: args.user.id,
+                            username: args.user.username,
+                            msg_id: msg.id
+                        });
                     });
-                });
 
-            args.user.send(`Welcome to ` + args.guild.name + `!`);
+                args.user.send(`Welcome to ` + args.guild.name + `!`);
 
-            get_role(args).then(rp => {
-                if (args.guild.roles.get(rp[0].Welcome_Role)) args.addRoles([rp[0].Welcome_Role]);
+                get_role(args).then(rp => {
+                    if (args.guild.roles.get(rp[0].Welcome_Role)) args.addRoles([rp[0].Welcome_Role]);
+                })
             })
         }
     });
