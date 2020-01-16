@@ -41,11 +41,11 @@ exports.settings = (client, args) => {
     const argument = args.content.trim().split(/ +/g)
     const command = argument.shift().toLowerCase();
 
-    if (_general.isAdmin(args)) {
+    if (_general.isAdmin(args) || _general.isMod(args)) {
         switch (command) {
             case '?bwelcome':
-                if (argument[0].match(/<#[0-9]*>/g)) {
-                    database.query('UPDATE `lpggbot_`.`welcome` SET `Welcome_ID`= ' + argument[0].replace(/[<>#]/g, '') + ' WHERE `Server_ID` = ' + args.guild.id + ';').then(rp => {
+                if (_general.isChannel(argument[0])) {
+                    database.query('UPDATE `lpggbot_`.`welcome` SET `Welcome_ID`= ' + argument[0].replace(/[<>#!]/g, '') + ' WHERE `Server_ID` = ' + args.guild.id + ';').then(rp => {
                         if (rp && rp.affectedRows) args.channel.send(new discord.RichEmbed()
                             .setColor('000000')
                             .setTitle('Successful')
@@ -55,8 +55,8 @@ exports.settings = (client, args) => {
                 }
                 break;
             case '?bleaver':
-                if (argument[0].match(/<#[0-9]*>/g)) {
-                    database.query('UPDATE `lpggbot_`.`welcome` SET `Leaver_ID`= ' + argument[0].replace(/[<>#]/g, '') + ' WHERE `Server_ID` = ' + args.guild.id + ';').then(rp => {
+                if (_general.isChannel(argument[0])) {
+                    database.query('UPDATE `lpggbot_`.`welcome` SET `Leaver_ID`= ' + argument[0].replace(/[<>#!]/g, '') + ' WHERE `Server_ID` = ' + args.guild.id + ';').then(rp => {
                         if (rp && rp.affectedRows) args.channel.send(new discord.RichEmbed()
                             .setColor('000000')
                             .setTitle('Successful')
@@ -66,7 +66,7 @@ exports.settings = (client, args) => {
                 }
                 break;
             case '?bwelcome-role':
-                if (argument[0].match(/<@&[0-9]*>/g)) {
+                if (_general.isRole(argument[0])) {
                     database.query('UPDATE `lpggbot_`.`welcome` SET `Welcome_Role`= ' + argument[0].replace(/[<>@&]/g, '') + ' WHERE `Server_ID` = ' + args.guild.id + ';').then(rp => {
                         if (rp && rp.affectedRows) args.channel.send(new discord.RichEmbed()
                             .setColor('000000')
