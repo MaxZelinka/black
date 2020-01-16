@@ -58,7 +58,7 @@ client.on('ready', async  (ready) => {
   var time = new Date() - start;
   console.log('------------------------------------------');
   console.log('[bot started] used time: ' + time/1000 + 's');
-  event.call(modul.get_module(), 'ready', ready);
+  event.call(modul.get_module(), 'ready', client, ready);
 
   modules.services.start(client, modules);
 });

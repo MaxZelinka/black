@@ -2,6 +2,8 @@ const discord = require("discord.js");
 const event = require('../event');
 const database = require('../database');
 const _general = require('./_general');
+const random = require('random');
+const node_fetch = require('node-fetch');
 
 /*
 Autor:          Necromant
@@ -97,21 +99,31 @@ function get_leaver(args) {
 exports.welcome = (client, args) => {
     if (args && args.user && !args.user.bot) get_welcome(args).then(rp => {
         if (args.guild.channels.get(rp[0].Welcome_ID)) {
-            client.fetchUser(args.member.id).then(user => {
-                const embed = new discord.RichEmbed()
-                    .setColor('000000')
-                    .setDescription('Willkommen ' + user + '!');
+            client.fetchUser(args.user.id).then(user => {
 
-                client.guilds.get(args.guild.id).channels.get(rp[0].Welcome_ID).send({
-                    embed
-                })
-                    .then(msg => {
-                        userlist.push({
-                            user_id: args.user.id,
-                            username: args.user.username,
-                            msg_id: msg.id
-                        });
+                node_fetch('http://api.giphy.com/v1/gifs/search?api_key=h7P6AQTeIKHs5Vl7qGZxJA2uwehup7V3&q=welcome&limit=1&offset=' + random.int(0, 50))
+                    .then(res => res.json())
+                    .then(json => {
+                        const embed = new discord.RichEmbed()
+                            .setColor('000000')
+                            .setImage('https://media.giphy.com/media/' + json.data[0].id + '/giphy.gif')
+                            .setDescription('Welcome ' + user + '!');
+
+                        client.guilds.get(args.guild.id).channels.get(rp[0].Welcome_ID).send({
+                            embed
+                        })
+                            .then(msg => {
+                                userlist.push({
+                                    user_id: args.user.id,
+                                    username: args.user.username,
+                                    msg_id: msg.id
+                                });
+                            });
+                    }).catch(err => {
+                        console.log(err);
                     });
+
+
 
                 args.user.send(`Welcome to ` + args.guild.name + `!`);
 
