@@ -42,6 +42,10 @@ exports.giphy = (client, args) => {
         fetch(client, 'good morning', random.int(0, 365), 'Good Morning!');
     });
 
+    cronjob.schedule('0 0 23 * * *', () => {
+        fetch(client, 'good night', random.int(0, 365), 'Good Night!');
+    });
+
     cronjob.schedule('0 0 20 24 12 *', () => {
         fetch(client, 'christmas', random.int(0, 100), 'Happy Christmas!');
     });
