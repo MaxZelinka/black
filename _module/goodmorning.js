@@ -23,7 +23,7 @@ exports.giphy = (client, args) => {
                     .setColor('000000')
                     .setImage('https://media.giphy.com/media/' + json.data[0].id + '/giphy.gif')
                     .setDescription('Good Morning!');
-                client.guilds.get('312477482836295681').channels.get('562208160329498624').send({
+                client.guilds.get('312477482836295681').channels.get('312477482836295681').send({
                     embed
                 })
             }).catch(err => {
