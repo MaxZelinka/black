@@ -101,37 +101,32 @@ function get_leaver(args) {
 exports.welcome = (client, args) => {
     if (args && args.user && !args.user.bot) get_welcome(args).then(rp => {
         if (args.guild.channels.get(rp[0].Welcome_ID)) {
-            client.fetchUser(args.user.id).then(user => {
+            node_fetch('http://api.giphy.com/v1/gifs/search?api_key=h7P6AQTeIKHs5Vl7qGZxJA2uwehup7V3&q=welcome&limit=1&offset=' + random.int(0, 50))
+                .then(res => res.json())
+                .then(json => {
+                    const embed = new discord.RichEmbed()
+                        .setColor('000000')
+                        .setImage('https://media.giphy.com/media/' + json.data[0].id + '/giphy.gif')
+                        .setDescription('Welcome ' + args.user.username + '!');
 
-                node_fetch('http://api.giphy.com/v1/gifs/search?api_key=h7P6AQTeIKHs5Vl7qGZxJA2uwehup7V3&q=welcome&limit=1&offset=' + random.int(0, 50))
-                    .then(res => res.json())
-                    .then(json => {
-                        const embed = new discord.RichEmbed()
-                            .setColor('000000')
-                            .setImage('https://media.giphy.com/media/' + json.data[0].id + '/giphy.gif')
-                            .setDescription('Welcome ' + user + '!');
-
-                        client.guilds.get(args.guild.id).channels.get(rp[0].Welcome_ID).send({
-                            embed
-                        })
-                            .then(msg => {
-                                userlist.push({
-                                    user_id: args.user.id,
-                                    username: args.user.username,
-                                    msg_id: msg.id
-                                });
+                    client.guilds.get(args.guild.id).channels.get(rp[0].Welcome_ID).send({
+                        embed
+                    })
+                        .then(msg => {
+                            userlist.push({
+                                user_id: args.user.id,
+                                username: args.user.username,
+                                msg_id: msg.id
                             });
-                    }).catch(err => {
-                        console.log(err);
-                    });
+                        });
+                }).catch(err => {
+                    console.log(err);
+                });
 
+            // args.user.send(`Welcome to ` + args.guild.name + `!`);
 
-
-                args.user.send(`Welcome to ` + args.guild.name + `!`);
-
-                get_role(args).then(rp => {
-                    if (args.guild.roles.get(rp[0].Welcome_Role)) args.addRoles([rp[0].Welcome_Role]);
-                })
+            get_role(args).then(rp => {
+                if (args.guild.roles.get(rp[0].Welcome_Role)) args.addRoles([rp[0].Welcome_Role]);
             })
         }
     });
