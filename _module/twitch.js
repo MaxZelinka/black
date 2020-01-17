@@ -14,7 +14,7 @@ Description:    Twitch integration
 /*init*/
 (function init() {
     event.add_event('ready', 'twitch', 'database');
-    // event.add_event('ready', 'twitch', 'twitch');
+    event.add_event('ready', 'twitch', 'twitch');
 }());
 
 exports.database = (client, args) => {
@@ -24,20 +24,28 @@ exports.database = (client, args) => {
 }
 
 exports.twitch = (client, args) => {
-    cronjob.schedule('* * * * * *', () => {
-        client.guilds.map(async (guild) => {
-            database.query('SELECT * FROM `lpggbot_`.`twitch` WHERE `Server_ID` = ' + guild.id).then(guild => {
-                guild.map(guild => {
-                    fetch(client, guild.User_Name, guild.Server_ID, guild.Channel_ID);
-                })
-            });
+    var streamer_liste = [];
+    database.query('SELECT DISTINCT `User_Name` FROM `lpggbot_`.`twitch`').then(streamer => {
+
+        streamer.map(el => {
+            streamer_liste[el.User_Name] = '';
         })
+
+        cronjob.schedule('0 2 * * * *', () => {
+            client.guilds.map(async (guild) => {
+                database.query('SELECT * FROM `lpggbot_`.`twitch` WHERE `Server_ID` = ' + guild.id).then(guild => {
+                    guild.map(guild => {
+                        fetch(client, guild.User_Name, guild.Server_ID, guild.Channel_ID, streamer_liste);
+                    })
+                });
+            })
+        });
     });
 }
 
 
 /* check whenether messages is send yet */
-function fetch(client, user_login, Guild_ID, Channel_ID) {
+function fetch(client, user_login, Guild_ID, Channel_ID, streamer_liste) {
 
     node_fetch('https://api.twitch.tv/helix/streams?user_login=' + user_login, {
         headers: {
@@ -46,21 +54,27 @@ function fetch(client, user_login, Guild_ID, Channel_ID) {
     })
         .then(res => res.json())
         .then(json => {
-            if (json.data[0]) { //live
-                // console.log(json.data[0] //game_id //viewer_count);
-                const embed = new discord.RichEmbed()
-                    .setColor('000000')
-                    .setTitle(json.data[0].user_name + ' [ LIVE ]')
-                    .setURL('https://www.twitch.tv/' + json.data[0].user_name)
-                    .setImage(json.data[0].thumbnail_url.replace(/(\{width\})/g,'400').replace(/(\{height\})/g,'225'))
-                    .setTimestamp(json.data[0].started_at)
-                    .setDescription(json.data[0].title)
-                    .setFooter('Live since');
-                client.guilds.get(Guild_ID).channels.get(Channel_ID).send({
-                    embed
-                })
+            if (json && json.data[0]) { //live
+                if (streamer_liste[json.data[0].user_name.toLowerCase()] != 'Live') {
+                    streamer_liste[json.data[0].user_name.toLowerCase()] = 'Live';
+
+                    const embed = new discord.RichEmbed()
+                        .setColor('000000')
+                        .setTitle(json.data[0].user_name + ' [ LIVE ]')
+                        .setURL('https://www.twitch.tv/' + json.data[0].user_name)
+                        .setImage(json.data[0].thumbnail_url.replace(/(\{width\})/g, '400').replace(/(\{height\})/g, '225'))
+                        .setTimestamp(json.data[0].started_at)
+                        .setDescription(json.data[0].title)
+                        .setFooter('Live since');
+                    client.guilds.get(Guild_ID).channels.get(Channel_ID).send({
+                        embed
+                    })
+                }
+
             } else { //not live
-                
+                if (streamer_liste[user_login] == 'Live') {
+                    streamer_liste[user_login] = '';
+                }
             }
         });
 }
