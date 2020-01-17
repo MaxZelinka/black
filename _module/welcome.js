@@ -24,7 +24,9 @@ Description:    Send Welcome-Messages for new Members
 let userlist = [];
 
 exports.database = (client, args) => {
-    database.query('CREATE TABLE `lpggbot_`.`welcome` ( `Server_ID` varchar(20) NOT NULL PRIMARY KEY, `Welcome_ID` VARCHAR(20) NULL , `Welcome_Role` varchar(20) NULL , `Leaver_ID` VARCHAR(20) NULL ) ENGINE = InnoDB;');
+    database.query('CREATE TABLE `lpggbot_`.`welcome` ( `Server_ID` varchar(20) NOT NULL PRIMARY KEY, `Welcome_ID` VARCHAR(20) NULL , `Welcome_Role` varchar(20) NULL , `Leaver_ID` VARCHAR(20) NULL ) ENGINE = InnoDB;').then(rp => {
+        if (rp) console.log('[modul] Welcome | create Database');
+    });
 }
 
 exports.add_guild = (client, args) => {
