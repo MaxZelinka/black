@@ -47,6 +47,7 @@ function fetch(client, user_login, Guild_ID, Channel_ID) {
         .then(res => res.json())
         .then(json => {
             if (json.data[0]) { //live
+                // console.log(json.data[0] //game_id //viewer_count);
                 const embed = new discord.RichEmbed()
                     .setColor('000000')
                     .setTitle(json.data[0].user_name + ' [ LIVE ]')
