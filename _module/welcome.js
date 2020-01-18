@@ -4,6 +4,8 @@ const database = require('../database');
 const _general = require('./_general');
 const random = require('random');
 const node_fetch = require('node-fetch');
+const node_cache = require('node-cache');
+const Leaver = new node_cache({ stdTTL: 86400, checkperiod: 86400 }); //1 day
 
 /*
 Autor:          Necromant
@@ -143,15 +145,25 @@ exports.leaver = (client, args) => {
         }
     });
 
-    get_leaver(args).then(rp => {
-        if (args.guild.channels.get(rp[0].Leaver_ID)) {
-            const embed = new discord.RichEmbed()
-                .setColor('000000')
-                .setDescription(args.user.username);
+    if (Leaver.get(args.guild.id)) {
+        var Leaved_User = Leaver.get(args.guild.id).split(',').push(args.user.username);
 
-            client.guilds.get(args.guild.id).channels.get(rp[0].Leaver_ID).send({
-                embed
-            });
+        if (Leaved_User.length >= 10) {
+            //post & reset
+            get_leaver(args).then(rp => {
+                if (args.guild.channels.get(rp[0].Leaver_ID)) {
+                    const embed = new discord.RichEmbed()
+                        .setColor('000000')
+                        .setDescription(Leaved_User.toString().repalce(/[\s]/g, '').replace(/[,]/g, '\n'));
+
+                    client.guilds.get(args.guild.id).channels.get(rp[0].Leaver_ID).send({
+                        embed
+                    });
+                }
+            })
+            Leaver.del(args.guild.id);
         }
-    })
+    } else {
+        Leaver.set(args.guild.id, args.user.username);
+    }
 }
