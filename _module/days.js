@@ -20,20 +20,20 @@ Description:    Day-Events
 }());
 
 exports.database = (client, args) => {
-    database.query('CREATE TABLE `lpggbot_`.`days` ( `Server_ID` varchar(20) NOT NULL PRIMARY KEY, `Channel_ID` VARCHAR(20) NULL) ENGINE = InnoDB;').then(rp => {
-        if (rp) console.log('[modul] Days | create Database');
+    database.query('CREATE TABLE IF NOT EXISTS `lpggbot_`.`days` ( `Server_ID` varchar(20) NOT NULL PRIMARY KEY, `Channel_ID` VARCHAR(20) NULL) ENGINE = InnoDB;').then(rp => {
+        if (rp.affectedRows) console.log('[modul] Days | create Database');
     });
 }
 
 exports.add_guild = (client, args) => {
     database.query('INSERT INTO `lpggbot_`.`days`(`Server_ID`) VALUES (' + args.guild.id + ');').then(rp => {
-        if (rp) console.log('[modul] Days | create Database Entry for ' + args.guild.id);
+        if (rp.affectedRows) console.log('[modul] Days | create Database Entry for ' + args.guild.id);
     });
 }
 
 exports.del_guild = (client, args) => {
     database.query('DELETE FROM `lpggbot_`.`days` WHERE `Server_ID`= ' + args.guild.id + ';').then(rp => {
-        if (rp) console.log('[modul] Days | delete Database Entry for ' + args.guild.id);
+        if (rp.affectedRows) console.log('[modul] Days | delete Database Entry for ' + args.guild.id);
     });
 }
 

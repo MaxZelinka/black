@@ -19,8 +19,8 @@ Description:    Twitch integration
 }());
 
 exports.database = (client, args) => {
-    database.query('CREATE TABLE `lpggbot_`.`twitch` (`ID` int AUTO_INCREMENT PRIMARY KEY, `Server_ID` varchar(20) NOT NULL, `Channel_ID` VARCHAR(20) NULL, `User_Name` VARCHAR(255) NULL) ENGINE = InnoDB;').then(rp => {
-        if (rp) console.log('[modul] Twitch | create Database');
+    database.query('CREATE TABLE IF NOT EXISTS `lpggbot_`.`twitch` (`ID` int AUTO_INCREMENT PRIMARY KEY, `Server_ID` varchar(20) NOT NULL, `Channel_ID` VARCHAR(20) NULL, `User_Name` VARCHAR(255) NULL) ENGINE = InnoDB;').then(rp => {
+        if (rp.affectedRows) console.log('[modul] Twitch | create Database');
     });
 }
 
@@ -32,7 +32,7 @@ exports.twitch = (client, args) => {
             streamer_liste[el.User_Name] = '';
         })
 
-        cronjob.schedule('0 2 * * * *', () => {
+        cronjob.schedule('0 0,5 * * * *', () => {
             client.guilds.map(async (guild) => {
                 database.query('SELECT * FROM `lpggbot_`.`twitch` WHERE `Server_ID` = ' + guild.id).then(guild => {
                     guild.map(guild => {
@@ -54,7 +54,7 @@ function fetch(client, user_login, Guild_ID, Channel_ID, streamer_liste) {
     })
         .then(res => res.json())
         .then(streamer => {
-            if (streamer && streamer.data[0]) { //live
+            if (streamer.data[0]) { //live
                 if (streamer_liste[streamer.data[0].user_name.toLowerCase()] != 'Live') {
                     streamer_liste[streamer.data[0].user_name.toLowerCase()] = 'Live';
 
@@ -64,14 +64,18 @@ function fetch(client, user_login, Guild_ID, Channel_ID, streamer_liste) {
                         },
                     })
                         .then(res => res.json())
-                        .then(user => {
-                            var Game_Name = (Games.get(streamer.data[0].game_id)) ? Game_Name = Games.get(streamer.data[0].game_id) : node_fetch('https://api.twitch.tv/helix/games?id=' + streamer.data[0].game_id, {
+                        .then(async user => {
+
+                            var Game_Name = (Games.get(streamer.data[0].game_id)) ? Games.get(streamer.data[0].game_id) : await node_fetch('https://api.twitch.tv/helix/games?id=' + streamer.data[0].game_id, {
                                 headers: {
                                     'Client-ID': 'kb5jsbinsj8hm52nfp0q1r1l6rgobt',
                                 },
                             })
-                                .then(res => res.json())
-                                .then(game => Game_Name = game.data[0].name, Games.set(streamer.data[0].game_id, game.data[0].name));
+                                .then(resp => resp.json())
+                                .then(resp => {
+                                    Games.set(streamer.data[0].game_id, resp.data[0].name)
+                                    return resp.data[0].name;
+                                });
 
                             const embed = new discord.RichEmbed()
                                 .setColor('000000')

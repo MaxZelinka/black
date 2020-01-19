@@ -18,18 +18,18 @@ Description:    Create General-Settings in the Database and more
 }());
 
 exports.database = (client, args) => {
-    database.query('CREATE TABLE `lpggbot_`.`_general` ( `Server_ID` varchar(20) NOT NULL PRIMARY KEY, `Moderator_ID` TEXT NULL, `Channel_ID` TEXT NULL  ) ENGINE = InnoDB;');
+    database.query('CREATE TABLE IF NOT EXISTS `lpggbot_`.`_general` ( `Server_ID` varchar(20) NOT NULL PRIMARY KEY, `Moderator_ID` TEXT NULL, `Channel_ID` TEXT NULL  ) ENGINE = InnoDB;');
 }
 
 exports.add_guild = (client, args) => {
     database.query('INSERT INTO `lpggbot_`.`_general`(`Server_ID`) VALUES (' + args.guild.id + ');').then(rp => {
-        if (rp) console.log('[modul] _general | create Database Entry for ' + args.guild.id);
+        if (rp.affectedRows) console.log('[modul] _general | create Database Entry for ' + args.guild.id);
     });
 }
 
 exports.del_guild = (client, args) => {
     database.query('DELETE FROM `lpggbot_`.`_general` WHERE `Server_ID`= ' + args.guild.id + ';').then(rp => {
-        if (rp) console.log('[modul] _general | delete Database Entry for ' + args.guild.id);
+        if (rp.affectedRows) console.log('[modul] _general | delete Database Entry for ' + args.guild.id);
     });
 }
 

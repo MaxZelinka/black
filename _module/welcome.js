@@ -6,6 +6,7 @@ const random = require('random');
 const node_fetch = require('node-fetch');
 const node_cache = require('node-cache');
 const Leaver = new node_cache({ stdTTL: 86400, checkperiod: 86400 }); //1 day
+const moment = require('moment');
 
 /*
 Autor:          Necromant
@@ -26,20 +27,20 @@ Description:    Send Welcome-Messages for new Members
 let userlist = [];
 
 exports.database = (client, args) => {
-    database.query('CREATE TABLE `lpggbot_`.`welcome` ( `Server_ID` varchar(20) NOT NULL PRIMARY KEY, `Welcome_ID` VARCHAR(20) NULL , `Welcome_Role` varchar(20) NULL , `Leaver_ID` VARCHAR(20) NULL ) ENGINE = InnoDB;').then(rp => {
-        if (rp) console.log('[modul] Welcome | create Database');
+    database.query('CREATE TABLE IF NOT EXISTS `lpggbot_`.`welcome` ( `Server_ID` varchar(20) NOT NULL PRIMARY KEY, `Welcome_ID` VARCHAR(20) NULL , `Welcome_Role` varchar(20) NULL , `Leaver_ID` VARCHAR(20) NULL ) ENGINE = InnoDB;').then(rp => {
+        if (rp.affectedRows) console.log('[modul] Welcome | create Database');
     });
 }
 
 exports.add_guild = (client, args) => {
     database.query('INSERT INTO `lpggbot_`.`welcome`(`Server_ID`) VALUES (' + args.guild.id + ');').then(rp => {
-        if (rp) console.log('[modul] Welcome | create Database Entry for ' + args.guild.id);
+        if (rp.affectedRows) console.log('[modul] Welcome | create Database Entry for ' + args.guild.id);
     });
 }
 
 exports.del_guild = (client, args) => {
     database.query('DELETE FROM `lpggbot_`.`welcome` WHERE `Server_ID`= ' + args.guild.id + ';').then(rp => {
-        if (rp) console.log('[modul] Welcome | delete Database Entry for ' + args.guild.id);
+        if (rp.affectedRows) console.log('[modul] Welcome | delete Database Entry for ' + args.guild.id);
     });
 }
 
@@ -134,7 +135,6 @@ exports.welcome = (client, args) => {
     });
 }
 
-
 exports.leaver = (client, args) => {
     get_welcome(args).then(rp => {
         if (args.guild.channels.get(rp[0].Welcome_ID)) {
@@ -148,7 +148,8 @@ exports.leaver = (client, args) => {
     if (Leaver.get(args.guild.id)) {
         var Leaved_User = Leaver.get(args.guild.id).split(',').push(args.user.username);
 
-        if (Leaved_User.length >= 10) {
+
+        if (Leaved_User.length >= 10 || moment().format("HH:mm") == '23:59') {
             //post & reset
             get_leaver(args).then(rp => {
                 if (args.guild.channels.get(rp[0].Leaver_ID)) {
