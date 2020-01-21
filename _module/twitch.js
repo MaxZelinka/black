@@ -4,7 +4,10 @@ const node_fetch = require('node-fetch');
 const database = require('../database');
 const cronjob = require('node-cron');
 const node_cache = require('node-cache');
-const Games = new node_cache({ stdTTL: 86400, checkperiod: 86400 }); //1 day
+const Games = new node_cache({
+    stdTTL: 86400,
+    checkperiod: 86400
+}); //1 day
 
 /*
 Autor:          Necromant
@@ -44,33 +47,55 @@ exports.twitch = (client, args) => {
     });
 }
 
+var old_Status;
 
 /* check whenether messages is send yet */
 function fetch(client, user_login, Guild_ID, Channel_ID, streamer_liste) {
     node_fetch('https://api.twitch.tv/helix/streams?user_login=' + user_login, {
-        headers: {
-            'Client-ID': 'kb5jsbinsj8hm52nfp0q1r1l6rgobt',
-        },
-    })
+            headers: {
+                'Client-ID': 'kb5jsbinsj8hm52nfp0q1r1l6rgobt',
+            },
+        })
         .then(res => res.json())
         .then(streamer => {
+            try {
+                if (user_login.toLowerCase() == 'letsplaygreatgames' && streamer.data[0]) {
+                    old_Status = client.user.presence;
+                    client.user.setPresence({
+                        game: {
+                            name: 'https://www.twitch.tv/letsplaygreatgames',
+                            type: 'STREAMING',
+                            url: 'https://www.twitch.tv/letsplaygreatgames'
+                        },
+                        status: 'online'
+                    });
+                }
+
+                if (user_login.toLowerCase() == 'letsplaygreatgames' && !streamer.data[0]) {
+                    client.user.setPresence(old_Status);
+                }
+            } catch (err) {
+                console.log('twitch status');
+                console.log(err);
+            }
+
             if (streamer.data[0]) { //live
                 if (streamer_liste[streamer.data[0].user_name.toLowerCase()] != 'Live') {
                     streamer_liste[streamer.data[0].user_name.toLowerCase()] = 'Live';
 
                     node_fetch('https://api.twitch.tv/helix/users?id=' + streamer.data[0].user_id, {
-                        headers: {
-                            'Client-ID': 'kb5jsbinsj8hm52nfp0q1r1l6rgobt',
-                        },
-                    })
+                            headers: {
+                                'Client-ID': 'kb5jsbinsj8hm52nfp0q1r1l6rgobt',
+                            },
+                        })
                         .then(res => res.json())
                         .then(async user => {
 
                             var Game_Name = (Games.get(streamer.data[0].game_id)) ? Games.get(streamer.data[0].game_id) : await node_fetch('https://api.twitch.tv/helix/games?id=' + streamer.data[0].game_id, {
-                                headers: {
-                                    'Client-ID': 'kb5jsbinsj8hm52nfp0q1r1l6rgobt',
-                                },
-                            })
+                                    headers: {
+                                        'Client-ID': 'kb5jsbinsj8hm52nfp0q1r1l6rgobt',
+                                    },
+                                })
                                 .then(resp => resp.json())
                                 .then(resp => {
                                     Games.set(streamer.data[0].game_id, resp.data[0].name)
