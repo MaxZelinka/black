@@ -12,6 +12,7 @@ Description:    Create General-Settings in the Database and more
 /*init*/
 (function init() {
     event.add_event('ready', '_general', 'database');
+    event.add_event('ready', '_general', 'status');
     event.add_event('guildCreate', '_general', 'add_guild');
     event.add_event('guildDelete', '_general', 'del_guild');
     event.add_event('message', '_general', 'settings');
@@ -59,8 +60,13 @@ exports.isBot = (args) => {
     return args.member.user.bot;
 }
 
-exports.Status = (client, args) => {
-    client.user.setPresence({ game: { name: '?bhelp' }, status: 'online' });
+exports.status = (client, args) => {
+    client.user.setPresence({
+        game: {
+            name: '?bhelp',
+        },
+        status: 'online'
+    })
 }
 
 exports.settings = (client, args) => {

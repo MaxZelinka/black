@@ -47,8 +47,6 @@ exports.twitch = (client, args) => {
     });
 }
 
-var old_Status;
-
 /* check whenether messages is send yet */
 function fetch(client, user_login, Guild_ID, Channel_ID, streamer_liste) {
     node_fetch('https://api.twitch.tv/helix/streams?user_login=' + user_login, {
@@ -59,8 +57,7 @@ function fetch(client, user_login, Guild_ID, Channel_ID, streamer_liste) {
         .then(res => res.json())
         .then(streamer => {
             try {
-                if (user_login.toLowerCase() == 'letsplaygreatgames' && streamer.data[0]) {
-                    old_Status = client.user.presence;
+                if (user_login.toLowerCase() == 'letsplaygreatgames' && streamer.data[0] && streamer_liste[streamer.data[0].user_name.toLowerCase()] != 'Live') {
                     client.user.setPresence({
                         game: {
                             name: 'https://www.twitch.tv/letsplaygreatgames',
@@ -71,8 +68,13 @@ function fetch(client, user_login, Guild_ID, Channel_ID, streamer_liste) {
                     });
                 }
 
-                if (user_login.toLowerCase() == 'letsplaygreatgames' && !streamer.data[0]) {
-                    client.user.setPresence(old_Status);
+                if (user_login.toLowerCase() == 'letsplaygreatgames' && !streamer.data[0] && streamer_liste[streamer.data[0].user_name.toLowerCase()] == 'Live') {
+                    client.user.setPresence({
+                        game: {
+                            name: '?bhelp',
+                        },
+                        status: 'online'
+                    })
                 }
             } catch (err) {
                 console.log('twitch status');
@@ -112,9 +114,9 @@ function fetch(client, user_login, Guild_ID, Channel_ID, streamer_liste) {
                                 .addField('Viewers', streamer.data[0].viewer_count, true)
                                 .setTimestamp(streamer.data[0].started_at)
                                 .setFooter('Live');
-                            client.guilds.get(Guild_ID).channels.get(Channel_ID).send({
-                                embed
-                            })
+                            // client.guilds.get(Guild_ID).channels.get(Channel_ID).send({
+                            //     embed
+                            // })
                         })
                 }
             } else { //not live
