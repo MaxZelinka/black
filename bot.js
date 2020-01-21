@@ -53,14 +53,14 @@ const db = require("./js/db"),
 /**************************************************************************************************************/
 client.on('ready', async  (ready) => {
   // console.log('[bot started]');
-  modules.services.set_status(client, modules);
+  // modules.services.set_status(client, modules);
 
   var time = new Date() - start;
   console.log('------------------------------------------');
   console.log('[bot started] used time: ' + time/1000 + 's');
   event.call(modul.get_module(), 'ready', client, ready);
 
-  modules.services.start(client, modules);
+  // modules.services.start(client, modules);
 });
 
 /**************************************************************************************************************/

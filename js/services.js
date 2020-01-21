@@ -5,7 +5,7 @@ const StatusCache = new NodeCache();
 
 exports.start = async (client, modules) => {
     //start the services
-    status_(client, modules);
+    // status_(client, modules);
     file_observer(modules);
 }
 

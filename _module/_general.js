@@ -59,6 +59,10 @@ exports.isBot = (args) => {
     return args.member.user.bot;
 }
 
+exports.Status = (client, args) => {
+    client.user.setPresence({ game: { name: '?bhelp' }, status: 'online' });
+}
+
 exports.settings = (client, args) => {
     const argument = args.content.trim().split(/ +/g)
     const command = argument.shift().toLowerCase();
