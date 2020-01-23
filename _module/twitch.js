@@ -114,9 +114,9 @@ function fetch(client, user_login, Guild_ID, Channel_ID, streamer_liste) {
                                 .addField('Viewers', streamer.data[0].viewer_count, true)
                                 .setTimestamp(streamer.data[0].started_at)
                                 .setFooter('Live');
-                            // client.guilds.get(Guild_ID).channels.get(Channel_ID).send({
-                            //     embed
-                            // })
+                            client.guilds.get(Guild_ID).channels.get(Channel_ID).send({
+                                embed
+                            })
                         })
                 }
             } else { //not live
