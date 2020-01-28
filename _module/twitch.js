@@ -68,7 +68,7 @@ function fetch(client, user_login, Guild_ID, Channel_ID, streamer_liste) {
                     });
                 }
 
-                if (user_login.toLowerCase() == 'letsplaygreatgames' && !streamer.data[0] && streamer_liste[streamer.data[0].user_name.toLowerCase()] == 'Live') {
+                if (user_login.toLowerCase() == 'letsplaygreatgames' && !streamer.data[0] && streamer_liste[user_login.toLowerCase()] == 'Live') {
                     client.user.setPresence({
                         game: {
                             name: '?bhelp',
