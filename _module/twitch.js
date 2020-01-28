@@ -60,7 +60,7 @@ function fetch(client, user_login, Guild_ID, Channel_ID, streamer_liste) {
                 if (user_login.toLowerCase() == 'letsplaygreatgames' && streamer.data[0] && streamer_liste[streamer.data[0].user_name.toLowerCase()] != 'Live') {
                     client.user.setPresence({
                         game: {
-                            name: 'https://www.twitch.tv/letsplaygreatgames',
+                            name: streamer.data[0].title,
                             type: 'STREAMING',
                             url: 'https://www.twitch.tv/letsplaygreatgames'
                         },

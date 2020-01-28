@@ -1,3 +1,9 @@
+/*
+Autor:          Necromant
+Date:           14.01.2020
+Description:    Send Welcome-Messages for new Members
+*/
+
 const discord = require("discord.js");
 const event = require('../event');
 const database = require('../database');
@@ -7,12 +13,6 @@ const node_fetch = require('node-fetch');
 const node_cache = require('node-cache');
 const Leaver = new node_cache({ stdTTL: 86400, checkperiod: 86400 }); //1 day
 const moment = require('moment');
-
-/*
-Autor:          Necromant
-Date:           14.01.2020
-Description:    Send Welcome-Messages for new Members
-*/
 
 /*init*/
 (function init() {

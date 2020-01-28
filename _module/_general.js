@@ -1,13 +1,13 @@
-const discord = require("discord.js");
-const event = require('../event');
-const database = require('../database');
-const _general = require('./_general');
-
 /*
 Autor:          Necromant
 Date:           16.01.2020
 Description:    Create General-Settings in the Database and more
 */
+
+const discord = require("discord.js");
+const event = require('../event');
+const database = require('../database');
+const _general = require('./_general');
 
 /*init*/
 (function init() {
