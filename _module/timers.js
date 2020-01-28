@@ -21,7 +21,7 @@ exports.database = (client, args) => {
 
 var timers;
 function get_timers(){
-    timers = database.query('SELECT * FROM `lpggbot_``timers` WHERE `day` = ' + moment().day() + ';').then(rp => (rp) ? rp : null);
+    timers = database.query('SELECT * FROM `lpggbot_`.`timers` WHERE `day` = ' + moment().day() + ';').then(rp => (rp) ? rp : null);
 }
 
 exports.read_timers = (client, args) => {
