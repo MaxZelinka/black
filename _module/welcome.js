@@ -147,26 +147,15 @@ exports.leaver = (client, args) => {
         }
     });
 
-    if (Leaver.get(args.guild.id)) {
-        var Leaved_User = Leaver.get(args.guild.id).split(',').push(args.user.username);
+    get_leaver(args).then(rp => {
+        if (args.guild.channels.get(rp[0].Leaver_ID)) {
+            const embed = new discord.RichEmbed()
+                .setColor('000000')
+                .setDescription(args.user.username);
 
-
-        if (Leaved_User.length >= 10 || moment().format("HH:mm") == '23:59') {
-            //post & reset
-            get_leaver(args).then(rp => {
-                if (args.guild.channels.get(rp[0].Leaver_ID)) {
-                    const embed = new discord.RichEmbed()
-                        .setColor('000000')
-                        .setDescription(Leaved_User.toString().repalce(/[\s]/g, '').replace(/[,]/g, '\n'));
-
-                    client.guilds.get(args.guild.id).channels.get(rp[0].Leaver_ID).send({
-                        embed
-                    });
-                }
-            })
-            Leaver.del(args.guild.id);
+            client.guilds.get(args.guild.id).channels.get(rp[0].Leaver_ID).send({
+                embed
+            });
         }
-    } else {
-        Leaver.set(args.guild.id, args.user.username);
-    }
+    })
 }
