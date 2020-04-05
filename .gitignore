@@ -3,7 +3,7 @@ auth.json
 *.log
 auth.json
 
-node_modules/
+node_modules/*
 downloads/
 logs/
 package-lock.json
