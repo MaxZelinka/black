@@ -1,6 +1,5 @@
 # Black (Discordbot)
-made by LPGGNecromant (https://www.twitch.tv/letsplaygreatgames)
- 
+
 The bot is currently in the **beta phase** and is currently running with Xampp on a local mashine so there may be delays!
 
 The bot is currently based on the server-side language _NodeJs_ and uses _MySQL_ for data storage.
